@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
+//suff
 import org.firstinspires.ftc.teamcode.util.RedDetecter;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
