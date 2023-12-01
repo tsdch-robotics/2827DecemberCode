@@ -21,6 +21,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime; // Import ElapsedTime
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -95,6 +96,16 @@ public class detectionWithAuto extends LinearOpMode {
     ExamplePipeline examplePipeline;
     private DcMotor slides;
 
+    int spikeMarkX = 0;
+    int spikeMarkY = 0;
+
+    int spikeMarkDegrees = 0;
+
+    private Servo servo1;
+    private Servo servo2;
+    private Servo servo3;
+
+
     // public final int firstForward = 20;
     //public final int firstStrafe = -50;
 
@@ -104,6 +115,9 @@ public class detectionWithAuto extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
+        Pose2d afterSensing = new Pose2d(0, -10, Math.toRadians(0));
+
+
 
         drive.setPoseEstimate(startPose);
 
@@ -118,6 +132,10 @@ public class detectionWithAuto extends LinearOpMode {
         slides = hardwareMap.dcMotor.get("slides");
         slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        servo1 = hardwareMap.servo.get("servo1");
+        servo2 = hardwareMap.servo.get("servo2");
+        servo3 = hardwareMap.servo.get("servo3");
 
         examplePipeline = new ExamplePipeline();
         webcam1.setPipeline(examplePipeline);
@@ -170,20 +188,20 @@ public class detectionWithAuto extends LinearOpMode {
 
         if (left > right && (Math.abs(left - right)) >= 1.5) {
             zone = 1;
-            telemetry.addData("Zone", zone);
-            telemetry.addData("Average Left Value", averageLeft);
-            telemetry.addData("Average Right Value", averageRight);
-            telemetry.update();
 
             Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                    .splineTo(new Vector2d(15, -2), Math.toRadians(0))
+                    // .forward(25)
+                    .splineTo(new Vector2d(-10, 28), Math.toRadians(-7))
                     .build();
-
             Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                    .splineTo(new Vector2d(25, 80), Math.toRadians(0))
+
+                    .splineTo(new Vector2d(-10, 0), Math.toRadians(90))
                     .build();
 
             drive.followTrajectory(traj1);
+            sleep(500);
+            servo1.setPosition(0);
+            sleep(1000);
             drive.followTrajectory(traj2);
 
 
@@ -193,50 +211,67 @@ public class detectionWithAuto extends LinearOpMode {
             telemetry.addData("Average Left Value", averageLeft);
             telemetry.addData("Average Right Value", averageRight);
             telemetry.update();
-            Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                    .forward(25)
-                    //.splineTo(new Vector2d(15, 0), Math.toRadians(0))
-                    .build();
 
+
+
+            Trajectory traj1 = drive.trajectoryBuilder(startPose)
+                    // .forward(25)
+                    .splineTo(new Vector2d(-5, 28), Math.toRadians(0))
+                    .build();
             Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                    .strafeLeft(90)
-                    //   .splineTo(new Vector2d(25, 80), Math.toRadians(0))
+
+                    .splineTo(new Vector2d(-10, 0), Math.toRadians(90))
                     .build();
 
             drive.followTrajectory(traj1);
+            sleep(500);
+            servo1.setPosition(0);
+            sleep(1000);
             drive.followTrajectory(traj2);
+
+
         } else {
             zone = 3;
             telemetry.addData("Zone", zone);
             telemetry.addLine("C");
             telemetry.update();
+
+          //  spikeMarkX = 7;
+          //  spikeMarkY = 28;
+           // spikeMarkDegrees = 5;
+
+
             Trajectory traj1 = drive.trajectoryBuilder(startPose)
                     // .forward(25)
-                    .splineTo(new Vector2d(25, -1), Math.toRadians(90))
+                    .splineTo(new Vector2d(28, 7), Math.toRadians(5))
                     .build();
-
             Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
 
-                    .forward(40)
-                    //  .splineTo(new Vector2d(30, 80), Math.toRadians(0))
-                    .build();
-
-            Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-
-                    .forward(40)
-                    //  .splineTo(new Vector2d(30, 80), Math.toRadians(0))
+                    .splineTo(new Vector2d(0, -10), Math.toRadians(90))
                     .build();
 
             drive.followTrajectory(traj1);
-            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slides.setTargetPosition(600);
-            slides.setPower(1);
+            sleep(500);
+            servo1.setPosition(0);
+            sleep(1000);
             drive.followTrajectory(traj2);
-            drive.followTrajectory(traj3);
-            // Add your autonomous steps for condition C
+            sleep(500);
+
         }
 
 
+
+
+     /*   Trajectory traj3 = drive.trajectoryBuilder(afterSensing)
+
+                .forward(90)
+                //  .splineTo(new Vector2d(30, 80), Math.toRadians(0))
+                .build();
+
+        drive.followTrajectory(traj3);
+
+
+*/
 
         sleep(4000);
 
