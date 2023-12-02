@@ -236,9 +236,9 @@ public class detectionWithAuto extends LinearOpMode {
             telemetry.addLine("C");
             telemetry.update();
 
-          //  spikeMarkX = 7;
-          //  spikeMarkY = 28;
-           // spikeMarkDegrees = 5;
+            spikeMarkX = 7;
+            spikeMarkY = 28;
+            spikeMarkDegrees = 5;
 
 
             Trajectory traj1 = drive.trajectoryBuilder(startPose)

@@ -11,6 +11,10 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name = "BlueTeleOp", group = "TeleOp")
 public class BlueTeleOp extends OpMode {
 
+
+
+
+
     double rotate = 0;
     private DcMotor frontLeftMotor;
     private DcMotor frontRightMotor;
@@ -22,8 +26,16 @@ public class BlueTeleOp extends OpMode {
     private DcMotor intake;
 
 
-    private Servo servo1;
-    private Servo servo2;
+    private Servo arm1;
+    private Servo arm2;
+
+    private Servo wrist;
+    private Servo finger1;
+
+    private Servo finger2;
+
+
+
 
     private boolean gyroSquareRequested = false;
     private BNO055IMU imu; // Gyro sensor
@@ -42,8 +54,12 @@ public class BlueTeleOp extends OpMode {
     @Override
     public void init() {
 
-        servo1 = hardwareMap.servo.get("servo1");
-        servo2 = hardwareMap.servo.get("servo2");
+        arm1 = hardwareMap.servo.get("arm1");
+        arm2 = hardwareMap.servo.get("arm2");
+        wrist = hardwareMap.servo.get("wrist");
+        finger1 = hardwareMap.servo.get("finger1");
+        finger2 = hardwareMap.servo.get("finger2");
+
 
         frontLeftMotor = hardwareMap.dcMotor.get("FL");
         frontRightMotor = hardwareMap.dcMotor.get("FR");
@@ -85,11 +101,39 @@ public class BlueTeleOp extends OpMode {
     @Override
     public void loop() {
 
-
+        telemetry.update();
         telemetry.addData("Position of slides", slides.getCurrentPosition());
+        telemetry.addData("Position of arm1", arm1.getPosition());
+        telemetry.addData("Position of arm2", arm2.getPosition());
+        telemetry.addData("Position of finger1", finger1.getPosition());
+        telemetry.addData("Position of finger2", finger2.getPosition());
+        telemetry.addData("Position of wrist", wrist.getPosition());
 
 
 
+
+        //wrist
+        if(gamepad2.left_bumper){
+            wrist.setPosition(.4 );//intaking
+
+        }
+        if(gamepad2.right_bumper){
+            wrist.setPosition(.5);
+        }
+        //fingers
+
+        if(gamepad2.left_trigger > .2){
+            finger1.setPosition(0);
+            finger2.setPosition(1);
+        }
+        if(gamepad2.right_trigger > .2){
+            finger1.setPosition(.7);
+            finger2.setPosition(.5);
+
+        }
+
+
+        //intake
         if(gamepad1.left_trigger < .5){
             intake.setPower(gamepad1.right_trigger);
         }
@@ -98,14 +142,14 @@ public class BlueTeleOp extends OpMode {
 
         }
 
-        if(gamepad1.dpad_up && slides.getCurrentPosition() < 3000){
+        if(gamepad2.dpad_up && slides.getCurrentPosition() < 3000){
 
             currentSlidesPosition = slides.getCurrentPosition();
             slides.setTargetPosition(currentSlidesPosition + 200);
             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             slides.setPower(1);
         }
-        if(gamepad1.dpad_down && slides.getCurrentPosition() > 0){
+        if(gamepad2.dpad_down && slides.getCurrentPosition() > 0){
 
 
             slides.setTargetPosition(currentSlidesPosition - 200);
@@ -116,22 +160,39 @@ public class BlueTeleOp extends OpMode {
 
 
 
-        if(gamepad1.a){
+        //arm control
+        if(gamepad2.dpad_right){
+//inmtake
+            arm1.setPosition(.95);
+            arm2.setPosition(.05);
+         //   wrist.setPosition(.2);
+        }
+        if(gamepad2.dpad_left){
+
+
+            arm1.setPosition(0);
+            arm2.setPosition(1);
+        }
+
+
+
+
+        if(gamepad2.a){
             slides.setTargetPosition(0);
             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             slides.setPower(1);
         }
-        if(gamepad1.x){
+        if(gamepad2.x){
             slides.setTargetPosition(1000);
             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             slides.setPower(1);
         }
-        if(gamepad1.y){
+        if(gamepad2.y){
             slides.setTargetPosition(2300);
             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             slides.setPower(1);
         }
-        if(gamepad1.b){
+        if(gamepad2.b){
             slides.setTargetPosition(3900);
             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             slides.setPower(1);
@@ -144,6 +205,7 @@ public class BlueTeleOp extends OpMode {
             setpoint = 90;
         }
         if (gamepad1.right_bumper){
+
             setpoint = 45;
         }*/
 
