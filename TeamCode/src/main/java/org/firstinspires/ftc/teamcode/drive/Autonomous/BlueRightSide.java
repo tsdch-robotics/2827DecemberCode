@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode.drive.Autonomous;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 //sufffdisusdouifhsdofuihs
-import org.firstinspires.ftc.teamcode.util.RedDetecter;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -19,72 +18,19 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime; // Import ElapsedTime
-
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvCameraFactory;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
-
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.util.Hardware;
-import org.firstinspires.ftc.teamcode.util.RedDetecter;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvCameraFactory;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.openftc.easyopencv.OpenCvWebcam;
 
-
-import com.acmerobotics.dashboard.config.Config;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.firstMove;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.firstStrafe;
-
-
+@Config
 @Autonomous(group = "drive")
-public class detectionWithAuto extends LinearOpMode {
+public class BlueRightSide extends LinearOpMode {
     OpenCvWebcam webcam1 = null;
     ElapsedTime elapsedTime = new ElapsedTime(); // Add ElapsedTime to track time
     double totalLeftAvg = 0;
@@ -96,10 +42,32 @@ public class detectionWithAuto extends LinearOpMode {
     ExamplePipeline examplePipeline;
     private DcMotor slides;
 
-    int spikeMarkX = 0;
-    int spikeMarkY = 0;
 
-    int spikeMarkDegrees = 0;
+    //constants
+
+    public static double ID1spikeMarkX = 28;
+    public static double ID1spikeMarkY = 6.5;
+
+    public static double ID1spikeMarkDegrees = 5;
+
+    public static double ID2spikeMarkX = 29;
+    public static double ID2spikeMarkY = 1.2;
+
+    public static double ID2spikeMarkDegrees = 0;
+
+    public static double ID3spikeMarkX = 29;
+    public static double ID3spikeMarkY = -6.5;
+
+    public static double ID3spikeMarkDegrees = -5;
+
+
+
+
+
+
+
+
+
 
     private Servo arm1;
     private Servo arm2;
@@ -121,6 +89,10 @@ public class detectionWithAuto extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
+        drive.setPoseEstimate(startPose);
+
+
+
         //Pose2d afterSensing = new Pose2d(0, -10, Math.toRadians(0));
 
 
@@ -178,10 +150,12 @@ public class detectionWithAuto extends LinearOpMode {
             sleep(50);
         }*/
 
-        left = examplePipeline.leftavgfin;
-        right = examplePipeline.rightavgfin;
+        double tleft = examplePipeline.leftavgfin;
+        dobul tright = examplePipeline.rightavgfin;
 
         telemetry.addLine("done computing");
+        telemetry.addData("left", left);
+        telemetry.addData("right", left);
         telemetry.update();
         // Average color values over ten seconds
         double averageLeft = left;//totalLeftAvg / frameCount;
@@ -195,41 +169,31 @@ public class detectionWithAuto extends LinearOpMode {
 
 
 
-        if (left > right && (Math.abs(left - right)) >= 1.5) {
-            zone = 1;
-
-            Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                    // .forward(25)
-                    .splineTo(new Vector2d(-10, 28), Math.toRadians(-7))
-                    .build();
-            Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-
-                    .splineTo(new Vector2d(-10, 0), Math.toRadians(90))
-                    .build();
-
-            drive.followTrajectory(traj1);
-            sleep(500);
-            flicker.setPosition(0);
-            sleep(1000);
-            drive.followTrajectory(traj2);
-
-
-        } else if (left < right && (Math.abs(left - right)) >= 1.5) {
+        if (left > right/* && (Math.abs(left - right)) >= 1.5*/) {
             zone = 2;
-            telemetry.addData("Zone", zone);
-            telemetry.addData("Average Left Value", averageLeft);
-            telemetry.addData("Average Right Value", averageRight);
-            telemetry.update();
-
-
+//middle
 
             Trajectory traj1 = drive.trajectoryBuilder(startPose)
                     // .forward(25)
-                    .splineTo(new Vector2d(-5, 28), Math.toRadians(0))
+                    .splineTo(new Vector2d(ID2spikeMarkX, ID2spikeMarkY), Math.toRadians(ID2spikeMarkDegrees))
                     .build();
+
+
             Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
 
-                    .splineTo(new Vector2d(-10, 0), Math.toRadians(90))
+
+
+
+                    .lineToLinearHeading(new Pose2d(1, 0, Math.toRadians(90)))
+                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
+                    .build();
+
+            Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
+
+
+
+                    .forward(70)
+                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
                     .build();
 
             drive.followTrajectory(traj1);
@@ -237,26 +201,84 @@ public class detectionWithAuto extends LinearOpMode {
             flicker.setPosition(0);
             sleep(1000);
             drive.followTrajectory(traj2);
+            drive.followTrajectory(traj3);
+            sleep(500);
 
+
+        } else if (left < right/* && (Math.abs(left - right)) >= 1.5*/) {
+
+            zone = 3;
+//middle
+
+            Trajectory traj1 = drive.trajectoryBuilder(startPose)
+                    // .forward(25)
+                    .splineTo(new Vector2d(ID3spikeMarkX, ID3spikeMarkY), Math.toRadians(ID3spikeMarkDegrees))
+                    .build();
+
+
+            Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+
+
+
+
+                    .lineToLinearHeading(new Pose2d(1, 0, Math.toRadians(90)))
+                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
+                    .build();
+
+            Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
+
+
+
+                    .forward(70)
+                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
+                    .build();
+
+            drive.followTrajectory(traj1);
+            sleep(500);
+            flicker.setPosition(0);
+            sleep(1000);
+            drive.followTrajectory(traj2);
+            drive.followTrajectory(traj3);
+
+            sleep(500);
 
         } else {
-            zone = 3;
+            zone = 1;
             telemetry.addData("Zone", zone);
             telemetry.addLine("C");
             telemetry.update();
 
-            spikeMarkX = 7;
-            spikeMarkY = 28;
-            spikeMarkDegrees = 5;
+
 
 
             Trajectory traj1 = drive.trajectoryBuilder(startPose)
                     // .forward(25)
-                    .splineTo(new Vector2d(28, 6.5), Math.toRadians(5))
+                    .splineTo(new Vector2d(ID1spikeMarkX, ID1spikeMarkY), Math.toRadians(ID1spikeMarkDegrees))
                     .build();
-            Trajectory traj2 = drive.trajectoryBuilder(traj1.end(), true)
+            Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
 
-                    .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
+
+
+                    .lineToLinearHeading(new Pose2d(24, 0, Math.toRadians(5)))
+                    //.lineToLinearHeading(new Pose2d(1, 0, Math.toRadians(90)))
+                   // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
+                    .build();
+
+            Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
+
+
+
+
+                    .lineToLinearHeading(new Pose2d(1, 0, Math.toRadians(90)))
+                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
+                    .build();
+
+            Trajectory traj4 = drive.trajectoryBuilder(traj3.end())
+
+
+
+                    .forward(70)
+                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
                     .build();
 
             drive.followTrajectory(traj1);
@@ -264,6 +286,8 @@ public class detectionWithAuto extends LinearOpMode {
             flicker.setPosition(0);
             sleep(1000);
             drive.followTrajectory(traj2);
+            drive.followTrajectory(traj3);
+            drive.followTrajectory(traj4);
             sleep(500);
 
         }
@@ -325,9 +349,9 @@ public class detectionWithAuto extends LinearOpMode {
         @Override
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
-
-            Rect leftRect = new Rect(1, 1, 400, 500);
-            Rect rightRect = new Rect(800, 1, 400, 500);//midile is 640
+//1280,720
+            Rect leftRect = new Rect(200, 100, 400, 500);
+            Rect rightRect = new Rect(800, 100, 400, 500);//midile is 640
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, leftRect, rectColor, 20);
@@ -336,8 +360,8 @@ public class detectionWithAuto extends LinearOpMode {
             leftCrop = YCbCr.submat(leftRect);
             rightCrop = YCbCr.submat(rightRect);
 
-            Core.extractChannel(leftCrop, leftCrop, 1);
-            Core.extractChannel(rightCrop, rightCrop, 1);
+            Core.extractChannel(leftCrop, leftCrop, 0);
+            Core.extractChannel(rightCrop, rightCrop, 0);
 
             Scalar leftavg = Core.mean(leftCrop);
             Scalar rightavg = Core.mean(rightCrop);
