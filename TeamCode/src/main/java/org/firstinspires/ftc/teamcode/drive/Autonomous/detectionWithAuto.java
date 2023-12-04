@@ -101,9 +101,15 @@ public class detectionWithAuto extends LinearOpMode {
 
     int spikeMarkDegrees = 0;
 
-    private Servo servo1;
-    private Servo servo2;
-    private Servo servo3;
+    private Servo arm1;
+    private Servo arm2;
+
+    private Servo wrist;
+    private Servo finger1;
+
+    private Servo finger2;
+
+    private Servo flicker;
 
 
     // public final int firstForward = 20;
@@ -115,7 +121,7 @@ public class detectionWithAuto extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
-        Pose2d afterSensing = new Pose2d(0, -10, Math.toRadians(0));
+        //Pose2d afterSensing = new Pose2d(0, -10, Math.toRadians(0));
 
 
 
@@ -133,9 +139,12 @@ public class detectionWithAuto extends LinearOpMode {
         slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        servo1 = hardwareMap.servo.get("servo1");
-        servo2 = hardwareMap.servo.get("servo2");
-        servo3 = hardwareMap.servo.get("servo3");
+        arm1 = hardwareMap.servo.get("arm1");
+        arm2 = hardwareMap.servo.get("arm2");
+        wrist = hardwareMap.servo.get("wrist");
+        finger1 = hardwareMap.servo.get("finger1");
+        finger2 = hardwareMap.servo.get("finger2");
+        flicker = hardwareMap.servo.get("flicker");
 
         examplePipeline = new ExamplePipeline();
         webcam1.setPipeline(examplePipeline);
@@ -200,7 +209,7 @@ public class detectionWithAuto extends LinearOpMode {
 
             drive.followTrajectory(traj1);
             sleep(500);
-            servo1.setPosition(0);
+            flicker.setPosition(0);
             sleep(1000);
             drive.followTrajectory(traj2);
 
@@ -225,7 +234,7 @@ public class detectionWithAuto extends LinearOpMode {
 
             drive.followTrajectory(traj1);
             sleep(500);
-            servo1.setPosition(0);
+            flicker.setPosition(0);
             sleep(1000);
             drive.followTrajectory(traj2);
 
@@ -243,16 +252,16 @@ public class detectionWithAuto extends LinearOpMode {
 
             Trajectory traj1 = drive.trajectoryBuilder(startPose)
                     // .forward(25)
-                    .splineTo(new Vector2d(28, 7), Math.toRadians(5))
+                    .splineTo(new Vector2d(28, 6.5), Math.toRadians(5))
                     .build();
-            Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+            Trajectory traj2 = drive.trajectoryBuilder(traj1.end(), true)
 
-                    .splineTo(new Vector2d(0, -10), Math.toRadians(90))
+                    .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
                     .build();
 
             drive.followTrajectory(traj1);
             sleep(500);
-            servo1.setPosition(0);
+            flicker.setPosition(0);
             sleep(1000);
             drive.followTrajectory(traj2);
             sleep(500);
