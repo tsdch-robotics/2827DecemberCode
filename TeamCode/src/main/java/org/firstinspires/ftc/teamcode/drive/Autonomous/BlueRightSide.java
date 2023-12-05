@@ -60,9 +60,12 @@ public class BlueRightSide extends LinearOpMode {
 
     public static double ID3spikeMarkDegrees = -5;
 
-    public static double randomParameter = 4;
+    public static double sensitivityLevel = .075;//lower for higher sensitivity, raise for less sensitity
 
 
+    public double spikeMarkX;
+    public double spikeMarkY;
+    public double spikeMarkDegrees;
 
 
 
@@ -141,30 +144,6 @@ public class BlueRightSide extends LinearOpMode {
         telemetry.addLine("started");
         telemetry.update();
 
-
-       /* double left = examplePipeline.leftavgfin;
-        double right = examplePipeline.rightavgfin;
-
-
-
-
-
-
-        telemetry.addLine("done computing");
-        telemetry.addData("left", left);
-        telemetry.addData("right", right);
-        telemetry.update();
-        sleep(3000);
-        // Average color values over ten seconds
-        double averageLeft = left;//totalLeftAvg / frameCount;
-        double averageRight = right;//totalRightAvg / frameCount;
-
-        telemetry.addLine("Returning Values");
-        telemetry.update();
-        // Use the average values to determine autonomous steps
-
-*/
-
 //necessary to work
         for (int i = 0; i < 50; i++) { // 200 iterations * 50 milliseconds = 10 seconds, 50 * 50 = 2.5 seconds
             telemetry.addLine("Measuring Camera stream");
@@ -188,16 +167,20 @@ public class BlueRightSide extends LinearOpMode {
         telemetry.addData("right", averageRight);
         telemetry.update();
         sleep(500);
+//end of sensing stuff
 
-
-
-        if (averageRight > averageLeft && (Math.abs(averageRight - averageLeft)) >= randomParameter) {
+        if (averageRight > averageLeft && (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
             zone = 2;
             telemetry.addData("Zone", zone);
             telemetry.update();
+
+            spikeMarkX = ID2spikeMarkX;
+            spikeMarkY = ID2spikeMarkY;
+            spikeMarkDegrees = ID2spikeMarkDegrees;
+
 //middle
 
-            Trajectory traj1 = drive.trajectoryBuilder(startPose)
+          /*  Trajectory traj1 = drive.trajectoryBuilder(startPose)
                     // .forward(25)
                     .splineTo(new Vector2d(ID2spikeMarkX, ID2spikeMarkY), Math.toRadians(ID2spikeMarkDegrees))
                     .build();
@@ -226,16 +209,21 @@ public class BlueRightSide extends LinearOpMode {
             sleep(1000);
             drive.followTrajectory(traj2);
             drive.followTrajectory(traj3);
-            sleep(500);
+            sleep(500);*/
 
-
-        } else if (averageRight < averageLeft && (Math.abs(averageRight - averageLeft)) >= randomParameter) {
+//adjusts negligibility by scale rather than an actual parameter
+        } else if (averageRight < averageLeft&& (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
 
             zone = 3;
             telemetry.addData("Zone", zone);
             telemetry.update();
 //middle
 
+            spikeMarkX = ID3spikeMarkX;
+            spikeMarkY = ID3spikeMarkY;
+            spikeMarkDegrees = ID3spikeMarkDegrees;
+
+      /*
             Trajectory traj1 = drive.trajectoryBuilder(startPose)
                     // .forward(25)
                     .splineTo(new Vector2d(ID3spikeMarkX, ID3spikeMarkY), Math.toRadians(ID3spikeMarkDegrees))
@@ -266,7 +254,7 @@ public class BlueRightSide extends LinearOpMode {
             drive.followTrajectory(traj2);
             drive.followTrajectory(traj3);
 
-            sleep(500);
+            sleep(500);*/
 
         } else {
             zone = 1;
@@ -274,10 +262,13 @@ public class BlueRightSide extends LinearOpMode {
 
             telemetry.update();
 
+            spikeMarkX = ID1spikeMarkX;
+            spikeMarkY = ID1spikeMarkY;
+            spikeMarkDegrees = ID1spikeMarkDegrees;
 
 
 
-            Trajectory traj1 = drive.trajectoryBuilder(startPose)
+          /*  Trajectory traj1 = drive.trajectoryBuilder(startPose)
                     // .forward(25)
                     .splineTo(new Vector2d(ID1spikeMarkX, ID1spikeMarkY), Math.toRadians(ID1spikeMarkDegrees))
                     .build();
@@ -315,23 +306,37 @@ public class BlueRightSide extends LinearOpMode {
             drive.followTrajectory(traj3);
             drive.followTrajectory(traj4);
             sleep(500);
-
+*/
         }
 
 
 
 
-     /*   Trajectory traj3 = drive.trajectoryBuilder(afterSensing)
-
-                .forward(90)
-                //  .splineTo(new Vector2d(30, 80), Math.toRadians(0))
+       //beginning of trajectories
+        Trajectory traj1 = drive.trajectoryBuilder(startPose)
+                .splineTo(new Vector2d(spikeMarkX, spikeMarkY), Math.toRadians(spikeMarkDegrees))
+                .build();
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+                .lineToLinearHeading(new Pose2d(24, 0, Math.toRadians(spikeMarkDegrees)))
+                .build();
+        Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
+                .lineToLinearHeading(new Pose2d(2, 0, Math.toRadians(90)))
+                // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
+                .build();
+        Trajectory traj4 = drive.trajectoryBuilder(traj3.end())
+                .lineToLinearHeading(new Pose2d(2, 80, Math.toRadians(90)))
+                // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
                 .build();
 
+
+
+        drive.followTrajectory(traj1);
+        sleep(500);
+        flicker.setPosition(0);
+        sleep(1000);
+        drive.followTrajectory(traj2);
         drive.followTrajectory(traj3);
-
-
-*/
-
+        drive.followTrajectory(traj4);
         sleep(4000);
 
 
