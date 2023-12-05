@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.drive.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -18,7 +18,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 
 
 @Autonomous
-public class RedDetecter extends OpMode {
+public class VisionDebugger extends OpMode {
 
 
     OpenCvWebcam webcam1 = null;
@@ -72,10 +72,9 @@ public class RedDetecter extends OpMode {
         @Override
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
-            telemetry.addLine("pipeline running");
-
-            Rect leftRect = new Rect(1, 1, 959, 1079);
-            Rect rightRect = new Rect(960, 1, 959, 1079);
+//1280,720
+            Rect leftRect = new Rect(200, 100, 400, 500);
+            Rect rightRect = new Rect(800, 100, 400, 500);//midile is 640
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, leftRect, rectColor, 20);
@@ -84,14 +83,20 @@ public class RedDetecter extends OpMode {
             leftCrop = YCbCr.submat(leftRect);
             rightCrop = YCbCr.submat(rightRect);
 
-            Core.extractChannel(leftCrop, leftCrop, 1);
-            Core.extractChannel(rightCrop, rightCrop, 1);
+            Core.extractChannel(leftCrop, leftCrop, 0);
+            Core.extractChannel(rightCrop, rightCrop, 0);
 
             Scalar leftavg = Core.mean(leftCrop);
             Scalar rightavg = Core.mean(rightCrop);
 
             leftavgfin = leftavg.val[0];
             rightavgfin = rightavg.val[0];
+
+     /*       telemetry.addLine("pipeline running");
+            telemetry.addData("LeftValue", leftavgfin);
+            telemetry.addData("RightValue", rightavgfin);
+*/
+            //return outPut;
 
             if (leftavgfin > rightavgfin && (Math.abs(leftavgfin-rightavgfin)) >= 1.5){
                 telemetry.addLine("A");

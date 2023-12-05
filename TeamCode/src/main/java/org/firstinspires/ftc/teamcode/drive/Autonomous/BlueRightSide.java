@@ -35,8 +35,8 @@ public class BlueRightSide extends LinearOpMode {
     ElapsedTime elapsedTime = new ElapsedTime(); // Add ElapsedTime to track time
     double totalLeftAvg = 0;
     double totalRightAvg = 0;
-    double left = 0;
-    double right = 0;
+  //  double left = 0;
+ //   double right = 0;
     int frameCount = 0;
     int zone = 0;
     ExamplePipeline examplePipeline;
@@ -51,14 +51,16 @@ public class BlueRightSide extends LinearOpMode {
     public static double ID1spikeMarkDegrees = 5;
 
     public static double ID2spikeMarkX = 29;
-    public static double ID2spikeMarkY = 1.2;
+    public static double ID2spikeMarkY = -4;
 
     public static double ID2spikeMarkDegrees = 0;
 
     public static double ID3spikeMarkX = 29;
-    public static double ID3spikeMarkY = -6.5;
+    public static double ID3spikeMarkY = -12;
 
     public static double ID3spikeMarkDegrees = -5;
+
+    public static double randomParameter = 4;
 
 
 
@@ -124,7 +126,7 @@ public class BlueRightSide extends LinearOpMode {
         webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam1.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                webcam1.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);//changed to upside down
             }//TODO: adjust width and height baced on specific camera
 
             @Override
@@ -138,25 +140,21 @@ public class BlueRightSide extends LinearOpMode {
         // Run for 10 seconds
         telemetry.addLine("started");
         telemetry.update();
-      /*  for (int i = 0; i < 200; i++) { // 200 iterations * 50 milliseconds = 10 seconds
-            telemetry.addLine("Measuring Camara stream");
-            telemetry.update();
-            // Process frames and accumulate color values
-            totalLeftAvg += examplePipeline.leftavgfin;
-            totalRightAvg += examplePipeline.rightavgfin;
-            frameCount++;
 
-            // Sleep for 50 milliseconds
-            sleep(50);
-        }*/
 
-        double tleft = examplePipeline.leftavgfin;
-        dobul tright = examplePipeline.rightavgfin;
+       /* double left = examplePipeline.leftavgfin;
+        double right = examplePipeline.rightavgfin;
+
+
+
+
+
 
         telemetry.addLine("done computing");
         telemetry.addData("left", left);
-        telemetry.addData("right", left);
+        telemetry.addData("right", right);
         telemetry.update();
+        sleep(3000);
         // Average color values over ten seconds
         double averageLeft = left;//totalLeftAvg / frameCount;
         double averageRight = right;//totalRightAvg / frameCount;
@@ -165,12 +163,38 @@ public class BlueRightSide extends LinearOpMode {
         telemetry.update();
         // Use the average values to determine autonomous steps
 
+*/
+
+//necessary to work
+        for (int i = 0; i < 50; i++) { // 200 iterations * 50 milliseconds = 10 seconds, 50 * 50 = 2.5 seconds
+            telemetry.addLine("Measuring Camera stream");
+            telemetry.update();
+
+            // Process frames and accumulate color values
+            totalLeftAvg += examplePipeline.leftavgfin;
+            totalRightAvg += examplePipeline.rightavgfin;
+            frameCount++;
+
+            // Sleep for 50 milliseconds
+            sleep(50);
+        }
+
+// Calculate average color values over ten seconds
+        double averageLeft = totalLeftAvg / frameCount;
+        double averageRight = totalRightAvg / frameCount;
+
+        telemetry.addLine("done computing");
+        telemetry.addData("left", averageLeft); // Fix the display here
+        telemetry.addData("right", averageRight);
+        telemetry.update();
+        sleep(500);
 
 
 
-
-        if (left > right/* && (Math.abs(left - right)) >= 1.5*/) {
+        if (averageRight > averageLeft && (Math.abs(averageRight - averageLeft)) >= randomParameter) {
             zone = 2;
+            telemetry.addData("Zone", zone);
+            telemetry.update();
 //middle
 
             Trajectory traj1 = drive.trajectoryBuilder(startPose)
@@ -205,9 +229,11 @@ public class BlueRightSide extends LinearOpMode {
             sleep(500);
 
 
-        } else if (left < right/* && (Math.abs(left - right)) >= 1.5*/) {
+        } else if (averageRight < averageLeft && (Math.abs(averageRight - averageLeft)) >= randomParameter) {
 
             zone = 3;
+            telemetry.addData("Zone", zone);
+            telemetry.update();
 //middle
 
             Trajectory traj1 = drive.trajectoryBuilder(startPose)
@@ -245,7 +271,7 @@ public class BlueRightSide extends LinearOpMode {
         } else {
             zone = 1;
             telemetry.addData("Zone", zone);
-            telemetry.addLine("C");
+
             telemetry.update();
 
 
