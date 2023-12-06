@@ -30,13 +30,13 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
 @Autonomous(group = "drive")
-public class BlueRightSide extends LinearOpMode {
+public class RedRightSide extends LinearOpMode {
     OpenCvWebcam webcam1 = null;
     ElapsedTime elapsedTime = new ElapsedTime(); // Add ElapsedTime to track time
     double totalLeftAvg = 0;
     double totalRightAvg = 0;
-  //  double left = 0;
- //   double right = 0;
+    //  double left = 0;
+    //   double right = 0;
     int frameCount = 0;
     int zone = 0;
     ExamplePipeline examplePipeline;
@@ -60,12 +60,22 @@ public class BlueRightSide extends LinearOpMode {
 
     public static double ID3spikeMarkDegrees = -5;
 
-    public static double sensitivityLevel = .075;//lower for higher sensitivity, raise for less sensitity
+    public static double sensitivityLevel = .015;//lower for higher sensitivity, raise for less sensitity
 
+
+    public static double ID4X = 32;
+    public static double ID5X = 25;
+    public static double ID6X = 16;
 
     public double spikeMarkX;
     public double spikeMarkY;
     public double spikeMarkDegrees;
+
+    public static double inchesToBoard = -40;
+
+    public double zoneSpecificX;
+
+
 
 
 
@@ -158,161 +168,53 @@ public class BlueRightSide extends LinearOpMode {
             sleep(50);
         }
 
-// Calculate average color values over ten seconds
+// calculate average color values
         double averageLeft = totalLeftAvg / frameCount;
         double averageRight = totalRightAvg / frameCount;
 
         telemetry.addLine("done computing");
-        telemetry.addData("left", averageLeft); // Fix the display here
+        telemetry.addData("left", averageLeft); // fix the display hereesdf
         telemetry.addData("right", averageRight);
         telemetry.update();
-        sleep(500);
+   //     sleep(5000);
 //end of sensing stuff
 
-        if (averageRight > averageLeft && (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
-            zone = 2;
-            telemetry.addData("Zone", zone);
+        if (averageRight < averageLeft && (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
+            //zone = 2;
+            telemetry.addLine("Middle");
             telemetry.update();
 
+            zoneSpecificX = ID5X;
             spikeMarkX = ID2spikeMarkX;
             spikeMarkY = ID2spikeMarkY;
             spikeMarkDegrees = ID2spikeMarkDegrees;
 
-//middle
+        } else if (averageRight > averageLeft&& (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
 
-          /*  Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                    // .forward(25)
-                    .splineTo(new Vector2d(ID2spikeMarkX, ID2spikeMarkY), Math.toRadians(ID2spikeMarkDegrees))
-                    .build();
-
-
-            Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-
-
-
-
-                    .lineToLinearHeading(new Pose2d(1, 0, Math.toRadians(90)))
-                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
-                    .build();
-
-            Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-
-
-
-                    .forward(70)
-                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
-                    .build();
-
-            drive.followTrajectory(traj1);
-            sleep(500);
-            flicker.setPosition(0);
-            sleep(1000);
-            drive.followTrajectory(traj2);
-            drive.followTrajectory(traj3);
-            sleep(500);*/
-
-//adjusts negligibility by scale rather than an actual parameter
-        } else if (averageRight < averageLeft&& (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
-
-            zone = 3;
-            telemetry.addData("Zone", zone);
+            //zone = 3;
+            telemetry.addLine("Right");
             telemetry.update();
-//middle
-
+            zoneSpecificX = ID6X;
             spikeMarkX = ID3spikeMarkX;
             spikeMarkY = ID3spikeMarkY;
             spikeMarkDegrees = ID3spikeMarkDegrees;
 
-      /*
-            Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                    // .forward(25)
-                    .splineTo(new Vector2d(ID3spikeMarkX, ID3spikeMarkY), Math.toRadians(ID3spikeMarkDegrees))
-                    .build();
-
-
-            Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-
-
-
-
-                    .lineToLinearHeading(new Pose2d(1, 0, Math.toRadians(90)))
-                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
-                    .build();
-
-            Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-
-
-
-                    .forward(70)
-                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
-                    .build();
-
-            drive.followTrajectory(traj1);
-            sleep(500);
-            flicker.setPosition(0);
-            sleep(1000);
-            drive.followTrajectory(traj2);
-            drive.followTrajectory(traj3);
-
-            sleep(500);*/
-
         } else {
-            zone = 1;
-            telemetry.addData("Zone", zone);
-
+            //zone = 1;
+            telemetry.addLine("Left");
             telemetry.update();
 
+            zoneSpecificX = ID4X;
             spikeMarkX = ID1spikeMarkX;
             spikeMarkY = ID1spikeMarkY;
             spikeMarkDegrees = ID1spikeMarkDegrees;
 
-
-
-          /*  Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                    // .forward(25)
-                    .splineTo(new Vector2d(ID1spikeMarkX, ID1spikeMarkY), Math.toRadians(ID1spikeMarkDegrees))
-                    .build();
-            Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-
-
-
-                    .lineToLinearHeading(new Pose2d(24, 0, Math.toRadians(5)))
-                    //.lineToLinearHeading(new Pose2d(1, 0, Math.toRadians(90)))
-                   // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
-                    .build();
-
-            Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-
-
-
-
-                    .lineToLinearHeading(new Pose2d(1, 0, Math.toRadians(90)))
-                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
-                    .build();
-
-            Trajectory traj4 = drive.trajectoryBuilder(traj3.end())
-
-
-
-                    .forward(70)
-                    // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
-                    .build();
-
-            drive.followTrajectory(traj1);
-            sleep(500);
-            flicker.setPosition(0);
-            sleep(1000);
-            drive.followTrajectory(traj2);
-            drive.followTrajectory(traj3);
-            drive.followTrajectory(traj4);
-            sleep(500);
-*/
         }
 
 
 
 
-       //beginning of trajectories
+        //beginning of trajectories
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
                 .splineTo(new Vector2d(spikeMarkX, spikeMarkY), Math.toRadians(spikeMarkDegrees))
                 .build();
@@ -320,15 +222,13 @@ public class BlueRightSide extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(24, 0, Math.toRadians(spikeMarkDegrees)))
                 .build();
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                .lineToLinearHeading(new Pose2d(3, 0, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(zoneSpecificX, inchesToBoard, Math.toRadians(-90)))
+                .build();
+       /* Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
+                .lineToLinearHeading(new Pose2d(zoneSpecific, inchesToBoard, Math.toRadians(-90)))//-80
                 // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
                 .build();
-        Trajectory traj4 = drive.trajectoryBuilder(traj3.end())
-                .lineToLinearHeading(new Pose2d(3, 80, Math.toRadians(90)))
-                // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
-                .build();
-
-
+*/
 
         drive.followTrajectory(traj1);
         sleep(500);
@@ -336,7 +236,7 @@ public class BlueRightSide extends LinearOpMode {
         sleep(1000);
         drive.followTrajectory(traj2);
         drive.followTrajectory(traj3);
-        drive.followTrajectory(traj4);
+     //   drive.followTrajectory(traj4);
         sleep(4000);
 
 
@@ -391,8 +291,8 @@ public class BlueRightSide extends LinearOpMode {
             leftCrop = YCbCr.submat(leftRect);
             rightCrop = YCbCr.submat(rightRect);
 
-            Core.extractChannel(leftCrop, leftCrop, 0);
-            Core.extractChannel(rightCrop, rightCrop, 0);
+            Core.extractChannel(leftCrop, leftCrop, 1);
+            Core.extractChannel(rightCrop, rightCrop, 1);
 
             Scalar leftavg = Core.mean(leftCrop);
             Scalar rightavg = Core.mean(rightCrop);
