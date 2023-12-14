@@ -113,24 +113,26 @@ public class BlueTeleOp extends OpMode {
 
 
         //wrist
-        if(gamepad2.left_bumper){
+        /*if(gamepad2.left_bumper){
             wrist.setPosition(.4 );//intaking
 
         }
         if(gamepad2.right_bumper){
             wrist.setPosition(.5);
-        }
+        }*/
         //fingers
 
-        if(gamepad2.left_trigger > .2){
-            finger1.setPosition(0);
-            finger2.setPosition(1);
-        }
-        if(gamepad2.right_trigger > .2){
-            finger1.setPosition(.7);
+        if(gamepad2.left_bumper){
+            finger1.setPosition(.5);
             finger2.setPosition(.5);
+        }
+        if(gamepad2.right_bumper){
+            finger1.setPosition(1);
+            finger2.setPosition(1);
 
         }
+
+
 
 
         //intake
@@ -161,13 +163,13 @@ public class BlueTeleOp extends OpMode {
 
 
         //arm control
-        if(gamepad2.dpad_right){
+        if(gamepad2.left_trigger >= .2){
 //inmtake
-            arm1.setPosition(.95);
-            arm2.setPosition(.05);
+            arm1.setPosition(.9);
+            arm2.setPosition(.1);
          //   wrist.setPosition(.2);
         }
-        if(gamepad2.dpad_left){
+        if(gamepad2.right_trigger >= .2){
 
 
             arm1.setPosition(0);
@@ -178,7 +180,7 @@ public class BlueTeleOp extends OpMode {
 
 
         if(gamepad2.a){
-            slides.setTargetPosition(0);
+            slides.setTargetPosition(-20);
             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             slides.setPower(1);
         }
@@ -193,7 +195,7 @@ public class BlueTeleOp extends OpMode {
             slides.setPower(1);
         }
         if(gamepad2.b){
-            slides.setTargetPosition(3900);
+            slides.setTargetPosition(3000);
             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             slides.setPower(1);
         }
