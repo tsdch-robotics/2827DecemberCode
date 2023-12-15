@@ -8,6 +8,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+
 @TeleOp(name = "BlueTeleOp", group = "TeleOp")
 public class BlueTeleOp extends OpMode {
 
@@ -50,6 +59,38 @@ public class BlueTeleOp extends OpMode {
     double setpoint  = 90;
 
     int currentSlidesPosition;
+    public int targetSlidesHeight;
+
+
+    public enum SlidePosition {
+
+        THREATEN, //waiting to stab
+        STAB, //stabing
+
+        ZERO, //0
+        LOW, //500
+        MEDIUM,//1500
+        HIGH;//2500
+    }
+
+    public SlidePosition slideTarget;
+    public SlidePosition slidePreload;
+    public SlidePosition slideCurrentState;
+
+
+
+    public static double release = .6;
+    public static double stabExpand = 1;
+    public static double scoringWrist = 0;
+
+
+    public void halt(int seconds) {
+        try {
+            Thread.sleep(seconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void init() {
@@ -97,9 +138,18 @@ public class BlueTeleOp extends OpMode {
         //  IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
         //          LOGO_FACING_DIR, USB_FACING_DIR));
         //  imu.initialize(parameters);
+
+
+        slideTarget = SlidePosition.ZERO;
+        slideCurrentState = SlidePosition.ZERO;
+
+
+
     }
     @Override
     public void loop() {
+
+
 
         telemetry.update();
         telemetry.addData("Position of slides", slides.getCurrentPosition());
@@ -112,25 +162,125 @@ public class BlueTeleOp extends OpMode {
 
 
 
-        //wrist
-        /*if(gamepad2.left_bumper){
-            wrist.setPosition(.4 );//intaking
 
-        }
-        if(gamepad2.right_bumper){
-            wrist.setPosition(.5);
-        }*/
+        //gamepad1 controls
+
+        //wrist
+
         //fingers
 
-        if(gamepad2.left_bumper){
-            finger1.setPosition(.5);
-            finger2.setPosition(.5);
+        if(gamepad1.left_bumper){
+            finger1.setPosition(release);
+            //finger2.setPosition(.5);
         }
-        if(gamepad2.right_bumper){
-            finger1.setPosition(1);
-            finger2.setPosition(1);
+        if(gamepad1.right_bumper){
+          //  finger1.setPosition(1);
+            finger2.setPosition(release);
+        }
+
+
+        if(gamepad1.dpad_down){
 
         }
+        if(gamepad1.dpad_left){
+            slidePreload = SlidePosition.LOW;
+        }
+        if(gamepad1.dpad_up){
+            slidePreload = SlidePosition.HIGH;
+        }
+        if(gamepad1.dpad_right){
+            slidePreload = SlidePosition.MEDIUM;
+        }
+        if(gamepad1.a){
+
+            if (slideCurrentState == SlidePosition.THREATEN){
+                slideTarget = SlidePosition.STAB;
+            }else{
+                slideTarget = SlidePosition.THREATEN;
+            }
+        }else if(gamepad1.b){
+            slideTarget = slidePreload;
+        }
+
+
+
+
+        //state executions
+        if(slideTarget == SlidePosition.THREATEN){
+
+            wrist.setPosition(.5);
+            slides.setTargetPosition(100);
+            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slides.setPower(1);
+            finger1.setPosition(release);
+            finger2.setPosition(release);
+
+            arm1.setPosition(.9);
+            arm2.setPosition(.1);//TODO adjust thretening arm
+
+            slideCurrentState = SlidePosition.THREATEN;
+
+
+        }else if (slideTarget == SlidePosition.STAB && slideCurrentState == SlidePosition.THREATEN){
+
+            slides.setTargetPosition(300);
+            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slides.setPower(1);
+            wrist.setPosition(.75);
+
+            halt(1000);
+
+            slides.setTargetPosition(0);
+            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slides.setPower(1);
+
+            finger1.setPosition(stabExpand);
+            finger2.setPosition(stabExpand);
+
+            slideCurrentState = SlidePosition.STAB;
+
+
+
+        }else if (slideTarget == SlidePosition.LOW){
+
+            slides.setTargetPosition(500);
+            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slides.setPower(1);
+            wrist.setPosition(scoringWrist);
+
+            arm1.setPosition(0);
+            arm2.setPosition(1);
+
+            slideCurrentState = SlidePosition.LOW;
+
+        }else if (slideTarget == SlidePosition.MEDIUM){
+
+            slides.setTargetPosition(1500);
+            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slides.setPower(1);
+            wrist.setPosition(scoringWrist);
+
+            arm1.setPosition(0);
+            arm2.setPosition(1);
+
+            slideCurrentState = SlidePosition.MEDIUM;
+
+        }else if (slideTarget == SlidePosition.HIGH){
+
+            slides.setTargetPosition(2500);
+            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slides.setPower(1);
+            wrist.setPosition(scoringWrist);
+
+            arm1.setPosition(0);
+            arm2.setPosition(1);
+
+            slideCurrentState = SlidePosition.HIGH;
+
+        }
+
+
+
 
 
 
@@ -144,73 +294,41 @@ public class BlueTeleOp extends OpMode {
 
         }
 
-        if(gamepad2.dpad_up && slides.getCurrentPosition() < 3000){
-
-            currentSlidesPosition = slides.getCurrentPosition();
-            slides.setTargetPosition(currentSlidesPosition + 200);
-            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slides.setPower(1);
-        }
-        if(gamepad2.dpad_down && slides.getCurrentPosition() > 0){
-
-
-            slides.setTargetPosition(currentSlidesPosition - 200);
-            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slides.setPower(1);
-        }
 
 
 
 
         //arm control
-        if(gamepad2.left_trigger >= .2){
-//inmtake
-            arm1.setPosition(.9);
-            arm2.setPosition(.1);
-         //   wrist.setPosition(.2);
-        }
-        if(gamepad2.right_trigger >= .2){
-
-
-            arm1.setPosition(0);
-            arm2.setPosition(1);
-        }
 
 
 
 
-        if(gamepad2.a){
-            slides.setTargetPosition(-20);
-            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slides.setPower(1);
-        }
-        if(gamepad2.x){
-            slides.setTargetPosition(1000);
-            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slides.setPower(1);
-        }
-        if(gamepad2.y){
-            slides.setTargetPosition(2300);
-            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slides.setPower(1);
-        }
-        if(gamepad2.b){
-            slides.setTargetPosition(3000);
-            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slides.setPower(1);
-        }
 
 
 
 
-       /* if (gamepad1.left_bumper){
-            setpoint = 90;
-        }
-        if (gamepad1.right_bumper){
 
-            setpoint = 45;
-        }*/
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//drive code
         // Calculate the error (how far off the robot is from the setpoint)
         double error = setpoint - getPitch();
 
@@ -224,13 +342,9 @@ public class BlueTeleOp extends OpMode {
 
 
 
-
-
-
-
         // Calculate the PID output (rotate)
         // Check if the B button is pressed for rotating to 90 degrees
-        if (gamepad1.left_bumper && !rotatingTo90) {
+        /*if (gamepad1.left_bumper && !rotatingTo90) {
             setpoint = 90;
             rotatingTo90 = true;
             integral = 0; // Reset the integral term
@@ -239,7 +353,7 @@ public class BlueTeleOp extends OpMode {
             setpoint = 135;
             rotatingTo90 = true;
             integral = 0; // Reset the integral term
-        }
+        }*/
 
 
 
@@ -271,12 +385,7 @@ public class BlueTeleOp extends OpMode {
         double strafe = -gamepad1.left_stick_x;
 
 
-        if(gamepad1.dpad_left){
-            strafe = .75;
-        }
-        if(gamepad1.dpad_right){
-            strafe = -.75;
-        }
+
 
         // reset gyro button
    /*     if (gamepad1.a) {
