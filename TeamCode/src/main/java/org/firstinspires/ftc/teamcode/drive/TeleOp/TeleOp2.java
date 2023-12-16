@@ -6,32 +6,37 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+
+
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.slidesPIDpower;
+
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.Halt;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@TeleOp(name = "BlueTeleOp", group = "TeleOp")
-public class BlueTeleOp extends OpMode {
+@TeleOp(name = "TeleOp2", group = "TeleOp")
+public class TeleOp2 extends OpMode {
 
+//custom funcitons, used to save code space
 
-    double rotate = 0;
+    sliderMachineState executeSlides = new sliderMachineState();
     private DcMotor frontLeftMotor;
     private DcMotor frontRightMotor;
     private DcMotor rearLeftMotor;
     private DcMotor rearRightMotor;
-
     private DcMotor slides;
-
     private DcMotor intake;
-
-
     private Servo arm1;
     private Servo arm2;
 
@@ -41,67 +46,16 @@ public class BlueTeleOp extends OpMode {
     private Servo finger2;
 
 
-
-
     private boolean gyroSquareRequested = false;
     private BNO055IMU imu; // Gyro sensor
     private boolean gyroResetRequested = false;
 
+    public static final double release = 0;
+
+//TODO import my "halt" funciton
+    //TODO adjust slider pid;
 
 
-
-
-    int currentSlidesPosition;
-    public int targetSlidesHeight;
-
-
-    public enum SlidePosition {
-
-        THREATEN, //waiting to stab
-        STAB, //stabing
-
-        ZERO, //0
-        LOW, //500
-        MEDIUM,//1500
-        HIGH;//2500
-    }
-
-    public SlidePosition slideTarget;
-    public SlidePosition slidePreload;
-    public SlidePosition slideCurrentState;
-
-
-
-//slide PID stuff
-    public int slidePIDtargetPosition;
-    public int slidePIDerror;
-    public int slidePIDintegral;
-    public int slidePIDderivative;
-    public int slidePIDlastError;
-    public int slidePIDcorrection;
-    public int slidePIDpower;
-
-    private double slideKp = 0.1; // Proportional gain
-    private double slideKi = 0.01; // Integral gain
-    private double slideKd = 0.001; // Derivative gain
-
-    private int slideTargetPosition = 0;
-    private int slideError, slideIntegral, slideDerivative, slideLastError;
-    private int slideCorrection, slidePower;
-
-
-
-
-
-
-
-    public void halt(int seconds) {
-        try {
-            Thread.sleep(seconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void init() {
@@ -111,6 +65,7 @@ public class BlueTeleOp extends OpMode {
         wrist = hardwareMap.servo.get("wrist");
         finger1 = hardwareMap.servo.get("finger1");
         finger2 = hardwareMap.servo.get("finger2");
+
 
         frontLeftMotor = hardwareMap.dcMotor.get("FL");
         frontRightMotor = hardwareMap.dcMotor.get("FR");
@@ -147,16 +102,17 @@ public class BlueTeleOp extends OpMode {
         //          LOGO_FACING_DIR, USB_FACING_DIR));
         //  imu.initialize(parameters);
 
-
-        slideTarget = SlidePosition.ZERO;
-        slideCurrentState = SlidePosition.ZERO;
-
-
-
     }
+
     @Override
     public void loop() {
 
+
+
+
+
+
+        //telemetry
         telemetry.update();
         telemetry.addData("Position of slides", slides.getCurrentPosition());
         telemetry.addData("Position of arm1", arm1.getPosition());
@@ -166,53 +122,44 @@ public class BlueTeleOp extends OpMode {
         telemetry.addData("Position of wrist", wrist.getPosition());
 
 
-
-
-
         //gamepad1 controls
 
         //wrist
 
         //fingers
 
-        if(gamepad1.left_bumper){
-        //    finger1.setPosition(release);
+        if (gamepad1.left_bumper) {
+            finger1.setPosition(release);
             //finger2.setPosition(.5);
         }
-        if(gamepad1.right_bumper){
-          //  finger1.setPosition(1);
-            //finger2.setPosition(release);
+        if (gamepad1.right_bumper) {
+            //  finger1.setPosition(1);
+            finger2.setPosition(release);
         }
 
 
-        if(gamepad1.dpad_down){
+        if (gamepad1.dpad_down) {
 
         }
-        if(gamepad1.dpad_left){
+        if (gamepad1.dpad_left) {
             slidePreload = SlidePosition.LOW;
         }
-        if(gamepad1.dpad_up){
+        if (gamepad1.dpad_up) {
             slidePreload = SlidePosition.HIGH;
         }
-        if(gamepad1.dpad_right){
+        if (gamepad1.dpad_right) {
             slidePreload = SlidePosition.MEDIUM;
         }
-        if(gamepad1.a){
 
-            if (slideCurrentState == SlidePosition.THREATEN){
-                slideTarget = SlidePosition.STAB;
-            }else{
-                slideTarget = SlidePosition.THREATEN;
-            }
-        }else if(gamepad1.b){
-            slideTarget = slidePreload;
-        }
 
-        //intake
-        if(gamepad1.left_trigger < .5){
+
+        //intake code
+
+
+        if (gamepad1.left_trigger < .5) {
             intake.setPower(gamepad1.right_trigger);
         }
-        if(gamepad1.right_trigger < .5){
+        if (gamepad1.right_trigger < .5) {
             intake.setPower(-gamepad1.left_trigger);
 
         }
@@ -221,50 +168,26 @@ public class BlueTeleOp extends OpMode {
 
 
 
-        //arm control
-
-
-//THIS is slider PID powersetting code:
-
-
-/*  public int slidePIDtargetPosition;
-    public int slidePIDerror;
-    public int slidePIDintegral;
-    public int slidePIDderivative;
-    public int slidePIDlastError;
-    public int slidePIDcorrection;
-    public int slidePIDkp;
-    public int slidePIDpower;
-
-*/
-
-        // Calculate PID components
-        slidePIDerror = slidePIDtargetPosition - currentSlidesPosition;
-        slidePIDintegral += slidePIDerror;
-        slideDerivative = slideError - slideLastError;
-
-// Calculate PID correction
-        slideCorrection = slideKp * slideError + slideKi * slideIntegral + slideKd * slideDerivative;
-
-// Calculate motor power
-        slidePower = /* Your base slide motor power logic here */ + slideCorrection;
-
-// Apply motor power with bounds to avoid exceeding limits
-        slides.setPower(Range.clip(slidePower, -1, 1));
-
-// Update last error
-        slideLastError = slideError;
 
 
 
-//THIS is drivcode:
-
-
-        rotate = Range.clip(rotate, -1.0, 1.0);
-
-        // Get joystick inputs from the gamepad
+//Drive Code
         double drive = gamepad1.left_stick_y;
         double strafe = -gamepad1.left_stick_x;
+        double rotate = -gamepad1.right_stick_x;
+
+        // reset gyro button
+   /*     if (gamepad1.a) {
+            gyroResetRequested = true;
+        }*/
+
+        //TODO: update gyro reset?
+
+        // Perform gyro reset if requested
+        if (gyroResetRequested) {
+            resetGyro();
+            gyroResetRequested = false; // Reset the request
+        }
 
         // Get the robot's heading from the gyro sensor
         double heading = getPitch();
@@ -290,15 +213,18 @@ public class BlueTeleOp extends OpMode {
         rearLeftMotor.setPower(rearLeftPower);
         rearRightMotor.setPower(rearRightPower);
 
-
         // Update telemetry and control motors
         telemetry.addData("Gyro Heading", heading);
         telemetry.update();
+
     }
+
+    //This is used for field centric code but is outside of the loop
     private double getPitch() {
         // Get the robot's heading from the gyro sensor
         return imu.getAngularOrientation().firstAngle;
     }
+
     private void resetGyro() {
         // Reset the gyro orientation to its initial state
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
