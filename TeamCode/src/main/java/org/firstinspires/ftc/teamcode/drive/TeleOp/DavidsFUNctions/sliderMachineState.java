@@ -34,7 +34,7 @@ public class sliderMachineState {
 
     public void magicalMacro (DcMotor slider, Servo arm1, Servo arm2,
                               Servo wrist, Servo stabberLeft,
-                              Servo stabberRight, slidePosition targetMachineState, slidePosition currentMachineState){
+                              Servo stabberRight, slidePosition targetMachineState){
 
         switch (targetMachineState) {
             case THREATEN:

@@ -52,6 +52,8 @@ public class TeleOp2 extends OpMode {
 
     public static final double release = 0;
 
+    private sliderMachineState.slidePosition preloadPos;
+
 //TODO import my "halt" funciton
     //TODO adjust slider pid;
 
@@ -121,6 +123,9 @@ public class TeleOp2 extends OpMode {
         telemetry.addData("Position of finger2", finger2.getPosition());
         telemetry.addData("Position of wrist", wrist.getPosition());
 
+        telemetry.addData("Preload state", preloadPos);
+
+
 
         //gamepad1 controls
 
@@ -140,16 +145,34 @@ public class TeleOp2 extends OpMode {
 
         if (gamepad1.dpad_down) {
 
+            preloadPos = sliderMachineState.slidePosition.THREATEN;
+
         }
         if (gamepad1.dpad_left) {
-            slidePreload = SlidePosition.LOW;
+
+            preloadPos = sliderMachineState.slidePosition.LOW;
         }
         if (gamepad1.dpad_up) {
-            slidePreload = SlidePosition.HIGH;
+
+            preloadPos = sliderMachineState.slidePosition.MEDIUM;
         }
         if (gamepad1.dpad_right) {
-            slidePreload = SlidePosition.MEDIUM;
+
+            preloadPos = sliderMachineState.slidePosition.HIGH;
+
         }
+
+
+        //exocute pos
+        if(gamepad1.y){
+            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, preloadPos);
+        }
+//stab
+        if(gamepad1.a){
+            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB);
+        }
+
+
 
 
 
