@@ -171,7 +171,7 @@ public class TeleOp2 extends OpMode {
         if(gamepad1.a){
             executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB);
         }
-
+//TODO fix potential issues with ellapsed tiime, as it it called in a seprate file
 
 
 

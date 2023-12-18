@@ -33,12 +33,11 @@ import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
 
 import java.util.ArrayList;
 
 @TeleOp
-public class AutonomousExample extends LinearOpMode
+public class originalAprilTagCV extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -57,7 +56,7 @@ public class AutonomousExample extends LinearOpMode
     // UNITS ARE METERS
     double tagsize = 0.166;
     //adjust tag size
-    int ID_TAG_OF_INTEREST = 6; // Tag ID 18 from the 36h11 family
+    int ID_TAG_OF_INTEREST = 3;
     //TODO: adjust tag size and tag of interest
     AprilTagDetection tagOfInterest = null;
 
@@ -74,7 +73,7 @@ public class AutonomousExample extends LinearOpMode
             @Override
             public void onOpened()
             {
-                camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(1280,720, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
