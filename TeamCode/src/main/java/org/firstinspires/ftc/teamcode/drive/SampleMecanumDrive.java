@@ -332,4 +332,12 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
     }
+
+    public void cancelFollowing() {
+        // Stop the drive
+        setDrivePower(new Pose2d(0, 0, 0));
+
+        // Reset the follower
+        follower = null;
+    }
 }

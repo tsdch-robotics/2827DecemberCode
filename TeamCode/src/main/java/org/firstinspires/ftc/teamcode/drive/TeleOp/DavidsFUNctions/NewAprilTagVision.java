@@ -31,6 +31,8 @@ package org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions;
 
 import android.util.Size;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -45,14 +47,33 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp(name="", group="Linear OpMode")
 public class NewAprilTagVision extends LinearOpMode {
 
-    // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
 
+    Vector2d aprilTagKnownPosition = new Vector2d(-15, 25);
+
+    Vector2d rawVector;
+    Vector2d robotVectorTagRelative;
+    Vector2d robotVectorFieldRelative;
+    Pose2d robotPoseFieldRelativeTagCalibrated;
+
+
+    double w;
+    double z;
+    double x;
+    double y;
+
+    //for BLUE SIDE
+    double aprilTagY = 10;
+    double aprilTagX = -80;
+
+
+    public int webcamOriginOffset = 6;
 
     @Override
     public void runOpMode() {
@@ -94,9 +115,19 @@ public class NewAprilTagVision extends LinearOpMode {
                 AprilTagDetection tag = tagProcessor.getDetections().get(0);
 
 
+                rawVector = new Vector2d(tag.ftcPose.x, (tag.ftcPose.y + webcamOriginOffset));//y + "l"
+                robotVectorTagRelative = rawVector.rotated(tag.ftcPose.yaw);
+                w = robotVectorTagRelative.getX();
+                z = robotVectorTagRelative.getY();
+
+                y = (-w)+ aprilTagY;
+                x = (z)+ aprilTagX;
+
+                robotPoseFieldRelativeTagCalibrated = new Pose2d(x, y, Math.toRadians((90-(tag.ftcPose.yaw))));
+
                 telemetry.addData("exposure supported", exposure.isExposureSupported());
 
-
+                telemetry.addData("tag Calibrated Pose:", robotPoseFieldRelativeTagCalibrated);
                 telemetry.addData("x", tag.ftcPose.x);
                 telemetry.addData("y", tag.ftcPose.y);
                 telemetry.addData("z", tag.ftcPose.z);
