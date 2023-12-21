@@ -50,7 +50,7 @@ public class TeleOp2 extends OpMode {
     private BNO055IMU imu; // Gyro sensor
     private boolean gyroResetRequested = false;
 
-    public static final double release = 0;
+    public static double release = 0;
 
     private sliderMachineState.slidePosition preloadPos;
 
