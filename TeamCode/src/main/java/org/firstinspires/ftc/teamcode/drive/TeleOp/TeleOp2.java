@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
-import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.slidesPIDpower;
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
 
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.Halt;
 
@@ -30,6 +30,7 @@ public class TeleOp2 extends OpMode {
 
 //custom funcitons, used to save code space
 
+    ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
     private DcMotor frontLeftMotor;
     private DcMotor frontRightMotor;
@@ -67,6 +68,7 @@ public class TeleOp2 extends OpMode {
         wrist = hardwareMap.servo.get("wrist");
         finger1 = hardwareMap.servo.get("finger1");
         finger2 = hardwareMap.servo.get("finger2");
+        arm1.setDirection(Servo.Direction.REVERSE);
 
         frontLeftMotor = hardwareMap.dcMotor.get("FL");
         frontRightMotor = hardwareMap.dcMotor.get("FR");
@@ -133,12 +135,12 @@ public class TeleOp2 extends OpMode {
         //fingers
 
         if (gamepad1.left_bumper) {
-            finger1.setPosition(release);
+            finger1.setPosition(sliderMachineState.Finger1Loose);
             //finger2.setPosition(.5);
         }
         if (gamepad1.right_bumper) {
             //  finger1.setPosition(1);
-            finger2.setPosition(release);
+            finger2.setPosition(sliderMachineState.Finger2Loose);
         }
 
 
@@ -164,11 +166,11 @@ public class TeleOp2 extends OpMode {
 
         //exocute pos
         if(gamepad1.y){
-            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, preloadPos);
+            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, preloadPos, slidesTime);
         }
 //stab
         if(gamepad1.a){
-            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB);
+            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB, slidesTime);
         }
 //TODO fix potential issues with ellapsed tiime, as it it called in a seprate file
 

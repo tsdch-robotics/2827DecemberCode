@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
-import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.slidesPIDpower;
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
 
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.Halt;
 
@@ -70,12 +70,12 @@ public class slidesPIDPowerDebugger extends OpMode {
         rearRightMotor = hardwareMap.dcMotor.get("BR");
         intake = hardwareMap.dcMotor.get("intake");
         slides = hardwareMap.dcMotor.get("slides");
-        //slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         touch = hardwareMap.get(TouchSensor.class, "touch");
 //because we are using PID and not their dinky encoder stuff
-
     }
 
     @Override
@@ -97,6 +97,7 @@ public class slidesPIDPowerDebugger extends OpMode {
         if(touch.isPressed()){
             slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             telemetry.addData("Calibrated to 0 position. SLide positin:", slides.getCurrentPosition());
+            telemetry.update();
         }//if it hits the touch sensor it will stay at 0 and reset
 
 

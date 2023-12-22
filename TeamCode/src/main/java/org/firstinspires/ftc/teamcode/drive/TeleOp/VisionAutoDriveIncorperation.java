@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -36,9 +37,9 @@ public class VisionAutoDriveIncorperation extends LinearOpMode {
     Mode currentMode = Mode.DRIVER_CONTROL;
 
     // The coordinates we want the bot to automatically go to when we press the A button
-    Vector2d targetAVector = new Vector2d(45, 45);
+    Vector2d targetAVector = new Vector2d(-80, 90);
     // The heading we want the bot to end on for targetA
-    double targetAHeading = Math.toRadians(90);
+    double targetAHeading = Math.toRadians(-90);
 
     // The location we want the bot to automatically go to when we press the B button
     Vector2d targetBVector = new Vector2d(-15, 25);
@@ -68,14 +69,29 @@ public class VisionAutoDriveIncorperation extends LinearOpMode {
     double aprilTagX = 0;
     int cycle = 0;
 
+    double VectorRotatedXValue;
+    double VectorRotatedYValue;
 
-    public int webcamOriginOffset = 6;
+    int tagID;
+    public int webcamOriginOffset = 9;
 
     boolean enableAuto = false;
+
+    private Servo arm1;
+    private Servo arm2;
+
+    private Servo wrist;
+    private Servo finger1;
+
+    private Servo finger2;
+
+    private DcMotor slides;
+
 
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         // Initialize custom cancelable SampleMecanumDrive class
 
 
@@ -89,8 +105,22 @@ public class VisionAutoDriveIncorperation extends LinearOpMode {
         // See AutoTransferPose.java for further details
 
 
-        Pose2d startPose = new Pose2d(20, -60, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(-60, -60, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
+
+
+
+        slides = hardwareMap.dcMotor.get("slides");
+        slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        arm1 = hardwareMap.servo.get("arm1");
+        arm2 = hardwareMap.servo.get("arm2");
+        wrist = hardwareMap.servo.get("wrist");
+        finger1 = hardwareMap.servo.get("finger1");
+        finger2 = hardwareMap.servo.get("finger2");
+        //flicker = hardwareMap.servo.get("flicker");
+
 
 
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -170,12 +200,12 @@ public class VisionAutoDriveIncorperation extends LinearOpMode {
                 }else{
                     telemetry.addLine("you detected the wrong tag");
                     telemetry.update();
-                    enableAuto = false;
+                    //enableAuto = false;
                 }
             }else{
                 telemetry.addLine("no tag detected");
                 telemetry.update();
-                enableAuto = false;
+               // enableAuto = false;
             }
 //Ends
 
@@ -204,37 +234,38 @@ public class VisionAutoDriveIncorperation extends LinearOpMode {
                             )
                     );
 
-                    if (gamepad1.a) {
-                        // If the A button is pressed on gamepad1, we generate a splineTo()
-                        // trajectory on the fly and follow it
-                        // We switch the state to AUTOMATIC_CONTROL
+                    if (enableAuto == true && !gamepad1.a) {
+
+                        double currentX = poseEstimate.getX();
+                        double currerntY = poseEstimate.getY();
 
                         Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
-                                .splineTo(targetAVector, targetAHeading)
+                                .lineToSplineHeading(new Pose2d((currerntY + VectorRotatedXValue), (currentX + VectorRotatedYValue), Math.toRadians(-90)))
                                 .build();
 
                         drive.followTrajectoryAsync(traj1);
 
                         currentMode = Mode.AUTOMATIC_CONTROL;
+
                     } else if (gamepad1.b) {
                         // If the B button is pressed on gamepad1, we generate a lineTo()
                         // trajectory on the fly and follow it
                         // We switch the state to AUTOMATIC_CONTROL
-
+/*
                         Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
                                 .lineTo(targetBVector)
                                 .build();
 
                         drive.followTrajectoryAsync(traj1);
 
-                        currentMode = Mode.AUTOMATIC_CONTROL;
+                        currentMode = Mode.AUTOMATIC_CONTROL;*/
                     } else if (gamepad1.y) {
                         // If Y is pressed, we turn the bot to the specified angle to reach
                         // targetAngle (by default, 45 degrees)
 
-                        drive.turnAsync(Angle.normDelta(targetAngle - poseEstimate.getHeading()));
+                      //  drive.turnAsync(Angle.normDelta(targetAngle - poseEstimate.getHeading()));
 
-                        currentMode = Mode.AUTOMATIC_CONTROL;
+                       // currentMode = Mode.AUTOMATIC_CONTROL;
                     }
                     break;
                 case AUTOMATIC_CONTROL:
@@ -242,11 +273,13 @@ public class VisionAutoDriveIncorperation extends LinearOpMode {
                     if (gamepad1.x) {
                         drive.cancelFollowing();//i made this function. It may not work. Found in smapleMecnaumDriveded.
                         currentMode = Mode.DRIVER_CONTROL;
+                        enableAuto = false;
                     }
 
                     // If drive finishes its task, cede control to the driver
                     if (!drive.isBusy()) {
                         currentMode = Mode.DRIVER_CONTROL;
+                        enableAuto = false;
                     }
                     break;
             }

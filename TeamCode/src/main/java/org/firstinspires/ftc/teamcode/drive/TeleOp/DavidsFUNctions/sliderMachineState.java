@@ -4,13 +4,16 @@ import android.transition.Slide;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.slidesPIDpower;
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.Halt;
 
 
 public class sliderMachineState {
 
-    slidesPIDpower magicalMachine = new slidesPIDpower();
+    moveWithBasicEncoder moveByEncoder = new moveWithBasicEncoder();
+    Halt halt = new Halt();
 
    public enum slidePosition {
 
@@ -23,39 +26,42 @@ public class sliderMachineState {
         HIGH;//2500
     }
 
-    public static final int LOWpos = 500;
-    public static final int THREATENINGpos = 100;
+    public static final int LOWpos = 800;
+    public static final int THREATENINGpos = 10;
     public static final int midSTABpos = 300;
-    public static final int STABBINGpos = 10;
-    public static final int MEDIUMpos = 1500;
-    public static final int HIGHpos = 2500;
+    public static final int STABBINGpos = 0;
+    public static final int MEDIUMpos = 1600;
+    public static final int HIGHpos = 2800;
     //todo adjust these values
 
-    public static final double stabOpen = 0;//servo pos
-    public static final double stabClosed = 1;//servo pos
+    public static final double stabFinger1Tight = 1;//servo pos
+    public static final double stabFinger2Tight = .58;//servo pos
 
-    public static final double wristThreaten = 0;//servo pos
-    public static final double wristStab = 0.5;//servo pos
-    public static final double wristScore = 1;//servo pos
+    public static final double Finger1Loose = 0.6;//servo pos
+    public static final double Finger2Loose = 0.51;//servo pos
+
+    public static final double wristThreaten = .75;//servo pos
+    public static final double wristStab = 0.75;//servo pos
+    public static final double wristScore = 0.3;//servo pos
 
 
-    public static final double armThreaten = 0;//servo pos
-    public static final double armStab = 0.5;//servo pos
-    public static final double armScore = 1;//servo pos
+    public static final double armThreaten = 0.17;//servo pos
+    public static final double armStab = 0.05;//servo pos
+    public static final double armScore = 0.85;//servo pos
 
 
 
 
     public void magicalMacro (DcMotor slider, Servo arm1, Servo arm2,
                               Servo wrist, Servo stabberLeft,
-                              Servo stabberRight, slidePosition targetMachineState){
+                              Servo stabberRight, slidePosition targetMachineState, ElapsedTime time){
 
         switch (targetMachineState) {
             case THREATEN:
 
-                stabberLeft.setPosition(stabOpen);
-                stabberRight.setPosition(stabOpen);
-                magicalMachine.powerSlider(slider, THREATENINGpos);
+                stabberLeft.setPosition(Finger1Loose);
+                stabberRight.setPosition(Finger2Loose);
+                moveByEncoder.powerSlider(slider, THREATENINGpos);
                 wrist.setPosition(wristThreaten);
                 arm1.setPosition(armThreaten);
                 arm2.setPosition(armThreaten);//need to make servos go the same direction
@@ -65,38 +71,47 @@ public class sliderMachineState {
 
             case STAB:
 
-                magicalMachine.powerSlider(slider, STABBINGpos);
+                moveByEncoder.powerSlider(slider, midSTABpos);
+                halt.halt(500, time);
                 wrist.setPosition(wristStab);
                 arm1.setPosition(armStab);
                 arm2.setPosition(armStab);
-                stabberLeft.setPosition(stabClosed);
-                stabberRight.setPosition(stabClosed);
+                halt.halt(700, time);
+                moveByEncoder.powerSlider(slider, STABBINGpos);
+                halt.halt(500, time);
+                //delay until it is over the pixel
+                stabberLeft.setPosition(stabFinger1Tight);
+                stabberRight.setPosition(stabFinger2Tight);
 
                 break;
             case LOW:
 
 
-                magicalMachine.powerSlider(slider, LOWpos);
-                wrist.setPosition(wristScore);
+                moveByEncoder.powerSlider(slider, LOWpos);
+
                 arm1.setPosition(armScore);
                 arm2.setPosition(armScore);
+                halt.halt(2000, time);
+                wrist.setPosition(wristScore);
 
                 break;
             case MEDIUM:
 
-                magicalMachine.powerSlider(slider, MEDIUMpos);
-                wrist.setPosition(wristScore);
+                moveByEncoder.powerSlider(slider, MEDIUMpos);
                 arm1.setPosition(armScore);
                 arm2.setPosition(armScore);
+                halt.halt(2000, time);
+                wrist.setPosition(wristScore);
 
 
                 break;
             case HIGH:
 
-                magicalMachine.powerSlider(slider, HIGHpos);
-                wrist.setPosition(wristScore);
+                moveByEncoder.powerSlider(slider, HIGHpos);
                 arm1.setPosition(armScore);
                 arm2.setPosition(armScore);
+                halt.halt(2000, time);
+                wrist.setPosition(wristScore);
 
                 break;
 

@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
-import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.slidesPIDpower;
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
 
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.Halt;
 
@@ -52,8 +52,8 @@ public class PerfectPose extends OpMode {
     public static double currentFinger2 = .5;//servo pos
 
     public static double currentWrist = .5;//servo pos
-    public static double currentArm1 = 0.5;//servo pos
-    public static double currentArm2 = .5;
+    public static double currentArm = 0;//servo pos
+    //public static double currentArm2 = .5;
 
 
     @Override
@@ -79,6 +79,7 @@ public class PerfectPose extends OpMode {
         finger1 = hardwareMap.servo.get("finger1");
         finger2 = hardwareMap.servo.get("finger2");
 
+        arm1.setDirection(Servo.Direction.REVERSE);
 
         frontLeftMotor = hardwareMap.dcMotor.get("FL");
         frontRightMotor = hardwareMap.dcMotor.get("FR");
@@ -97,8 +98,8 @@ public class PerfectPose extends OpMode {
     @Override
     public void loop() {
 
-        arm1.setPosition(currentArm1);
-        arm2.setPosition(currentArm2);
+        arm1.setPosition(currentArm);
+        arm2.setPosition(currentArm);
         wrist.setPosition(currentWrist);
         finger1.setPosition(currentFinger1);
         finger2.setPosition(currentFinger2);
