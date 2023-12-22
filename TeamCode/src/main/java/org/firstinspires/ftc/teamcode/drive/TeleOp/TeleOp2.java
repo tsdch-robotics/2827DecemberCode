@@ -68,7 +68,6 @@ public class TeleOp2 extends OpMode {
         finger1 = hardwareMap.servo.get("finger1");
         finger2 = hardwareMap.servo.get("finger2");
 
-
         frontLeftMotor = hardwareMap.dcMotor.get("FL");
         frontRightMotor = hardwareMap.dcMotor.get("FR");
         rearLeftMotor = hardwareMap.dcMotor.get("BL");

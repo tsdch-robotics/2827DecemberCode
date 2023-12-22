@@ -14,7 +14,8 @@ public class slidesPIDpower {
     private double slideCorrection, slidePower;
     private ElapsedTime slideTimer = new ElapsedTime();
 
-    public double powerSlider(DcMotor slider, int targetPos) {
+    public double powerSlider(DcMotor slider, int targetPos) {//need to add time as a parameter and other computational values, otherwise nothing will happen to then
+
 
         // Calculate PID components
         slideError = slideTargetPosition - slider.getCurrentPosition();

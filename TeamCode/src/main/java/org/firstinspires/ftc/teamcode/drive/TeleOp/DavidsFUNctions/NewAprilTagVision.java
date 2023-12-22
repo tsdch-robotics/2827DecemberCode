@@ -42,16 +42,7 @@ public class NewAprilTagVision extends LinearOpMode {
     Vector2d robotVectorTagRelative;
 
 
-    double x = 0;
-    public static double Q = .1; // your model covariance.1
-    public static double R = 2; // your sensor covariance.4
-    public static double p = 1; // your initial covariance guess
-    double K; // Kalman gain
 
-    double x_previous = x;
-    double p_previous = p;
-    double u = 0;
-    double z = 0;
 
 
     Vector2d robotVectorFieldRelative;
