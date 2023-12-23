@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
-
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
@@ -30,7 +30,7 @@ public class TeleOp2 extends OpMode {
 
 //custom funcitons, used to save code space
 
-    ElapsedTime slidesTime = new ElapsedTime();
+    public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
     private DcMotor frontLeftMotor;
     private DcMotor frontRightMotor;
@@ -54,6 +54,7 @@ public class TeleOp2 extends OpMode {
     public static double release = 0;
 
     private sliderMachineState.slidePosition preloadPos;
+    private sliderMachineState.slidePosition exocutePos = sliderMachineState.slidePosition.THREATEN;
 
 //TODO import my "halt" funciton
     //TODO adjust slider pid;
@@ -103,18 +104,16 @@ public class TeleOp2 extends OpMode {
         imu.initialize(imuParams);
         //  IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
         //          LOGO_FACING_DIR, USB_FACING_DIR));
-        //  imu.initialize(parameters);
+        //  imu.initialize(parameters);//todo; delete this comment
+        slidesTime.reset();
+        slidesTime.startTime();
+        //waitForStart();
+      //  runtime.reset();
 
     }
 
     @Override
     public void loop() {
-
-
-
-
-
-
         //telemetry
         telemetry.update();
         telemetry.addData("Position of slides", slides.getCurrentPosition());
@@ -144,37 +143,42 @@ public class TeleOp2 extends OpMode {
         }
 
 
-        if (gamepad1.dpad_down) {
+       /* if (gamepad1.dpad_down) {
 
-            preloadPos = sliderMachineState.slidePosition.THREATEN;
+            preloadPos = sliderMachineState.slidePosition.LOW;
 
         }
         if (gamepad1.dpad_left) {
 
-            preloadPos = sliderMachineState.slidePosition.LOW;
+            //preloadPos = sliderMachineState.slidePosition.THREATEN;
         }
         if (gamepad1.dpad_up) {
 
-            preloadPos = sliderMachineState.slidePosition.MEDIUM;
+            preloadPos = sliderMachineState.slidePosition.HIGH;
         }
         if (gamepad1.dpad_right) {
 
-            preloadPos = sliderMachineState.slidePosition.HIGH;
+            preloadPos = sliderMachineState.slidePosition.MEDIUM;
 
         }
-
 
         //exocute pos
-        if(gamepad1.y){
-            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, preloadPos, slidesTime);
+        /*if(gamepad1.x){
+            exocutePos = preloadPos;
+            slidesTime.reset();
         }
 //stab
-        if(gamepad1.a){
-            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB, slidesTime);
+       /* if(gamepad1.a){
+
+            exocutePos = sliderMachineState.slidePosition.STAB;
+            slidesTime.reset();
+        }*/
+        if(gamepad1.b){
+
+            exocutePos = sliderMachineState.slidePosition.THREATEN;
+            slidesTime.reset();
         }
 //TODO fix potential issues with ellapsed tiime, as it it called in a seprate file
-
-
 
 
         //intake code
@@ -187,13 +191,87 @@ public class TeleOp2 extends OpMode {
             intake.setPower(-gamepad1.left_trigger);
 
         }
+       //second controller
+
+
+        if (gamepad2.left_bumper) {
+            finger1.setPosition(sliderMachineState.Finger1Loose);
+            //finger2.setPosition(.5);
+        }
+        if (gamepad2.right_bumper) {
+            //  finger1.setPosition(1);
+            finger2.setPosition(sliderMachineState.Finger2Loose);
+        }
+
+
+        if (gamepad2.dpad_down) {
+
+            //preloadPos = sliderMachineState.slidePosition.HIGH;
+            //gamepad1.rumble(1000);
+
+        }
+        if (gamepad2.dpad_left) {
+
+            preloadPos = sliderMachineState.slidePosition.LOW;
+        }
+        if (gamepad2.dpad_up) {
+
+            preloadPos = sliderMachineState.slidePosition.MEDIUM;
+        }
+        if (gamepad2.dpad_right) {
+
+            preloadPos = sliderMachineState.slidePosition.HIGH;
+
+        }
+
+        //exocute pos
+        if(gamepad2.y){
+            exocutePos = preloadPos;
+            slidesTime.reset();
+        }
+//stab
+        if(gamepad2.a){
+
+            exocutePos = sliderMachineState.slidePosition.STAB;
+            slidesTime.reset();
+        }
+        if(gamepad2.x){
+
+            exocutePos = sliderMachineState.slidePosition.THREATEN;
+            slidesTime.reset();
+        }
+//TODO fix potential issues with ellapsed tiime, as it it called in a seprate file
+
+
+        //intake code
+
+
+
+
+        if(gamepad2.left_stick_y >= 0.5){
+            int change = slides.getCurrentPosition() + 200;
+            slides.setTargetPosition(Range.clip(change, 0, 2500));
+            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            slides.setPower(Math.abs(gamepad2.left_stick_y));
+        }
+        if(gamepad2.left_stick_y <= -0.5){
+            int change = slides.getCurrentPosition() - 200;
+            slides.setTargetPosition(Range.clip(change, 0, 2500));
+            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            slides.setPower(Math.abs(gamepad2.left_stick_y));
+        }
 
 
 
 
 
 
-
+//power slides
+        if(Math.abs(gamepad2.left_stick_y) < .5) {
+            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, exocutePos, slidesTime);
+        }
 
 //Drive Code
         double drive = gamepad1.left_stick_y;
@@ -239,6 +317,7 @@ public class TeleOp2 extends OpMode {
 
         // Update telemetry and control motors
         telemetry.addData("Gyro Heading", heading);
+        telemetry.addData("slidesTime %2d", slidesTime.time());
         telemetry.update();
 
     }

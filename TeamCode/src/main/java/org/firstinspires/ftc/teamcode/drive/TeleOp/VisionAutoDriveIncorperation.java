@@ -167,8 +167,9 @@ public class VisionAutoDriveIncorperation extends LinearOpMode {
                 visionPortal.saveNextFrameRaw("Snapshot of last tag in match");
                 AprilTagDetection tag = tagProcessor.getDetections().get(0);
 
-                if (tag.id == 2){
+                if (tag.id == 2 || tag.id == 1 || tag.id == 3){
                     enableAuto = true;
+                    telemetry.addLine("enabling Auto");
                     cycle += 1;
                     double yaw = -tag.ftcPose.yaw;
                     double xValue = tag.ftcPose.x;

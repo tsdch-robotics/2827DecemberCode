@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.Autonomous;
+package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -45,35 +45,35 @@ public class RedRightSide extends LinearOpMode {
 
     //constants
 
-    public static double ID1spikeMarkX = 28;
-    public static double ID1spikeMarkY = 6.5;
+    private static double ID1spikeMarkX = 28;
+    private static double ID1spikeMarkY = 6.5;
 
-    public static double ID1spikeMarkDegrees = 5;
+    private static double ID1spikeMarkDegrees = 5;
 
-    public static double ID2spikeMarkX = 29;
-    public static double ID2spikeMarkY = -4;
+    private static double ID2spikeMarkX = 29;
+    private static double ID2spikeMarkY = -4;
 
-    public static double ID2spikeMarkDegrees = 0;
+    private static double ID2spikeMarkDegrees = 0;
 
-    public static double ID3spikeMarkX = 29;
-    public static double ID3spikeMarkY = -12;
+    private static double ID3spikeMarkX = 29;
+    private static double ID3spikeMarkY = -12;
 
-    public static double ID3spikeMarkDegrees = -5;
+    private static double ID3spikeMarkDegrees = -5;
 
-    public static double sensitivityLevel = .015;//lower for higher sensitivity, raise for less sensitity
+    private static double sensitivityLevel = .015;//lower for higher sensitivity, raise for less sensitity
 
 
-    public static double ID4X = 32;
-    public static double ID5X = 25;
-    public static double ID6X = 16;
+    private static double ID4X = 32;
+    private static double ID5X = 25;
+    private static double ID6X = 16;
 
-    public double spikeMarkX;
-    public double spikeMarkY;
-    public double spikeMarkDegrees;
+    private double spikeMarkX;
+    private double spikeMarkY;
+    private double spikeMarkDegrees;
 
-    public static double inchesToBoard = -40;
+    private static double inchesToBoard = -40;
 
-    public double zoneSpecificX;
+    private double zoneSpecificX;
 
 
 

@@ -4,13 +4,24 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Halt {
 
-    public void halt(int millis, ElapsedTime time) {
-        time.reset();
 
-        // Perform background tasks here while waiting
-        while (time.milliseconds() < millis) {
-            // Your background tasks go here
-            // This loop will run until the elapsed time reaches the specified milliseconds
+    public boolean halt(int millis, ElapsedTime time) {
+
+        if (time == null) {
+            // Handle the case where time is null (log an error, throw an exception, or any other appropriate action)
+            return false;
+        }else {
+           /* if(startingHalt) {
+                time.reset();
+                startingHalt = false;
+            }*/
+            // Perform background tasks here while waiting
+            if (time.milliseconds() < millis) {
+                return false;
+            } else {
+                //time.reset();
+                return true;
+            }//now the time will just reset when you hit the execute slides button
         }
     }
 }
