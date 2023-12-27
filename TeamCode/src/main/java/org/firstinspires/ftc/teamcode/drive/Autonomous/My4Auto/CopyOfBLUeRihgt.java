@@ -1,12 +1,16 @@
 package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-//sufffdisusdouifhsdofuihs
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Core;
@@ -14,25 +18,15 @@ import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime; // Import ElapsedTime
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
 @Autonomous(group = "drive")
-public class BlueRightSide extends LinearOpMode {
+public class CopyOfBLUeRihgt extends LinearOpMode {
 
 
 
@@ -234,9 +228,21 @@ public class BlueRightSide extends LinearOpMode {
         }
 
         TrajectorySequence scoreThePurple = drive.trajectorySequenceBuilder(startPose)
+
                 .splineTo(new Vector2d(sensedSpikeMarkLocal.getX(), sensedSpikeMarkLocal.getY()), sensedSpikeMarkLocal.getHeading())
+
                 .waitSeconds(1)
-               // .dropPixel(flicker)
+                .addTemporalMarker(() -> flicker.setPosition(0))
+                .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB, slidesTime, true))
+                .waitSeconds(.5)
+                .lineToLinearHeading(new Pose2d(24, 0, sensedSpikeMarkLocal.getHeading()))
+                .lineToLinearHeading(new Pose2d(3, 0, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(3, 50, Math.toRadians(90)))
+
+
+
+
+
                 .build();
 
 
@@ -254,6 +260,11 @@ public class BlueRightSide extends LinearOpMode {
                 .waitSeconds(1)
                 .lineToLinearHeading(parkPos)
                 .build();//takes robot to the board
+
+
+
+
+
 
 
 

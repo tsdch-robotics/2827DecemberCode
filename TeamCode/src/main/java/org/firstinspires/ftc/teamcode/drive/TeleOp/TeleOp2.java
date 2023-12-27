@@ -270,7 +270,7 @@ public class TeleOp2 extends OpMode {
 
 //power slides
         if(Math.abs(gamepad2.left_stick_y) < .5) {
-            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, exocutePos, slidesTime);
+            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, exocutePos, slidesTime, false);
         }
 
 //Drive Code

@@ -4,9 +4,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 //sufffdisusdouifhsdofuihs
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -31,6 +33,14 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Config
 @Autonomous(group = "drive")
 public class RedRightSide extends LinearOpMode {
+
+
+
+    public ElapsedTime slidesTime = new ElapsedTime();
+    sliderMachineState executeSlides = new sliderMachineState();
+
+
+
     OpenCvWebcam webcam1 = null;
     ElapsedTime elapsedTime = new ElapsedTime(); // Add ElapsedTime to track time
     double totalLeftAvg = 0;
@@ -45,37 +55,21 @@ public class RedRightSide extends LinearOpMode {
 
     //constants
 
-    private static double ID1spikeMarkX = 28;
-    private static double ID1spikeMarkY = 6.5;
 
-    private static double ID1spikeMarkDegrees = 5;
+    private static Pose2d ID1Location = new Pose2d(28, 6.8, Math.toRadians(5));
+    private static Pose2d ID2Location = new Pose2d(29, -4, Math.toRadians(0));
+    private static Pose2d ID3Location = new Pose2d(29, -12, Math.toRadians(-5));
 
-    private static double ID2spikeMarkX = 29;
-    private static double ID2spikeMarkY = -4;
+    private static Pose2d AprilTagScore1 = new Pose2d(28, 6.8, Math.toRadians(5));
+    private static Pose2d AprilTagScore2 = new Pose2d(29, -4, Math.toRadians(0));
+    private static Pose2d AprilTagScore3 = new Pose2d(29, -12, Math.toRadians(-5));
 
-    private static double ID2spikeMarkDegrees = 0;
+    private static double sensitivityLevel = .075;//lower for higher sensitivity, raise for less sensitity
 
-    private static double ID3spikeMarkX = 29;
-    private static double ID3spikeMarkY = -12;
+    private static Pose2d sensedSpikeMarkLocal;
+    private static Pose2d AprilTagScore;
 
-    private static double ID3spikeMarkDegrees = -5;
-
-    private static double sensitivityLevel = .015;//lower for higher sensitivity, raise for less sensitity
-
-
-    private static double ID4X = 32;
-    private static double ID5X = 25;
-    private static double ID6X = 16;
-
-    private double spikeMarkX;
-    private double spikeMarkY;
-    private double spikeMarkDegrees;
-
-    private static double inchesToBoard = -40;
-
-    private double zoneSpecificX;
-
-
+    private static Pose2d parkPos = new Pose2d(3, 80, Math.toRadians(0));;
 
 
 
@@ -103,14 +97,12 @@ public class RedRightSide extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));//(39,-62) in terms of FTC coordinates
         drive.setPoseEstimate(startPose);
 
 
 
         //Pose2d afterSensing = new Pose2d(0, -10, Math.toRadians(0));
-
-
 
         drive.setPoseEstimate(startPose);
 
@@ -168,99 +160,82 @@ public class RedRightSide extends LinearOpMode {
             sleep(50);
         }
 
-// calculate average color values
+// Calculate average color values over ten seconds
         double averageLeft = totalLeftAvg / frameCount;
         double averageRight = totalRightAvg / frameCount;
 
         telemetry.addLine("done computing");
-        telemetry.addData("left", averageLeft); // fix the display hereesdf
+        telemetry.addData("left", averageLeft); // Fix the display here
         telemetry.addData("right", averageRight);
         telemetry.update();
-   //     sleep(5000);
+        sleep(500);
 //end of sensing stuff
 
-        if (averageRight < averageLeft && (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
-            //zone = 2;
-            telemetry.addLine("Middle");
+        if (averageRight > averageLeft && (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
+            zone = 2;
+            telemetry.addData("Zone", zone);
             telemetry.update();
 
-            zoneSpecificX = ID5X;
-            spikeMarkX = ID2spikeMarkX;
-            spikeMarkY = ID2spikeMarkY;
-            spikeMarkDegrees = ID2spikeMarkDegrees;
 
-        } else if (averageRight > averageLeft&& (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
+            AprilTagScore = AprilTagScore2;
+            sensedSpikeMarkLocal = ID2Location;
 
-            //zone = 3;
-            telemetry.addLine("Right");
+//middle
+
+//adjusts negligibility by scale rather than an actual parameter
+        } else if (averageRight < averageLeft&& (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
+
+            zone = 3;
+            telemetry.addData("Zone", zone);
             telemetry.update();
-            zoneSpecificX = ID6X;
-            spikeMarkX = ID3spikeMarkX;
-            spikeMarkY = ID3spikeMarkY;
-            spikeMarkDegrees = ID3spikeMarkDegrees;
+//middle
+            AprilTagScore = AprilTagScore3;
+            sensedSpikeMarkLocal = ID3Location;
 
         } else {
-            //zone = 1;
-            telemetry.addLine("Left");
+            zone = 1;
+            telemetry.addData("Zone", zone);
+
             telemetry.update();
 
-            zoneSpecificX = ID4X;
-            spikeMarkX = ID1spikeMarkX;
-            spikeMarkY = ID1spikeMarkY;
-            spikeMarkDegrees = ID1spikeMarkDegrees;
-
+            AprilTagScore = AprilTagScore3;
+            sensedSpikeMarkLocal = ID1Location;
         }
 
+        TrajectorySequence scoreThePurple = drive.trajectorySequenceBuilder(startPose)
+                .splineTo(new Vector2d(sensedSpikeMarkLocal.getX(), sensedSpikeMarkLocal.getY()), sensedSpikeMarkLocal.getHeading())
+                .waitSeconds(1)
+                // .dropPixel(flicker)
+                .build();
+
+
+        TrajectorySequence outOfTheTruss = drive.trajectorySequenceBuilder(scoreThePurple.end())
+                .lineToLinearHeading(new Pose2d(24, 0, sensedSpikeMarkLocal.getHeading()))
+                .lineToLinearHeading(new Pose2d(3, 20, Math.toRadians(90)))
+                .build();//takes robot to the board
+        TrajectorySequence toTheTag = drive.trajectorySequenceBuilder(outOfTheTruss.end())
+                .lineToLinearHeading(AprilTagScore)
+                .build();//takes robot to the board
+        TrajectorySequence park = drive.trajectorySequenceBuilder(toTheTag.end())
+                .lineToLinearHeading(parkPos)
+                .build();//takes robot to the board
 
 
 
-        //beginning of trajectories
-        Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(spikeMarkX, spikeMarkY), Math.toRadians(spikeMarkDegrees))
-                .build();
-        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .lineToLinearHeading(new Pose2d(24, 0, Math.toRadians(spikeMarkDegrees)))
-                .build();
-        Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                .lineToLinearHeading(new Pose2d(zoneSpecificX, inchesToBoard, Math.toRadians(-90)))
-                .build();
-       /* Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                .lineToLinearHeading(new Pose2d(zoneSpecific, inchesToBoard, Math.toRadians(-90)))//-80
-                // .splineTo(new Vector2d(0, 0), Math.toRadians(-90))
-                .build();
-*/
 
-        drive.followTrajectory(traj1);
-        sleep(500);
+        drive.followTrajectorySequence(scoreThePurple);
         flicker.setPosition(0);
         sleep(1000);
-        drive.followTrajectory(traj2);
-        drive.followTrajectory(traj3);
-     //   drive.followTrajectory(traj4);
+        drive.followTrajectorySequenceAsync(outOfTheTruss);
+        slidesTime.reset();
+        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, true);
+        drive.followTrajectorySequence(toTheTag);
+        finger1.setPosition(sliderMachineState.Finger1Loose);
+        finger2.setPosition(sliderMachineState.Finger1Loose);
+        sleep(1000);
+        drive.followTrajectorySequence(park);
+
         sleep(4000);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 
