@@ -46,6 +46,8 @@ public class MeepMeepTesting {
                                 .splineTo(new Vector2d(28, 12), Math.toRadians(0))//180 because its backwards
                                 .splineTo(new Vector2d(47, 35), Math.toRadians(0))
 
+//test
+
 
 
                                // .addTemporalMarker(() -> finger1.setPosition(sliderMachineState.Finger1Loose))//score purple
