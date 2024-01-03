@@ -21,19 +21,21 @@ public class sliderMachineState {
 
         THREATEN, //waiting to stab
         STAB, //stabing
-
-
+        RESTAB,
+        STABAFTERSTAB,
         LOW, //500
         MEDIUM,//1500
-        HIGH;//2500
+        HIGH,//2500
+        REALLYHIGH;
     }
 
-    public static int LOWpos = 800;
+    public static int LOWpos = 700;
     public static int THREATENINGpos = 10;
     public static int midSTABpos = 200;
     public static int STABBINGpos = 0;
-    public static int MEDIUMpos = 1600;
-    public static int HIGHpos = 2800;
+    public static int MEDIUMpos = 1200;
+    public static int HIGHpos = 2000;
+    public static int ReallyHIGHpos = 3000;
     //todo adjust these values
 
     public static double stabFinger1Tight = 1;//servo pos
@@ -78,6 +80,32 @@ public class sliderMachineState {
                     break;
 
 
+                case RESTAB:
+
+                    stabberLeft.setPosition(Finger1Loose);
+                    stabberRight.setPosition(Finger2Loose);
+
+                    if(halt.halt(300, time)){
+                        moveByEncoder.powerSlider(slider, 300);
+                        wrist.setPosition(wristStab);
+                        //arm1.setPosition(armThreaten);
+                        arm2.setPosition(armStab);//need to make servos go the same direction
+
+                    }
+
+                    break;
+
+                case STABAFTERSTAB:
+
+                    moveByEncoder.powerSlider(slider, STABBINGpos-10);
+                    if(halt.halt(200, time)){
+                        stabberLeft.setPosition(stabFinger1Tight);
+                        stabberRight.setPosition(stabFinger2Tight);
+                    }
+
+                    break;
+
+
                 case STAB:
 
                     if (!halt.halt(50, time)){
@@ -87,9 +115,9 @@ public class sliderMachineState {
                         wrist.setPosition(wristStab);//unfortunalty this will use combine time so a second step has to acound for the time that has already been taken
                         arm1.setPosition(armStab);
                         arm2.setPosition(armStab);
-                        if (halt.halt(400, time)) {//so really this is only halting by this - the previous halt
+                        if (halt.halt(600, time)) {//so really this is only halting by this - the previous halt
                             moveByEncoder.powerSlider(slider, STABBINGpos);
-                            if (halt.halt(700, time) && slider.getCurrentPosition() <= (midSTABpos + 10)) {//so really this is only halting by this - the previous halt
+                            if (halt.halt(900, time) && slider.getCurrentPosition() <= (midSTABpos + 10)) {//so really this is only halting by this - the previous halt
                                 stabberLeft.setPosition(stabFinger1Tight);
                                 stabberRight.setPosition(stabFinger2Tight);
                             }
@@ -124,6 +152,16 @@ public class sliderMachineState {
                 case HIGH:
 
                     moveByEncoder.powerSlider(slider, HIGHpos);
+
+                    arm1.setPosition(armScore);
+                    arm2.setPosition(armScore);
+                    if (halt.halt(1200, time)) {
+                        wrist.setPosition(wristScore);
+                    }
+                    break;
+                case REALLYHIGH:
+
+                    moveByEncoder.powerSlider(slider, ReallyHIGHpos);
 
                     arm1.setPosition(armScore);
                     arm2.setPosition(armScore);
@@ -203,6 +241,15 @@ public class sliderMachineState {
                     break;
 
 
+                case STABAFTERSTAB:
+
+                    moveByEncoder.powerSlider(slider, STABBINGpos-10);
+                    sleep.sleep(300);
+                    stabberLeft.setPosition(stabFinger1Tight);
+                    stabberRight.setPosition(stabFinger2Tight);
+
+
+                    break;
 
             }
         }

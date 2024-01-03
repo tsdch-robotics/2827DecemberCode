@@ -50,14 +50,14 @@ public class CopyOfBLUeRihgt extends LinearOpMode {
     //constants
 
 
+//splineTo(new Vector2d(-33, 37), Math.toRadians(-85))
+    public static Pose2d ID1Location = new Pose2d(-33, 37, Math.toRadians(-85));
+    public static Pose2d ID2Location = new Pose2d(-40, 40, Math.toRadians(-90));
+    public static Pose2d ID3Location = new Pose2d(-45, 40, Math.toRadians(-95));
 
-    public static Pose2d ID1Location = new Pose2d(28, 6.8, Math.toRadians(5));
-    public static Pose2d ID2Location = new Pose2d(29, -4, Math.toRadians(0));
-    public static Pose2d ID3Location = new Pose2d(29, -12, Math.toRadians(-5));
-
-    public static Pose2d AprilTagScore1 = new Pose2d(12, 92, Math.toRadians(95));
-    public static Pose2d AprilTagScore2 = new Pose2d(11, 92, Math.toRadians(95));
-    public static Pose2d AprilTagScore3 = new Pose2d(17, 92, Math.toRadians(95));
+    public static Pose2d AprilTagScore1 = new Pose2d(47, 42, Math.toRadians(0));
+    public static Pose2d AprilTagScore2 = new Pose2d(47, 35, Math.toRadians(0));
+    public static Pose2d AprilTagScore3 = new Pose2d(47, 28, Math.toRadians(0));
 
     public static double sensitivityLevel = .075;//lower for higher sensitivity, raise for less sensitity
 
@@ -93,7 +93,7 @@ public class CopyOfBLUeRihgt extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));//(39,-62) in terms of FTC coordinates
+        Pose2d startPose = new Pose2d(-38, 60, Math.toRadians(270));//(39,-62) in terms of FTC coordinates
         drive.setPoseEstimate(startPose);
 
 
@@ -178,23 +178,13 @@ public class CopyOfBLUeRihgt extends LinearOpMode {
         if (averageRight > averageLeft && (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
             zone = 2;
 
-
             AprilTagScore = AprilTagScore2;
             sensedSpikeMarkLocal = ID2Location;
-
 
             telemetry.addData("Zone", zone);
             telemetry.addData("sensedSpikeMarkLocal", sensedSpikeMarkLocal);
             telemetry.addData("AprilTagScore", AprilTagScore);
-
-
-
-
             telemetry.update();
-
-
-
-
 //middle
 
 //adjusts negligibility by scale rather than an actual parameter
@@ -229,70 +219,30 @@ public class CopyOfBLUeRihgt extends LinearOpMode {
 
         TrajectorySequence scoreThePurple = drive.trajectorySequenceBuilder(startPose)
 
+
                 .splineTo(new Vector2d(sensedSpikeMarkLocal.getX(), sensedSpikeMarkLocal.getY()), sensedSpikeMarkLocal.getHeading())
 
-                .waitSeconds(1)
-                .addTemporalMarker(() -> flicker.setPosition(0))
+                .waitSeconds(.5)
+                .addTemporalMarker(() -> flicker.setPosition(0))//score purple
                 .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB, slidesTime, true))
                 .waitSeconds(.5)
-                .lineToLinearHeading(new Pose2d(24, 0, sensedSpikeMarkLocal.getHeading()))
-                .lineToLinearHeading(new Pose2d(3, 0, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(3, 50, Math.toRadians(90)))
+
+                .lineToSplineHeading(new Pose2d(-40, 57, Math.toRadians(0)))
+                .lineToSplineHeading(new Pose2d(15, 57,Math.toRadians(0)))
+                .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.LOW, slidesTime, true))
+
+                .splineTo(new Vector2d(AprilTagScore.getX(), AprilTagScore.getY()), AprilTagScore.getHeading())
+                .lineToSplineHeading(new Pose2d(42, 60, Math.toRadians(-90)))//park
 
 
-
-
+                .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, true))
 
                 .build();
 
 
-        TrajectorySequence outOfTheTruss = drive.trajectorySequenceBuilder(scoreThePurple.end())
-
-                .lineToLinearHeading(new Pose2d(24, 0, sensedSpikeMarkLocal.getHeading()))
-                .waitSeconds(1)
-                .lineToLinearHeading(new Pose2d(3, 0, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(3, 50, Math.toRadians(90)))
-                .build();//takes robot to the board
-        TrajectorySequence toTheTag = drive.trajectorySequenceBuilder(outOfTheTruss.end())
-                .lineToLinearHeading(AprilTagScore)
-                .build();//takes robot to the board
-        TrajectorySequence park = drive.trajectorySequenceBuilder(toTheTag.end())
-                .waitSeconds(1)
-                .lineToLinearHeading(parkPos)
-                .build();//takes robot to the board
-
-
-
-
-
-
-
-
-
-
-        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB, slidesTime, true);
-        sleep(2000);
-
-
         drive.followTrajectorySequence(scoreThePurple);
-        flicker.setPosition(0);
-        sleep(1000);
 
-        drive.followTrajectorySequence(outOfTheTruss);
-        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.LOW, slidesTime, true);
-        sleep(1000);
-
-        drive.followTrajectorySequence(toTheTag);
-        finger1.setPosition(sliderMachineState.Finger1Loose);
-        finger2.setPosition(sliderMachineState.Finger1Loose);
         sleep(2000);
-
-        drive.followTrajectorySequence(park);
-
-        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, true);
-
-
-        sleep(4000);
 
     }
 

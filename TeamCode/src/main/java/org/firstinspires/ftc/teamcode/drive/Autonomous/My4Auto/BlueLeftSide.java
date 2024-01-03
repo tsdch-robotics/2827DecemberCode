@@ -1,12 +1,16 @@
 package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-//sufffdisusdouifhsdofuihs
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Core;
@@ -14,21 +18,11 @@ import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime; // Import ElapsedTime
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
 @Autonomous(group = "drive")
@@ -56,22 +50,24 @@ public class BlueLeftSide extends LinearOpMode {
     //constants
 
 
-    private static Pose2d ID1Location = new Pose2d(28, 6.8, Math.toRadians(5));
-    private static Pose2d ID2Location = new Pose2d(29, -4, Math.toRadians(0));
-    private static Pose2d ID3Location = new Pose2d(29, -12, Math.toRadians(-5));
+    //splineTo(new Vector2d(-33, 37), Math.toRadians(-85))
+    public static Pose2d ID1Location = new Pose2d(19, 37, Math.toRadians(-85));
+    public static Pose2d ID2Location = new Pose2d(14, 33, Math.toRadians(-90));
+    public static Pose2d ID3Location = new Pose2d(9, 40, Math.toRadians(-95));
 
-    private static Pose2d AprilTagScore1 = new Pose2d(28, 6.8, Math.toRadians(5));
-    private static Pose2d AprilTagScore2 = new Pose2d(29, -4, Math.toRadians(0));
-    private static Pose2d AprilTagScore3 = new Pose2d(29, -12, Math.toRadians(-5));
+    public static Pose2d AprilTagScore1 = new Pose2d(47, 42, Math.toRadians(0));
+    public static Pose2d AprilTagScore2 = new Pose2d(47, 35, Math.toRadians(0));
+    public static Pose2d AprilTagScore3 = new Pose2d(47, 28, Math.toRadians(0));
 
-    private static double sensitivityLevel = .075;//lower for higher sensitivity, raise for less sensitity
+    public static double sensitivityLevel = .075;//lower for higher sensitivity, raise for less sensitity
 
-    private static Pose2d sensedSpikeMarkLocal;
+    public static Pose2d sensedSpikeMarkLocal;
     private static Pose2d AprilTagScore;
 
-    private static Pose2d parkPos = new Pose2d(3, 80, Math.toRadians(0));;
+    public static Pose2d parkPos = new Pose2d(0, 87, Math.toRadians(0));;
 
-
+    public static Rect leftRect = new Rect(200, 100, 400, 500);
+    public static Rect rightRect = new Rect(800, 100, 400, 500);//midile is 640
 
 
 
@@ -97,7 +93,7 @@ public class BlueLeftSide extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));//(39,-62) in terms of FTC coordinates
+        Pose2d startPose = new Pose2d(15, 60, Math.toRadians(270));//(39,-62) in terms of FTC coordinates
         drive.setPoseEstimate(startPose);
 
 
@@ -108,7 +104,7 @@ public class BlueLeftSide extends LinearOpMode {
 
 
 
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam1");
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
                 .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -124,6 +120,9 @@ public class BlueLeftSide extends LinearOpMode {
         finger1 = hardwareMap.servo.get("finger1");
         finger2 = hardwareMap.servo.get("finger2");
         flicker = hardwareMap.servo.get("flicker");
+
+
+        arm1.setDirection(Servo.Direction.REVERSE);
 
         examplePipeline = new ExamplePipeline();
         webcam1.setPipeline(examplePipeline);
@@ -141,6 +140,11 @@ public class BlueLeftSide extends LinearOpMode {
         });
         telemetry.addLine("Waiting to start");
         telemetry.update();
+        //slidesTime.reset();
+
+
+        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STABAFTERSTAB, slidesTime, true);
+
         waitForStart();
         // Run for 10 seconds
         telemetry.addLine("started");
@@ -173,13 +177,14 @@ public class BlueLeftSide extends LinearOpMode {
 
         if (averageRight > averageLeft && (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
             zone = 2;
-            telemetry.addData("Zone", zone);
-            telemetry.update();
-
 
             AprilTagScore = AprilTagScore2;
             sensedSpikeMarkLocal = ID2Location;
 
+            telemetry.addData("Zone", zone);
+            telemetry.addData("sensedSpikeMarkLocal", sensedSpikeMarkLocal);
+            telemetry.addData("AprilTagScore", AprilTagScore);
+            telemetry.update();
 //middle
 
 //adjusts negligibility by scale rather than an actual parameter
@@ -187,55 +192,65 @@ public class BlueLeftSide extends LinearOpMode {
 
             zone = 3;
             telemetry.addData("Zone", zone);
-            telemetry.update();
+
 //middle
             AprilTagScore = AprilTagScore3;
             sensedSpikeMarkLocal = ID3Location;
+
+            telemetry.addData("sensedSpikeMarkLocal", sensedSpikeMarkLocal);
+            telemetry.addData("AprilTagScore", AprilTagScore);
+
+            telemetry.update();
 
         } else {
             zone = 1;
             telemetry.addData("Zone", zone);
 
-            telemetry.update();
 
-            AprilTagScore = AprilTagScore3;
+
+            AprilTagScore = AprilTagScore1;
             sensedSpikeMarkLocal = ID1Location;
+
+            telemetry.addData("sensedSpikeMarkLocal", sensedSpikeMarkLocal);
+            telemetry.addData("AprilTagScore", AprilTagScore);
+
+            telemetry.update();
         }
 
         TrajectorySequence scoreThePurple = drive.trajectorySequenceBuilder(startPose)
+
+
                 .splineTo(new Vector2d(sensedSpikeMarkLocal.getX(), sensedSpikeMarkLocal.getY()), sensedSpikeMarkLocal.getHeading())
+
+                .waitSeconds(.5)
+                .addTemporalMarker(() -> flicker.setPosition(0))//score purple
+                .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STABAFTERSTAB, slidesTime, true))
+                .waitSeconds(.5)
+
+
+                .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.LOW, slidesTime, true))
+
+                .lineToSplineHeading(new Pose2d(15, 50, Math.toRadians(-80)))//park
+                .waitSeconds(.25)
+                .splineTo(new Vector2d(AprilTagScore.getX(), AprilTagScore.getY()), 0)
+
+
                 .waitSeconds(1)
-                // .dropPixel(flicker)
+                .addTemporalMarker(() -> finger1.setPosition(sliderMachineState.Finger1Loose))//score purple
+                .addTemporalMarker(() -> finger2.setPosition(sliderMachineState.Finger2Loose))//score purple
+                .waitSeconds(1)
+
+                .lineToSplineHeading(new Pose2d(42, 60, Math.toRadians(-90)))//park
+
+
+                .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, true))
+
                 .build();
 
 
-        TrajectorySequence outOfTheTruss = drive.trajectorySequenceBuilder(scoreThePurple.end())
-                .lineToLinearHeading(new Pose2d(24, 0, sensedSpikeMarkLocal.getHeading()))
-                .lineToLinearHeading(new Pose2d(3, 20, Math.toRadians(90)))
-                .build();//takes robot to the board
-        TrajectorySequence toTheTag = drive.trajectorySequenceBuilder(outOfTheTruss.end())
-                .lineToLinearHeading(AprilTagScore)
-                .build();//takes robot to the board
-        TrajectorySequence park = drive.trajectorySequenceBuilder(toTheTag.end())
-                .lineToLinearHeading(parkPos)
-                .build();//takes robot to the board
-
-
-
-
         drive.followTrajectorySequence(scoreThePurple);
-        flicker.setPosition(0);
-        sleep(1000);
-        drive.followTrajectorySequenceAsync(outOfTheTruss);
-        slidesTime.reset();
-        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, false);
-        drive.followTrajectorySequence(toTheTag);
-        finger1.setPosition(sliderMachineState.Finger1Loose);
-        finger2.setPosition(sliderMachineState.Finger1Loose);
-        sleep(1000);
-        drive.followTrajectorySequence(park);
 
-        sleep(4000);
+        sleep(2000);
 
     }
 
@@ -256,8 +271,8 @@ public class BlueLeftSide extends LinearOpMode {
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
 //1280,720
-            Rect leftRect = new Rect(200, 100, 400, 500);
-            Rect rightRect = new Rect(800, 100, 400, 500);//midile is 640
+            //Rect leftRect = new Rect(200, 100, 400, 500);
+            //Rect rightRect = new Rect(800, 100, 400, 500);//midile is 640
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, leftRect, rectColor, 20);

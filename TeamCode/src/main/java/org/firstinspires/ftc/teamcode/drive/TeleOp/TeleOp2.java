@@ -31,6 +31,7 @@ public class TeleOp2 extends OpMode {
 //custom funcitons, used to save code space
 
     public ElapsedTime slidesTime = new ElapsedTime();
+    public ElapsedTime debounceTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
     private DcMotor frontLeftMotor;
     private DcMotor frontRightMotor;
@@ -53,7 +54,7 @@ public class TeleOp2 extends OpMode {
 
     public static double release = 0;
 
-    private sliderMachineState.slidePosition preloadPos;
+    private sliderMachineState.slidePosition preloadPos = sliderMachineState.slidePosition.LOW;
     private sliderMachineState.slidePosition exocutePos = sliderMachineState.slidePosition.THREATEN;
 
 //TODO import my "halt" funciton
@@ -107,6 +108,8 @@ public class TeleOp2 extends OpMode {
         //  imu.initialize(parameters);//todo; delete this comment
         slidesTime.reset();
         slidesTime.startTime();
+        debounceTime.reset();
+        debounceTime.startTime();
         //waitForStart();
       //  runtime.reset();
 
@@ -124,6 +127,7 @@ public class TeleOp2 extends OpMode {
         telemetry.addData("Position of wrist", wrist.getPosition());
 
         telemetry.addData("Preload state", preloadPos);
+        telemetry.addData("debounce time", debounceTime);
 
 
 
@@ -143,31 +147,9 @@ public class TeleOp2 extends OpMode {
         }
 
 
-       /* if (gamepad1.dpad_down) {
 
-            preloadPos = sliderMachineState.slidePosition.LOW;
 
-        }
-        if (gamepad1.dpad_left) {
 
-            //preloadPos = sliderMachineState.slidePosition.THREATEN;
-        }
-        if (gamepad1.dpad_up) {
-
-            preloadPos = sliderMachineState.slidePosition.HIGH;
-        }
-        if (gamepad1.dpad_right) {
-
-            preloadPos = sliderMachineState.slidePosition.MEDIUM;
-
-        }
-
-        //exocute pos
-        /*if(gamepad1.x){
-            exocutePos = preloadPos;
-            slidesTime.reset();
-        }
-//stab
        /* if(gamepad1.a){
 
             exocutePos = sliderMachineState.slidePosition.STAB;
@@ -206,21 +188,21 @@ public class TeleOp2 extends OpMode {
 
         if (gamepad2.dpad_down) {
 
-            //preloadPos = sliderMachineState.slidePosition.HIGH;
+            preloadPos = sliderMachineState.slidePosition.LOW;
             //gamepad1.rumble(1000);
 
         }
         if (gamepad2.dpad_left) {
 
-            preloadPos = sliderMachineState.slidePosition.LOW;
+            preloadPos = sliderMachineState.slidePosition.MEDIUM;
         }
         if (gamepad2.dpad_up) {
 
-            preloadPos = sliderMachineState.slidePosition.MEDIUM;
+            preloadPos = sliderMachineState.slidePosition.HIGH;
         }
         if (gamepad2.dpad_right) {
 
-            preloadPos = sliderMachineState.slidePosition.HIGH;
+            preloadPos = sliderMachineState.slidePosition.REALLYHIGH;
 
         }
 
@@ -230,15 +212,37 @@ public class TeleOp2 extends OpMode {
             slidesTime.reset();
         }
 //stab
-        if(gamepad2.a){
+        if(gamepad2.a && exocutePos == sliderMachineState.slidePosition.THREATEN && debounceTime.milliseconds() > 500){
+
 
             exocutePos = sliderMachineState.slidePosition.STAB;
             slidesTime.reset();
+            debounceTime.reset();
         }
+        if(gamepad2.a && (exocutePos == sliderMachineState.slidePosition.STAB || exocutePos == sliderMachineState.slidePosition.STABAFTERSTAB) && debounceTime.milliseconds() > 500){
+
+            exocutePos = sliderMachineState.slidePosition.RESTAB;
+            slidesTime.reset();
+            debounceTime.reset();
+        }
+        if(gamepad2.a && exocutePos == sliderMachineState.slidePosition.RESTAB && debounceTime.milliseconds() > 500){
+
+            exocutePos = sliderMachineState.slidePosition.STABAFTERSTAB;
+            slidesTime.reset();
+            debounceTime.reset();
+        }
+
         if(gamepad2.x){
 
             exocutePos = sliderMachineState.slidePosition.THREATEN;
             slidesTime.reset();
+        }
+
+        if(gamepad2.b){
+
+            exocutePos = sliderMachineState.slidePosition.RESTAB;
+            slidesTime.reset();
+            debounceTime.reset();
         }
 //TODO fix potential issues with ellapsed tiime, as it it called in a seprate file
 
