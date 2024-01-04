@@ -37,48 +37,22 @@ public class MeepMeepTesting {
 
 
                                 .setReversed(true)//intaking side is the front now
-                                .splineTo(new Vector2d(28, 12), Math.toRadians(180))//180 because its backwards
-                                .splineTo(new Vector2d(-28, 12), Math.toRadians(180))
-                                .splineTo(new Vector2d(-55, 16), Math.toRadians(180))
+                                .splineTo(new Vector2d(45, 58), Math.toRadians(90))
 
-                                .setReversed(false)
-                                .splineTo(new Vector2d(-28, 12), Math.toRadians(0))
-                                .splineTo(new Vector2d(28, 12), Math.toRadians(0))//180 because its backwards
-                                .splineTo(new Vector2d(47, 35), Math.toRadians(0))
+
+                                //  .splineTo(new Vector2d(28, 12), Math.toRadians(180))//180 because its backwards
+                               // .splineTo(new Vector2d(-28, 12), Math.toRadians(180))
+                               // .splineTo(new Vector2d(-55, 16), Math.toRadians(180))
+
+                                //.setReversed(false)
+                              //  .splineTo(new Vector2d(-28, 12), Math.toRadians(0))
+                              //  .splineTo(new Vector2d(28, 12), Math.toRadians(0))//180 because its backwards
+                              //  .splineTo(new Vector2d(47, 35), Math.toRadians(0))
 
 //test
 
 
 
-                               // .addTemporalMarker(() -> finger1.setPosition(sliderMachineState.Finger1Loose))//score purple
-                               // .addTemporalMarker(() -> finger2.setPosition(sliderMachineState.Finger2Loose))//score purple
-                                .waitSeconds(1)
-
-
-
-                               //.lineToSplineHeading(new Pose2d(42, 60, Math.toRadians(-90)))//park
-
-
-                             //   .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, true))
-
-
-                               // .splineTo(new Vector2d(AprilTagScore.getX(), AprilTagScore.getY()), 0)
-
-
-                              /*  //BLue right side
-                                .splineTo(new Vector2d(-33, 37), Math.toRadians(-85))
-                                .lineToSplineHeading(new Pose2d(-40, 57, Math.toRadians(0)))
-                                .lineToSplineHeading(new Pose2d(15, 57,Math.toRadians(0)))
-                                .splineTo(new Vector2d(45, 30), Math.toRadians(0))
-                                .lineToSplineHeading(new Pose2d(42, 60, Math.toRadians(-90)))
-
-
-                                /*.lineToSplineHeading(new Pose2d(30, 10, Math.toRadians(0)))
-                                .lineToSplineHeading(new Pose2d(-60, 10, Math.toRadians(0)))
-                                .lineToSplineHeading(new Pose2d(-60, 18, Math.toRadians(0)))
-*/
-
-                                //.splineTo(new Vector2d(45, 40), Math.toRadians(90))
 
 
                                 .build()

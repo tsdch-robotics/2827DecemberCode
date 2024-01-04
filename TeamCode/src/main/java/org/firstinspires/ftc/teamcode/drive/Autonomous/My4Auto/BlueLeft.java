@@ -26,7 +26,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
 @Autonomous(group = "drive")
-public class CopyOfBLUeRihgt extends LinearOpMode {
+public class BlueLeft extends LinearOpMode {
 
 
 
@@ -93,7 +93,7 @@ public class CopyOfBLUeRihgt extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d startPose = new Pose2d(-38, 60, Math.toRadians(270));//(39,-62) in terms of FTC coordinates
+        Pose2d startPose = new Pose2d(15, 60, Math.toRadians(270));
         drive.setPoseEstimate(startPose);
 
 
@@ -185,6 +185,34 @@ public class CopyOfBLUeRihgt extends LinearOpMode {
             telemetry.addData("sensedSpikeMarkLocal", sensedSpikeMarkLocal);
             telemetry.addData("AprilTagScore", AprilTagScore);
             telemetry.update();
+
+
+            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+
+
+
+                    .splineTo(new Vector2d(14, 33), Math.toRadians(-90))//middle pos
+                    .waitSeconds(1)
+
+                    .lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
+                    .waitSeconds(1)
+
+                    .splineTo(new Vector2d(47, 35), Math.toRadians(0))//to board
+
+                    .waitSeconds(1)
+
+                    .setReversed(true)//intaking side is the front now
+                    .splineTo(new Vector2d(45, 58), Math.toRadians(90))
+
+
+                    .build();
+
+            drive.followTrajectorySequence(trajectory1);
+
+
+
+
+
 //middle
 
 //adjusts negligibility by scale rather than an actual parameter
@@ -192,6 +220,10 @@ public class CopyOfBLUeRihgt extends LinearOpMode {
 
             zone = 3;
             telemetry.addData("Zone", zone);
+
+
+
+
 
 //middle
             AprilTagScore = AprilTagScore3;
@@ -202,9 +234,41 @@ public class CopyOfBLUeRihgt extends LinearOpMode {
 
             telemetry.update();
 
+
+
+
+            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+
+
+
+                    .splineTo(new Vector2d(10, 40), Math.toRadians(-98))//right pos
+                    .waitSeconds(.5)
+                    //.addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.LOW, slidesTime, true))
+
+                    .lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
+                    .waitSeconds(.25)
+
+
+
+
+                    .splineTo(new Vector2d(47, 35), Math.toRadians(0))//to board
+
+                    .waitSeconds(1)
+
+
+                    .setReversed(true)//intaking side is the front now
+                    .splineTo(new Vector2d(45, 58), Math.toRadians(90))
+
+
+                    .build();
+
+            drive.followTrajectorySequence(trajectory1);
+
+
         } else {
             zone = 1;
             telemetry.addData("Zone", zone);
+
 
 
 
@@ -215,34 +279,39 @@ public class CopyOfBLUeRihgt extends LinearOpMode {
             telemetry.addData("AprilTagScore", AprilTagScore);
 
             telemetry.update();
+
+
+
+
+            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+
+
+
+                    .splineTo(new Vector2d(20, 40), Math.toRadians(-60))
+                    .waitSeconds(.5)
+
+                    .lineToSplineHeading(new Pose2d(25, 50, Math.toRadians(-40)))
+                    .waitSeconds(.25)
+
+
+
+
+                    .splineTo(new Vector2d(47, 41), Math.toRadians(0))//to board
+
+                    .waitSeconds(1)
+
+
+                    .setReversed(true)//intaking side is the front now
+                    .splineTo(new Vector2d(45, 58), Math.toRadians(90))
+
+
+
+
+                    .build();
+
+            drive.followTrajectorySequence(trajectory1);
         }
 
-        TrajectorySequence scoreThePurple = drive.trajectorySequenceBuilder(startPose)
-
-
-                .splineTo(new Vector2d(sensedSpikeMarkLocal.getX(), sensedSpikeMarkLocal.getY()), sensedSpikeMarkLocal.getHeading())
-
-                .waitSeconds(.5)
-                .addTemporalMarker(() -> flicker.setPosition(0))//score purple
-                .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB, slidesTime, true))
-                .waitSeconds(.5)
-
-                .lineToSplineHeading(new Pose2d(-40, 57, Math.toRadians(0)))
-                .lineToSplineHeading(new Pose2d(15, 57,Math.toRadians(0)))
-                .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.LOW, slidesTime, true))
-
-                .splineTo(new Vector2d(AprilTagScore.getX(), AprilTagScore.getY()), AprilTagScore.getHeading())
-                .lineToSplineHeading(new Pose2d(42, 60, Math.toRadians(-90)))//park
-
-
-                .addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, true))
-
-                .build();
-
-
-        drive.followTrajectorySequence(scoreThePurple);
-
-        sleep(2000);
 
     }
 

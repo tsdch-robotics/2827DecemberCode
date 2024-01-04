@@ -39,6 +39,12 @@ public class TeleOp2 extends OpMode {
     private DcMotor rearRightMotor;
     private DcMotor slides;
     private DcMotor intake;
+
+
+
+    private DcMotor hang1;
+    private DcMotor hang2;
+
     private Servo arm1;
     private Servo arm2;
 
@@ -80,6 +86,12 @@ public class TeleOp2 extends OpMode {
         slides = hardwareMap.dcMotor.get("slides");
         slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+        hang1 = hardwareMap.dcMotor.get("hang1");
+        hang2 = hardwareMap.dcMotor.get("hang2");
+
+        hang2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intake.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -126,6 +138,9 @@ public class TeleOp2 extends OpMode {
         telemetry.addData("Position of finger2", finger2.getPosition());
         telemetry.addData("Position of wrist", wrist.getPosition());
 
+        telemetry.addData("hang1", hang1.getCurrentPosition());
+        telemetry.addData("hang2", hang2.getCurrentPosition());
+
         telemetry.addData("Preload state", preloadPos);
         telemetry.addData("debounce time", debounceTime);
 
@@ -146,7 +161,31 @@ public class TeleOp2 extends OpMode {
             finger2.setPosition(sliderMachineState.Finger2Loose);
         }
 
+        if (gamepad2.left_bumper) {
+            hang1.setTargetPosition(1250);
+            hang1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hang1.setPower(1);
 
+            hang2.setTargetPosition(1250);
+            hang2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hang2.setPower(1);
+
+        }
+
+        if (gamepad2.right_bumper) {
+            hang1.setTargetPosition(0);
+            hang1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hang1.setPower(1);
+
+            hang2.setTargetPosition(0);
+            hang2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hang2.setPower(1);
+
+        }
 
 
 
