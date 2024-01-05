@@ -31,7 +31,7 @@ public class MeepMeepTesting {
 
 
 
-                                .splineTo(new Vector2d(47, 35), Math.toRadians(0))//to board
+                                .lineToSplineHeading(new Pose2d(47, 35, Math.toRadians(0)))//to board
 
                                 .waitSeconds(1)
 

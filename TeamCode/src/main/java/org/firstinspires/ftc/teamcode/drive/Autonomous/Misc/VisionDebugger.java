@@ -1,8 +1,10 @@
-package org.firstinspires.ftc.teamcode.drive.Autonomous;
+package org.firstinspires.ftc.teamcode.drive.Autonomous.Misc;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.opencv.core.Core;
@@ -18,6 +20,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 
 
 @Autonomous
+@Disabled
 public class VisionDebugger extends OpMode {
 
 
@@ -30,7 +33,7 @@ public class VisionDebugger extends OpMode {
     @Override
     public void init(){
 
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam1");
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
                 .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -83,8 +86,11 @@ public class VisionDebugger extends OpMode {
             leftCrop = YCbCr.submat(leftRect);
             rightCrop = YCbCr.submat(rightRect);
 
-            Core.extractChannel(leftCrop, leftCrop, 0);
-            Core.extractChannel(rightCrop, rightCrop, 0);
+            /*Core.extractChannel(leftCrop, leftCrop, 2);
+            Core.extractChannel(rightCrop, rightCrop, 2);//bad
+*/
+            Core.inRange(YCbCr, new Scalar(90, 90, 0), new Scalar(120, 255, 255), leftCrop);
+            Core.inRange(YCbCr, new Scalar(90, 90, 0), new Scalar(120, 255, 255), rightCrop);
 
             Scalar leftavg = Core.mean(leftCrop);
             Scalar rightavg = Core.mean(rightCrop);

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto;
+package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.BlueAutos;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -32,7 +32,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
 @Autonomous(group = "drive")
-public class RedRightSide extends LinearOpMode {
+public class BlueRightSide extends LinearOpMode {
 
 
 
@@ -45,8 +45,8 @@ public class RedRightSide extends LinearOpMode {
     ElapsedTime elapsedTime = new ElapsedTime(); // Add ElapsedTime to track time
     double totalLeftAvg = 0;
     double totalRightAvg = 0;
-    //  double left = 0;
-    //   double right = 0;
+  //  double left = 0;
+ //   double right = 0;
     int frameCount = 0;
     int zone = 0;
     ExamplePipeline examplePipeline;
@@ -56,22 +56,24 @@ public class RedRightSide extends LinearOpMode {
     //constants
 
 
-    private static Pose2d ID1Location = new Pose2d(28, 6.8, Math.toRadians(5));
-    private static Pose2d ID2Location = new Pose2d(29, -4, Math.toRadians(0));
-    private static Pose2d ID3Location = new Pose2d(29, -12, Math.toRadians(-5));
 
-    private static Pose2d AprilTagScore1 = new Pose2d(28, 6.8, Math.toRadians(5));
-    private static Pose2d AprilTagScore2 = new Pose2d(29, -4, Math.toRadians(0));
-    private static Pose2d AprilTagScore3 = new Pose2d(29, -12, Math.toRadians(-5));
+    public static Pose2d ID1Location = new Pose2d(28, 6.8, Math.toRadians(5));
+    public static Pose2d ID2Location = new Pose2d(29, -4, Math.toRadians(0));
+    public static Pose2d ID3Location = new Pose2d(29, -12, Math.toRadians(-5));
 
-    private static double sensitivityLevel = .075;//lower for higher sensitivity, raise for less sensitity
+    public static Pose2d AprilTagScore1 = new Pose2d(12, 92, Math.toRadians(95));
+    public static Pose2d AprilTagScore2 = new Pose2d(11, 92, Math.toRadians(95));
+    public static Pose2d AprilTagScore3 = new Pose2d(17, 92, Math.toRadians(95));
 
-    private static Pose2d sensedSpikeMarkLocal;
+    public static double sensitivityLevel = .075;//lower for higher sensitivity, raise for less sensitity
+
+    public static Pose2d sensedSpikeMarkLocal;
     private static Pose2d AprilTagScore;
 
-    private static Pose2d parkPos = new Pose2d(3, 80, Math.toRadians(0));;
+    public static Pose2d parkPos = new Pose2d(0, 87, Math.toRadians(0));;
 
-
+    public static Rect leftRect = new Rect(200, 100, 400, 500);
+    public static Rect rightRect = new Rect(800, 100, 400, 500);//midile is 640
 
 
 
@@ -108,7 +110,7 @@ public class RedRightSide extends LinearOpMode {
 
 
 
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam1");
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
                 .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -124,6 +126,9 @@ public class RedRightSide extends LinearOpMode {
         finger1 = hardwareMap.servo.get("finger1");
         finger2 = hardwareMap.servo.get("finger2");
         flicker = hardwareMap.servo.get("flicker");
+
+
+        arm1.setDirection(Servo.Direction.REVERSE);
 
         examplePipeline = new ExamplePipeline();
         webcam1.setPipeline(examplePipeline);
@@ -141,6 +146,11 @@ public class RedRightSide extends LinearOpMode {
         });
         telemetry.addLine("Waiting to start");
         telemetry.update();
+        //slidesTime.reset();
+
+
+        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, true);
+
         waitForStart();
         // Run for 10 seconds
         telemetry.addLine("started");
@@ -173,12 +183,23 @@ public class RedRightSide extends LinearOpMode {
 
         if (averageRight > averageLeft && (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
             zone = 2;
-            telemetry.addData("Zone", zone);
-            telemetry.update();
 
 
             AprilTagScore = AprilTagScore2;
             sensedSpikeMarkLocal = ID2Location;
+
+
+            telemetry.addData("Zone", zone);
+            telemetry.addData("sensedSpikeMarkLocal", sensedSpikeMarkLocal);
+            telemetry.addData("AprilTagScore", AprilTagScore);
+
+
+
+
+            telemetry.update();
+
+
+
 
 //middle
 
@@ -187,53 +208,78 @@ public class RedRightSide extends LinearOpMode {
 
             zone = 3;
             telemetry.addData("Zone", zone);
-            telemetry.update();
+
 //middle
             AprilTagScore = AprilTagScore3;
             sensedSpikeMarkLocal = ID3Location;
+
+            telemetry.addData("sensedSpikeMarkLocal", sensedSpikeMarkLocal);
+            telemetry.addData("AprilTagScore", AprilTagScore);
+
+            telemetry.update();
 
         } else {
             zone = 1;
             telemetry.addData("Zone", zone);
 
-            telemetry.update();
 
-            AprilTagScore = AprilTagScore3;
+
+            AprilTagScore = AprilTagScore1;
             sensedSpikeMarkLocal = ID1Location;
+
+            telemetry.addData("sensedSpikeMarkLocal", sensedSpikeMarkLocal);
+            telemetry.addData("AprilTagScore", AprilTagScore);
+
+            telemetry.update();
         }
 
         TrajectorySequence scoreThePurple = drive.trajectorySequenceBuilder(startPose)
                 .splineTo(new Vector2d(sensedSpikeMarkLocal.getX(), sensedSpikeMarkLocal.getY()), sensedSpikeMarkLocal.getHeading())
                 .waitSeconds(1)
-                // .dropPixel(flicker)
+               // .dropPixel(flicker)
                 .build();
 
 
         TrajectorySequence outOfTheTruss = drive.trajectorySequenceBuilder(scoreThePurple.end())
+
                 .lineToLinearHeading(new Pose2d(24, 0, sensedSpikeMarkLocal.getHeading()))
-                .lineToLinearHeading(new Pose2d(3, 20, Math.toRadians(90)))
+                .waitSeconds(1)
+                .lineToLinearHeading(new Pose2d(3, 0, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(3, 50, Math.toRadians(90)))
                 .build();//takes robot to the board
         TrajectorySequence toTheTag = drive.trajectorySequenceBuilder(outOfTheTruss.end())
                 .lineToLinearHeading(AprilTagScore)
                 .build();//takes robot to the board
         TrajectorySequence park = drive.trajectorySequenceBuilder(toTheTag.end())
+                .waitSeconds(1)
                 .lineToLinearHeading(parkPos)
                 .build();//takes robot to the board
 
 
 
 
+
+        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB, slidesTime, true);
+        sleep(2000);
+
+
         drive.followTrajectorySequence(scoreThePurple);
         flicker.setPosition(0);
         sleep(1000);
-        drive.followTrajectorySequenceAsync(outOfTheTruss);
-        slidesTime.reset();
-        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, true);
+
+        drive.followTrajectorySequence(outOfTheTruss);
+        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.LOW, slidesTime, true);
+        sleep(1000);
+
         drive.followTrajectorySequence(toTheTag);
         finger1.setPosition(sliderMachineState.Finger1Loose);
         finger2.setPosition(sliderMachineState.Finger1Loose);
-        sleep(1000);
+        sleep(2000);
+
         drive.followTrajectorySequence(park);
+
+        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, true);
+
 
         sleep(4000);
 
@@ -256,8 +302,8 @@ public class RedRightSide extends LinearOpMode {
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
 //1280,720
-            Rect leftRect = new Rect(200, 100, 400, 500);
-            Rect rightRect = new Rect(800, 100, 400, 500);//midile is 640
+            //Rect leftRect = new Rect(200, 100, 400, 500);
+            //Rect rightRect = new Rect(800, 100, 400, 500);//midile is 640
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, leftRect, rectColor, 20);
@@ -266,8 +312,8 @@ public class RedRightSide extends LinearOpMode {
             leftCrop = YCbCr.submat(leftRect);
             rightCrop = YCbCr.submat(rightRect);
 
-            Core.extractChannel(leftCrop, leftCrop, 1);
-            Core.extractChannel(rightCrop, rightCrop, 1);
+            Core.extractChannel(leftCrop, leftCrop, 0);
+            Core.extractChannel(rightCrop, rightCrop, 0);
 
             Scalar leftavg = Core.mean(leftCrop);
             Scalar rightavg = Core.mean(rightCrop);
