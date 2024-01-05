@@ -17,27 +17,24 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 52, Math.toRadians(180), Math.toRadians(180), 14.9)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(15, 60, Math.toRadians(270)))//-38, 60 for blue right
+                        drive.trajectorySequenceBuilder(new Pose2d(9, 60, Math.toRadians(-90)))//-38, 60 for blue right
 
 
+                                .lineToSplineHeading(new Pose2d(15, 59, Math.toRadians(-90)))
+                                .lineToSplineHeading(new Pose2d(15, 30, Math.toRadians(-90)))
+                                .lineToSplineHeading(new Pose2d(15.1, 30.1, Math.toRadians(180)))
 
-                                .splineTo(new Vector2d(14, 33), Math.toRadians(-90))//middle pos
-                                .waitSeconds(.5)
-                                //.addTemporalMarker(() -> executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.LOW, slidesTime, true))
+                                .lineToSplineHeading(new Pose2d(10, 35, Math.toRadians(180)))
 
-                                .lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
-                                .waitSeconds(.25)
-
-
-
-
-                                .lineToSplineHeading(new Pose2d(47, 35, Math.toRadians(0)))//to board
-
+                                //.splineTo(new Vector2d(10, 40), Math.toRadians(-98))
                                 .waitSeconds(1)
+                                .lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
+                                .waitSeconds(1)
+                                .lineToSplineHeading(new Pose2d(50, 35, Math.toRadians(0)))//was spline
+                                .waitSeconds(1)
+                                .setReversed(true)
+                                .splineTo(new Vector2d(45, 53), Math.toRadians(90))
 
-
-                                .setReversed(true)//intaking side is the front now
-                                .splineTo(new Vector2d(45, 58), Math.toRadians(90))
 
 
                                 //  .splineTo(new Vector2d(28, 12), Math.toRadians(180))//180 because its backwards

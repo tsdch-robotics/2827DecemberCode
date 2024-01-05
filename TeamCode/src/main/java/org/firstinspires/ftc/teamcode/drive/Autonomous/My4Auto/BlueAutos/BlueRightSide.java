@@ -286,8 +286,7 @@ public class BlueRightSide extends LinearOpMode {
     }
 
 
-
-    class ExamplePipeline extends OpenCvPipeline {
+    public class ExamplePipeline extends OpenCvPipeline {
 
         Mat YCbCr = new Mat();
         Mat leftCrop;

@@ -120,10 +120,6 @@ public class BluePixelAnalysis extends OpMode {
             }
 
 
-
-
-
-
             // Draw rectangles on the output frame for visualization
             Imgproc.rectangle(this.output, rect1, new Scalar(255, 0, 0), 2); // Blue for rectangle 1
             Imgproc.rectangle(this.output, rect2, new Scalar(255, 0, 0), 2); // Blue for rectangle 2
