@@ -28,7 +28,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
 @Autonomous(group = "drive")
-public class BlueLeft extends LinearOpMode {
+public class RedLeft extends LinearOpMode {
 
     public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
@@ -313,7 +313,7 @@ public class BlueLeft extends LinearOpMode {
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
-            })
+                    })
 
                     .lineToSplineHeading(new Pose2d(15, 59, Math.toRadians(-90)))
                     .lineToSplineHeading(new Pose2d(15, 30, Math.toRadians(-90)))
@@ -347,7 +347,7 @@ public class BlueLeft extends LinearOpMode {
 
                     .lineToSplineHeading(new Pose2d(52, 30, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                            DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
 
                     .addTemporalMarker(() -> {
@@ -371,8 +371,8 @@ public class BlueLeft extends LinearOpMode {
 
 
                     .splineTo(new Vector2d(45, 59), Math.toRadians(90),
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                        DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
 
                     .build();
@@ -387,26 +387,21 @@ public class BlueLeft extends LinearOpMode {
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
 
-
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
-                    .lineToSplineHeading(new Pose2d(16, 59, Math.toRadians(-90)))
-                    .lineToSplineHeading(new Pose2d(16, 31, Math.toRadians(-90)))
-
+                    .splineTo(new Vector2d(10, -35), Math.toRadians(130))
 
                     .waitSeconds(1)
                     .addTemporalMarker(() -> {flicker.setPosition(0);} )
 
-                    //.splineTo(new Vector2d(10, 40), Math.toRadians(-98))
+
                     .waitSeconds(1)
-                    //.lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
-                    //.waitSeconds(1)
 
-                    .lineToSplineHeading(new Pose2d(11, 38, Math.toRadians(0)))
 
+                    .lineToSplineHeading(new Pose2d(15, -45, Math.toRadians(90)))
 
                     .addTemporalMarker(() -> {
                         moveByEncoder.powerSlider(slides, (400));
@@ -416,7 +411,8 @@ public class BlueLeft extends LinearOpMode {
 
                     })
 
-                    .lineToSplineHeading(new Pose2d(40, 40, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(40, -32, Math.toRadians(0)))
+
                     //fast to board
 
 
@@ -425,7 +421,7 @@ public class BlueLeft extends LinearOpMode {
 
                     })
 
-                    .lineToSplineHeading(new Pose2d(49, 40, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(49, -32, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
@@ -443,9 +439,9 @@ public class BlueLeft extends LinearOpMode {
 
 
 
-                   // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
+                    // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(45, 59), Math.toRadians(90),
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                     .addTemporalMarker(() -> {

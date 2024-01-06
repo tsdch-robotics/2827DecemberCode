@@ -1,12 +1,18 @@
 package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.RedAutos;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-//sufffdisusdouifhsdofuihs
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Core;
@@ -14,105 +20,128 @@ import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime; // Import ElapsedTime
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
 @Autonomous(group = "drive")
 public class RedRightSide extends LinearOpMode {
 
-
-
     public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
 
-
-
     OpenCvWebcam webcam1 = null;
     ElapsedTime elapsedTime = new ElapsedTime(); // Add ElapsedTime to track time
-    double totalLeftAvg = 0;
-    double totalRightAvg = 0;
-    //  double left = 0;
-    //   double right = 0;
+
+    moveWithBasicEncoder moveByEncoder = new moveWithBasicEncoder();
+
     int frameCount = 0;
     int zone = 0;
-    ExamplePipeline examplePipeline;
+    int totalLeft;
+    int totalRight;
+
+    public boolean greaterThanTargetPercentBluePixels1 = false;
+    public boolean greaterThanTargetPercentBluePixels2 = false;
+
+    ColorAnalysisPipeline colorAnalysisPipeline;
+
+    private double targetPixPercent1 = .2;
+    private double targetPixPercent2 = .2;
+
     private DcMotor slides;
-
-
-    //constants
-
-
-    private static Pose2d ID1Location = new Pose2d(28, 6.8, Math.toRadians(5));
-    private static Pose2d ID2Location = new Pose2d(29, -4, Math.toRadians(0));
-    private static Pose2d ID3Location = new Pose2d(29, -12, Math.toRadians(-5));
-
-    private static Pose2d AprilTagScore1 = new Pose2d(28, 6.8, Math.toRadians(5));
-    private static Pose2d AprilTagScore2 = new Pose2d(29, -4, Math.toRadians(0));
-    private static Pose2d AprilTagScore3 = new Pose2d(29, -12, Math.toRadians(-5));
-
-    private static double sensitivityLevel = .075;//lower for higher sensitivity, raise for less sensitity
-
-    private static Pose2d sensedSpikeMarkLocal;
-    private static Pose2d AprilTagScore;
-
-    private static Pose2d parkPos = new Pose2d(3, 80, Math.toRadians(0));;
-
-
-
-
-
-
-
 
     private Servo arm1;
     private Servo arm2;
-
     private Servo wrist;
     private Servo finger1;
-
     private Servo finger2;
-
     private Servo flicker;
 
 
-    // public final int firstForward = 20;
-    //public final int firstStrafe = -50;
+    class ColorAnalysisPipeline extends OpenCvPipeline {
 
+        Mat input = new Mat();
+        Mat output = new Mat();
+
+        Scalar redLower = new Scalar(0, 50, 100);
+        Scalar redUpper = new Scalar(10, 255, 255);
+        Scalar yellowLower = new Scalar(20, 50, 50);
+        Scalar yellowUpper = new Scalar(40, 255, 255);
+        //Scalar blueLower = new Scalar(90, 50, 50);
+        //Scalar blueUpper = new Scalar(130, 255, 255);
+
+        private Rect rect1 = new Rect(50, 150, 300, 150);
+        private Rect rect2 = new Rect(440, 120, 190, 180);
+
+        private int redPixels1;
+        private int redPixels2;
+
+        public int getBluePixels1() {
+            return redPixels1;
+        }
+
+        public int getBluePixels2() {
+            return redPixels2;
+        }
+
+        public Rect getRect1() {
+            return rect1;
+        }
+
+        public Rect getRect2() {
+            return rect2;
+        }
+
+        @Override
+        public Mat processFrame(Mat input) {
+            input.copyTo(this.input);
+
+            this.input.copyTo(this.output);
+
+            Mat roi1 = this.input.submat(rect1);
+            Mat roi2 = this.input.submat(rect2);
+
+            redPixels1 = countBluePixels(roi1);
+            redPixels2 = countBluePixels(roi2);
+
+            telemetry.addData("ProcessFrame Called", true);
+            telemetry.addData("Blue Pixels in Rectangle 1", redPixels1);
+            telemetry.addData("Blue Pixels in Rectangle 2", redPixels2);
+            telemetry.addData("Rectangle1 Area", rect1.area());
+            telemetry.addData("Rectangle2 Area", rect2.area());
+
+            Imgproc.rectangle(this.output, rect1, new Scalar(255, 0, 0), 2);
+            Imgproc.rectangle(this.output, rect2, new Scalar(255, 0, 0), 2);
+
+            return this.output;
+        }
+
+
+        private int countBluePixels(Mat image) {
+            Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2HSV);
+
+            Mat blueMask = new Mat();
+            Core.inRange(image, redLower, redUpper, blueMask);
+
+            return Core.countNonZero(blueMask);
+        }
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));//(39,-62) in terms of FTC coordinates
+        Pose2d startPose = new Pose2d(14.5, -60, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
-
-
-
-        //Pose2d afterSensing = new Pose2d(0, -10, Math.toRadians(0));
 
         drive.setPoseEstimate(startPose);
 
-
-
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam1");
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
                 .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-
 
         slides = hardwareMap.dcMotor.get("slides");
         slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -125,14 +154,15 @@ public class RedRightSide extends LinearOpMode {
         finger2 = hardwareMap.servo.get("finger2");
         flicker = hardwareMap.servo.get("flicker");
 
-        examplePipeline = new ExamplePipeline();
-        webcam1.setPipeline(examplePipeline);
+        arm1.setDirection(Servo.Direction.REVERSE);
+
+        colorAnalysisPipeline = new ColorAnalysisPipeline();
+        webcam1.setPipeline(colorAnalysisPipeline);
 
         webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
             public void onOpened() {
-                webcam1.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);//changed to upside down
-            }//TODO: adjust width and height baced on specific camera
+                webcam1.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+            }
 
             @Override
             public void onError(int errorCode) {
@@ -141,150 +171,299 @@ public class RedRightSide extends LinearOpMode {
         });
         telemetry.addLine("Waiting to start");
         telemetry.update();
+
+
+        //executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB, slidesTime, true);
+
+
+        sleep(2000);
         waitForStart();
-        // Run for 10 seconds
         telemetry.addLine("started");
         telemetry.update();
 
-//necessary to work
-        for (int i = 0; i < 50; i++) { // 200 iterations * 50 milliseconds = 10 seconds, 50 * 50 = 2.5 seconds
+        for (int i = 0; i < 25; i++) {
             telemetry.addLine("Measuring Camera stream");
+            telemetry.addData("totalLeft", totalLeft);
             telemetry.update();
 
             // Process frames and accumulate color values
-            totalLeftAvg += examplePipeline.leftavgfin;
-            totalRightAvg += examplePipeline.rightavgfin;
-            frameCount++;
+            totalLeft += colorAnalysisPipeline.getBluePixels1();
+            totalRight += colorAnalysisPipeline.getBluePixels2();
 
-            // Sleep for 50 milliseconds
-            sleep(50);
+            frameCount = frameCount + 1;
+            sleep(10);
         }
 
-// Calculate average color values over ten seconds
-        double averageLeft = totalLeftAvg / frameCount;
-        double averageRight = totalRightAvg / frameCount;
+        webcam1.stopStreaming();//may want to remove
+
+        double averageLeft = totalLeft / frameCount;
+        double averageRight = totalRight / frameCount;
+
+        if (averageLeft / colorAnalysisPipeline.getRect1().area() > targetPixPercent1) {
+            greaterThanTargetPercentBluePixels1 = true;
+        } else if (averageRight / colorAnalysisPipeline.getRect2().area() > targetPixPercent2) {
+            greaterThanTargetPercentBluePixels2 = true;
+        } else {
+            greaterThanTargetPercentBluePixels1 = false;
+            greaterThanTargetPercentBluePixels2 = false;
+        }
+
+        if (averageLeft > averageRight && greaterThanTargetPercentBluePixels1) {
+            telemetry.addLine("Middle");
+            zone = 2;
+        } else if (averageLeft < averageRight && greaterThanTargetPercentBluePixels2) {
+            telemetry.addLine("Right");
+            zone = 3;
+        } else {
+            telemetry.addLine("Left");
+            zone = 1;
+        }
 
         telemetry.addLine("done computing");
-        telemetry.addData("left", averageLeft); // Fix the display here
+        telemetry.addData("left", averageLeft);
+        telemetry.addData("leftTotal", totalLeft);
         telemetry.addData("right", averageRight);
         telemetry.update();
-        sleep(500);
-//end of sensing stuff
 
-        if (averageRight > averageLeft && (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
-            zone = 2;
-            telemetry.addData("Zone", zone);
+
+        if (zone == 2) {
+            telemetry.addLine("running zone 2 auto!");
             telemetry.update();
 
 
-            AprilTagScore = AprilTagScore2;
-            sensedSpikeMarkLocal = ID2Location;
+            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
-//middle
 
-//adjusts negligibility by scale rather than an actual parameter
-        } else if (averageRight < averageLeft&& (((averageLeft+averageRight)/2)*sensitivityLevel) <= (Math.abs(averageRight - averageLeft))) {
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                    })
 
-            zone = 3;
-            telemetry.addData("Zone", zone);
+                    .lineToSplineHeading(new Pose2d(12, 59, Math.toRadians(-90)))
+                    .lineToSplineHeading(new Pose2d(11, 29, Math.toRadians(-90)))
+
+
+                    //.lineToSplineHeading(new Pose2d(15.1, 30.1, Math.toRadians(180)))
+                    //.lineToSplineHeading(new Pose2d(9, 35, Math.toRadians(180)))
+
+                    .addTemporalMarker(() -> {flicker.setPosition(0);} )
+
+                    //.splineTo(new Vector2d(10, 40), Math.toRadians(-98))
+                    .waitSeconds(1)
+                    .lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
+                    .waitSeconds(1)
+
+                    .addTemporalMarker(() -> {
+                        moveByEncoder.powerSlider(slides, (400));
+                        arm1.setPosition(sliderMachineState.armScore);
+                        arm2.setPosition(sliderMachineState.armScore);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(40, 35, Math.toRadians(0)))
+                    //fast to board
+
+
+                    .addTemporalMarker(() -> {
+                        wrist.setPosition(sliderMachineState.wristScore);
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(53, 35, Math.toRadians(0)),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
+//slow board aproch
+
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                    })
+
+
+                    .waitSeconds(1)
+                    .setReversed(true)
+
+                    .addTemporalMarker(() -> {
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+
+
+                    .splineTo(new Vector2d(45, 59), Math.toRadians(90),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+
+
+                    .build();
+
+            drive.followTrajectorySequence(trajectory1);
+        } else if (zone == 3) {
+            telemetry.addLine("running zone 6 auto!");
             telemetry.update();
-//middle
-            AprilTagScore = AprilTagScore3;
-            sensedSpikeMarkLocal = ID3Location;
 
+
+            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                    })
+
+                    .splineTo(new Vector2d(16, -40), Math.toRadians(20))
+
+                    .waitSeconds(1)
+                    .addTemporalMarker(() -> {flicker.setPosition(0);} )
+
+
+                    .waitSeconds(1)
+
+
+                    .lineToSplineHeading(new Pose2d(15, -45, Math.toRadians(90)))
+
+                    .addTemporalMarker(() -> {
+                        moveByEncoder.powerSlider(slides, (400));
+                        arm1.setPosition(sliderMachineState.armScore);
+                        arm2.setPosition(sliderMachineState.armScore);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(40, -42, Math.toRadians(0)))
+
+                    //fast to board
+
+
+                    .addTemporalMarker(() -> {
+                        wrist.setPosition(sliderMachineState.wristScore);
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(50, -42, Math.toRadians(0)),
+                            SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
+//slow board aproch
+
+
+                    .waitSeconds(1)
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                    })
+
+
+                    .waitSeconds(1)
+                    .setReversed(true)
+
+
+
+                    // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
+
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                    .addTemporalMarker(() -> {
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .waitSeconds(1)
+
+                    .build();
+
+
+            drive.followTrajectorySequence(trajectory1);
         } else {
-            zone = 1;
-            telemetry.addData("Zone", zone);
-
+            telemetry.addLine("running zone 4 auto!");
             telemetry.update();
 
-            AprilTagScore = AprilTagScore3;
-            sensedSpikeMarkLocal = ID1Location;
-        }
 
-        TrajectorySequence scoreThePurple = drive.trajectorySequenceBuilder(startPose)
-                .splineTo(new Vector2d(sensedSpikeMarkLocal.getX(), sensedSpikeMarkLocal.getY()), sensedSpikeMarkLocal.getHeading())
-                .waitSeconds(1)
-                // .dropPixel(flicker)
-                .build();
+            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
 
-        TrajectorySequence outOfTheTruss = drive.trajectorySequenceBuilder(scoreThePurple.end())
-                .lineToLinearHeading(new Pose2d(24, 0, sensedSpikeMarkLocal.getHeading()))
-                .lineToLinearHeading(new Pose2d(3, 20, Math.toRadians(90)))
-                .build();//takes robot to the board
-        TrajectorySequence toTheTag = drive.trajectorySequenceBuilder(outOfTheTruss.end())
-                .lineToLinearHeading(AprilTagScore)
-                .build();//takes robot to the board
-        TrajectorySequence park = drive.trajectorySequenceBuilder(toTheTag.end())
-                .lineToLinearHeading(parkPos)
-                .build();//takes robot to the board
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                    })
+
+                    .splineTo(new Vector2d(9, -34), Math.toRadians(130))
+
+                    .waitSeconds(1)
+                    .addTemporalMarker(() -> {flicker.setPosition(0);} )
+
+
+                    .waitSeconds(1)
+
+
+                    .lineToSplineHeading(new Pose2d(15, -45, Math.toRadians(90)))
+
+                    .addTemporalMarker(() -> {
+                        moveByEncoder.powerSlider(slides, (400));
+                        arm1.setPosition(sliderMachineState.armScore);
+                        arm2.setPosition(sliderMachineState.armScore);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(40, -32, Math.toRadians(0)))
+
+                    //fast to board
+
+
+                    .addTemporalMarker(() -> {
+                        wrist.setPosition(sliderMachineState.wristScore);
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(50, -32, Math.toRadians(0)),
+                            SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
+//slow board aproch
+
+
+                    .waitSeconds(1)
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                    })
+
+
+                    .waitSeconds(1)
+                    .setReversed(true)
 
 
 
+                    // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
 
-        drive.followTrajectorySequence(scoreThePurple);
-        flicker.setPosition(0);
-        sleep(1000);
-        drive.followTrajectorySequenceAsync(outOfTheTruss);
-        slidesTime.reset();
-        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.THREATEN, slidesTime, true);
-        drive.followTrajectorySequence(toTheTag);
-        finger1.setPosition(sliderMachineState.Finger1Loose);
-        finger2.setPosition(sliderMachineState.Finger1Loose);
-        sleep(1000);
-        drive.followTrajectorySequence(park);
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                    .addTemporalMarker(() -> {
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
 
-        sleep(4000);
+                    })
+                    .waitSeconds(1)
 
-    }
+                    .build();
 
 
-
-    class ExamplePipeline extends OpenCvPipeline {
-
-        Mat YCbCr = new Mat();
-        Mat leftCrop;
-        Mat rightCrop;
-        double leftavgfin;
-        double rightavgfin;
-        Mat outPut = new Mat();
-
-        Scalar rectColor = new Scalar(0.0, 0.0, 255.0);
-
-        @Override
-        public Mat processFrame(Mat input) {
-            Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
-//1280,720
-            Rect leftRect = new Rect(200, 100, 400, 500);
-            Rect rightRect = new Rect(800, 100, 400, 500);//midile is 640
-
-            input.copyTo(outPut);
-            Imgproc.rectangle(outPut, leftRect, rectColor, 20);
-            Imgproc.rectangle(outPut, rightRect, rectColor, 20);
-
-            leftCrop = YCbCr.submat(leftRect);
-            rightCrop = YCbCr.submat(rightRect);
-
-            Core.extractChannel(leftCrop, leftCrop, 1);
-            Core.extractChannel(rightCrop, rightCrop, 1);
-
-            Scalar leftavg = Core.mean(leftCrop);
-            Scalar rightavg = Core.mean(rightCrop);
-
-            leftavgfin = leftavg.val[0];
-            rightavgfin = rightavg.val[0];
-
-     /*       telemetry.addLine("pipeline running");
-            telemetry.addData("LeftValue", leftavgfin);
-            telemetry.addData("RightValue", rightavgfin);
-*/
-            return outPut;
+            drive.followTrajectorySequence(trajectory1);
         }
     }
-
-
-
 
 
 }

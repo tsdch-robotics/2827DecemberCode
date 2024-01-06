@@ -162,30 +162,27 @@ public class TeleOp2 extends OpMode {
         }
 
         if (gamepad2.left_bumper) {
-            hang1.setTargetPosition(1250);
-            hang1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
             hang1.setPower(1);
-
-            hang2.setTargetPosition(1250);
-            hang2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             hang2.setPower(1);
+            hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
+
+        }else if (gamepad2.right_bumper) {
+
+            hang1.setPower(-1);
+            hang2.setPower(-1);
+            hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        }else{
+            hang1.setPower(0);
+            hang2.setPower(0);
+            hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         }
 
-        if (gamepad2.right_bumper) {
-            hang1.setTargetPosition(0);
-            hang1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            hang1.setPower(1);
-
-            hang2.setTargetPosition(0);
-            hang2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            hang2.setPower(1);
-
-        }
 
 
 
