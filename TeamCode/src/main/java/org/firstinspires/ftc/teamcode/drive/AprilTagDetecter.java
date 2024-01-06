@@ -39,6 +39,8 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+
+@Disabled
 /**
  * This 2023-2024 OpMode illustrates the basics of AprilTag recognition and pose estimation, using
  * the easy way.

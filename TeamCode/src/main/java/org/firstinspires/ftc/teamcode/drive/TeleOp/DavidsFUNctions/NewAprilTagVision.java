@@ -29,6 +29,7 @@ import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
 @Config
+@Disabled
 @TeleOp(name="", group="Linear OpMode")
 public class NewAprilTagVision extends LinearOpMode {
 
