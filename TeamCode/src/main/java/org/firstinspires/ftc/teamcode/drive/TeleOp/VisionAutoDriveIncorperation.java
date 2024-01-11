@@ -153,6 +153,10 @@ public class VisionAutoDriveIncorperation extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING){}
+
+
+
+
         //safty feture to ensure that the camera is streaming before continuing
         ExposureControl exposure = visionPortal.getCameraControl(ExposureControl.class);
         exposure.setMode(ExposureControl.Mode.Manual);

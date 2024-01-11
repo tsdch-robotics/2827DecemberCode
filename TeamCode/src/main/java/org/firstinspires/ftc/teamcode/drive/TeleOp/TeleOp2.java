@@ -31,6 +31,17 @@ public class TeleOp2 extends OpMode {
 //custom funcitons, used to save code space
 
     public ElapsedTime slidesTime = new ElapsedTime();
+    public ElapsedTime matchTime = new ElapsedTime();
+
+
+    moveWithBasicEncoder moveByEncoder = new moveWithBasicEncoder();
+
+    public boolean matchTimeNotStarted = true;
+    public boolean ThirtySecWarning = true;
+    public boolean FifteenSecWarning = true;
+
+    public double slow = 1;
+
     public ElapsedTime debounceTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
     private DcMotor frontLeftMotor;
@@ -104,6 +115,13 @@ public class TeleOp2 extends OpMode {
         rearRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
+        hang2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hang1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+
         // Initialize the gyro sensor
         BNO055IMU.Parameters imuParams = new BNO055IMU.Parameters();
         imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -122,6 +140,7 @@ public class TeleOp2 extends OpMode {
         slidesTime.startTime();
         debounceTime.reset();
         debounceTime.startTime();
+
         //waitForStart();
       //  runtime.reset();
 
@@ -129,6 +148,33 @@ public class TeleOp2 extends OpMode {
 
     @Override
     public void loop() {
+
+
+        if (matchTimeNotStarted){
+            matchTime.startTime();
+            matchTime.reset();
+            matchTimeNotStarted = false;
+        }else if (ThirtySecWarning && matchTime.seconds() > 90){
+ //30 seconds left
+            gamepad2.rumble(500);
+
+
+
+            ThirtySecWarning = false;
+
+        }
+        else if (FifteenSecWarning && matchTime.seconds() > 105){
+//15 seconds left
+
+
+
+            gamepad1.rumbleBlips(5);
+            gamepad2.rumbleBlips(5);
+            FifteenSecWarning = false;
+
+        }
+
+
         //telemetry
         telemetry.update();
         telemetry.addData("Position of slides", slides.getCurrentPosition());
@@ -161,30 +207,58 @@ public class TeleOp2 extends OpMode {
             finger2.setPosition(sliderMachineState.Finger2Loose);
         }
 
-        if (gamepad2.left_bumper) {
+       if (gamepad2.left_bumper) {
 
-            hang1.setPower(1);
-            hang2.setPower(1);
-            hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+           moveByEncoder.powerSlider(hang1, 4800);
+           moveByEncoder.powerSlider(hang2, 4800);
 
 
         }else if (gamepad2.right_bumper) {
 
-            hang1.setPower(-1);
-            hang2.setPower(-1);
-            hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+           moveByEncoder.powerSlider(hang1, 1500);
 
-        }else{
-            hang1.setPower(0);
-            hang2.setPower(0);
-            hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+           moveByEncoder.powerSlider(hang2, 1500);
+
+
+
+       }else if (gamepad2.b){
+
+
+           moveByEncoder.powerSlider(hang1, 0);
+           moveByEncoder.powerSlider(hang2, 0);
         }
 
 
+/*
+if (gamepad2.left_stick_y > .2 && hang1.getCurrentPosition() <= 4800 && hang2.getCurrentPosition() <= 4800) {
 
+
+           hang2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+           hang1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+           hang1.setPower(-gamepad1.left_stick_y);
+           hang2.setPower(-gamepad1.left_stick_y);
+
+       }else if (gamepad2.left_stick_y < -.2 && hang1.getCurrentPosition() >= 800 && hang2.getCurrentPosition() >= 800) {
+
+
+           hang2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+           hang1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+           hang1.setPower(-gamepad1.left_stick_y);
+           hang2.setPower(-gamepad1.left_stick_y);
+
+       }else if (gamepad2.b){
+
+           moveByEncoder.powerSlider(hang1, 0);
+           moveByEncoder.powerSlider(hang2, 0);
+       }else{
+           hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+           hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+       }
+ */
 
        /* if(gamepad1.a){
 
@@ -212,7 +286,7 @@ public class TeleOp2 extends OpMode {
        //second controller
 
 
-        if (gamepad2.left_bumper) {
+        /*if (gamepad2.left_bumper) {
             finger1.setPosition(sliderMachineState.Finger1Loose);
             //finger2.setPosition(.5);
         }
@@ -220,7 +294,7 @@ public class TeleOp2 extends OpMode {
             //  finger1.setPosition(1);
             finger2.setPosition(sliderMachineState.Finger2Loose);
         }
-
+*/
 
         if (gamepad2.dpad_down) {
 
@@ -274,12 +348,7 @@ public class TeleOp2 extends OpMode {
             slidesTime.reset();
         }
 
-        if(gamepad2.b){
 
-            exocutePos = sliderMachineState.slidePosition.RESTAB;
-            slidesTime.reset();
-            debounceTime.reset();
-        }
 //TODO fix potential issues with ellapsed tiime, as it it called in a seprate file
 
 
@@ -288,21 +357,11 @@ public class TeleOp2 extends OpMode {
 
 
 
-        if(gamepad2.left_stick_y >= 0.5){
-            int change = slides.getCurrentPosition() + 200;
-            slides.setTargetPosition(Range.clip(change, 0, 2500));
-            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            slides.setPower(Math.abs(gamepad2.left_stick_y));
+        if(gamepad1.a){
+            slow = .5;
+        }else{
+            slow = 1;
         }
-        if(gamepad2.left_stick_y <= -0.5){
-            int change = slides.getCurrentPosition() - 200;
-            slides.setTargetPosition(Range.clip(change, 0, 2500));
-            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            slides.setPower(Math.abs(gamepad2.left_stick_y));
-        }
-
 
 
 
@@ -350,10 +409,10 @@ public class TeleOp2 extends OpMode {
         rearRightPower = Range.clip(rearRightPower, -1.0, 1.0);
 
         // Set motor powers
-        frontLeftMotor.setPower(frontLeftPower);
-        frontRightMotor.setPower(frontRightPower);
-        rearLeftMotor.setPower(rearLeftPower);
-        rearRightMotor.setPower(rearRightPower);
+        frontLeftMotor.setPower(slow * frontLeftPower);
+        frontRightMotor.setPower(slow * frontRightPower);
+        rearLeftMotor.setPower(slow * rearLeftPower);
+        rearRightMotor.setPower(slow *rearRightPower);
 
         // Update telemetry and control motors
         telemetry.addData("Gyro Heading", heading);

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.BlueAutos;
+package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.RedAutos;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -66,25 +66,25 @@ public class RedLeft extends LinearOpMode {
         Mat input = new Mat();
         Mat output = new Mat();
 
-        Scalar redLower = new Scalar(0, 50, 50);
-        Scalar redUpper = new Scalar(20, 255, 255);
+        Scalar redLower = new Scalar(0, 50, 100);
+        Scalar redUpper = new Scalar(10, 255, 255);
         Scalar yellowLower = new Scalar(20, 50, 50);
         Scalar yellowUpper = new Scalar(40, 255, 255);
-        Scalar blueLower = new Scalar(90, 50, 50);
-        Scalar blueUpper = new Scalar(130, 255, 255);
+        //Scalar blueLower = new Scalar(90, 50, 50);
+        //Scalar blueUpper = new Scalar(130, 255, 255);
 
         private Rect rect1 = new Rect(50, 150, 300, 150);
         private Rect rect2 = new Rect(440, 120, 190, 180);
 
-        private int bluePixels1;
-        private int bluePixels2;
+        private int redPixels1;
+        private int redPixels2;
 
         public int getBluePixels1() {
-            return bluePixels1;
+            return redPixels1;
         }
 
         public int getBluePixels2() {
-            return bluePixels2;
+            return redPixels2;
         }
 
         public Rect getRect1() {
@@ -104,12 +104,12 @@ public class RedLeft extends LinearOpMode {
             Mat roi1 = this.input.submat(rect1);
             Mat roi2 = this.input.submat(rect2);
 
-            bluePixels1 = countBluePixels(roi1);
-            bluePixels2 = countBluePixels(roi2);
+            redPixels1 = countBluePixels(roi1);
+            redPixels2 = countBluePixels(roi2);
 
             telemetry.addData("ProcessFrame Called", true);
-            telemetry.addData("Blue Pixels in Rectangle 1", bluePixels1);
-            telemetry.addData("Blue Pixels in Rectangle 2", bluePixels2);
+            telemetry.addData("Blue Pixels in Rectangle 1", redPixels1);
+            telemetry.addData("Blue Pixels in Rectangle 2", redPixels2);
             telemetry.addData("Rectangle1 Area", rect1.area());
             telemetry.addData("Rectangle2 Area", rect2.area());
 
@@ -124,7 +124,7 @@ public class RedLeft extends LinearOpMode {
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2HSV);
 
             Mat blueMask = new Mat();
-            Core.inRange(image, blueLower, blueUpper, blueMask);
+            Core.inRange(image, redLower, redUpper, blueMask);
 
             return Core.countNonZero(blueMask);
         }
@@ -133,7 +133,7 @@ public class RedLeft extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(9, 60, Math.toRadians(-90));
+        Pose2d startPose = new Pose2d(14.5, -60, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
         drive.setPoseEstimate(startPose);
@@ -227,7 +227,7 @@ public class RedLeft extends LinearOpMode {
 
 
         if (zone == 2) {
-            telemetry.addLine("running zone 2 auto!");
+            telemetry.addLine("running zone 5 auto!");
             telemetry.update();
 
 
@@ -239,160 +239,7 @@ public class RedLeft extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
-                    .lineToSplineHeading(new Pose2d(12, 59, Math.toRadians(-90)))
-                    .lineToSplineHeading(new Pose2d(11, 29, Math.toRadians(-90)))
-
-
-                    //.lineToSplineHeading(new Pose2d(15.1, 30.1, Math.toRadians(180)))
-                    //.lineToSplineHeading(new Pose2d(9, 35, Math.toRadians(180)))
-
-                    .addTemporalMarker(() -> {flicker.setPosition(0);} )
-
-                    //.splineTo(new Vector2d(10, 40), Math.toRadians(-98))
-                    .waitSeconds(1)
-                    .lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
-                    .waitSeconds(1)
-
-                    .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, (400));
-                        arm1.setPosition(sliderMachineState.armScore);
-                        arm2.setPosition(sliderMachineState.armScore);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
-
-                    })
-
-                    .lineToSplineHeading(new Pose2d(40, 35, Math.toRadians(0)))
-                    //fast to board
-
-
-                    .addTemporalMarker(() -> {
-                        wrist.setPosition(sliderMachineState.wristScore);
-
-                    })
-
-                    .lineToSplineHeading(new Pose2d(53, 35, Math.toRadians(0)),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
-//slow board aproch
-
-                    .addTemporalMarker(() -> {
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                    })
-
-
-                    .waitSeconds(1)
-                    .setReversed(true)
-
-                    .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
-                        arm1.setPosition(sliderMachineState.armThreaten);
-                        arm2.setPosition(sliderMachineState.armThreaten);
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
-
-                    })
-
-
-                    .splineTo(new Vector2d(45, 59), Math.toRadians(90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-
-
-                    .build();
-
-            drive.followTrajectorySequence(trajectory1);
-        } else if (zone == 3) {
-            telemetry.addLine("running zone 3 auto!");
-            telemetry.update();
-
-
-            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
-
-                    .addTemporalMarker(() -> {
-                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
-                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
-                    })
-
-                    .lineToSplineHeading(new Pose2d(15, 59, Math.toRadians(-90)))
-                    .lineToSplineHeading(new Pose2d(15, 30, Math.toRadians(-90)))
-                    .lineToSplineHeading(new Pose2d(15.1, 30.1, Math.toRadians(180)))
-
-                    .lineToSplineHeading(new Pose2d(9, 35, Math.toRadians(180)))
-
-                    .addTemporalMarker(() -> {flicker.setPosition(0);} )
-
-                    //.splineTo(new Vector2d(10, 40), Math.toRadians(-98))
-                    .waitSeconds(1)
-                    .lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
-                    .waitSeconds(1)
-
-                    .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, (400));
-                        arm1.setPosition(sliderMachineState.armScore);
-                        arm2.setPosition(sliderMachineState.armScore);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
-
-                    })
-
-                    .lineToSplineHeading(new Pose2d(40, 30, Math.toRadians(0)))
-                    //fast to board
-
-
-                    .addTemporalMarker(() -> {
-                        wrist.setPosition(sliderMachineState.wristScore);
-
-                    })
-
-                    .lineToSplineHeading(new Pose2d(52, 30, Math.toRadians(0)),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
-//slow board aproch
-
-                    .addTemporalMarker(() -> {
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                    })
-
-
-                    .waitSeconds(1)
-                    .setReversed(true)
-
-                    .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
-                        arm1.setPosition(sliderMachineState.armThreaten);
-                        arm2.setPosition(sliderMachineState.armThreaten);
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
-
-                    })
-
-
-                    .splineTo(new Vector2d(45, 59), Math.toRadians(90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-
-
-                    .build();
-
-
-            drive.followTrajectorySequence(trajectory1);
-        } else {
-            telemetry.addLine("running zone 1 auto!");
-            telemetry.update();
-
-
-            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
-
-
-                    .addTemporalMarker(() -> {
-                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
-                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
-                    })
-
-                    .splineTo(new Vector2d(10, -35), Math.toRadians(130))
+                    .splineTo(new Vector2d(17, -24), Math.toRadians(90))
 
                     .waitSeconds(1)
                     .addTemporalMarker(() -> {flicker.setPosition(0);} )
@@ -421,13 +268,13 @@ public class RedLeft extends LinearOpMode {
 
                     })
 
-                    .lineToSplineHeading(new Pose2d(49, -32, Math.toRadians(0)),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                    .lineToSplineHeading(new Pose2d(51, -25, Math.toRadians(0)),
+                            SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
 
 
-
+                    .waitSeconds(1)
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
                         finger2.setPosition(sliderMachineState.Finger2Loose);
@@ -441,7 +288,169 @@ public class RedLeft extends LinearOpMode {
 
                     // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(45, -59), Math.toRadians(90),
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                    .addTemporalMarker(() -> {
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .waitSeconds(1)
+                    .build();
+
+            drive.followTrajectorySequence(trajectory1);
+        } else if (zone == 3) {
+            telemetry.addLine("running zone 6 auto!");
+            telemetry.update();
+
+
+            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                    })
+
+
+
+                    .lineTo(new Vector2d(18, -50))
+
+                    .lineToSplineHeading(new Pose2d(17.5, -40, Math.toRadians(20)))
+
+
+                    .waitSeconds(1)
+                    .addTemporalMarker(() -> {flicker.setPosition(0);} )
+
+
+                    .waitSeconds(1)
+
+
+                    .lineToSplineHeading(new Pose2d(15, -45, Math.toRadians(90)))
+
+                    .addTemporalMarker(() -> {
+                        moveByEncoder.powerSlider(slides, (400));
+                        arm1.setPosition(sliderMachineState.armScore);
+                        arm2.setPosition(sliderMachineState.armScore);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(40, -42, Math.toRadians(0)))
+
+                    //fast to board
+
+
+                    .addTemporalMarker(() -> {
+                        wrist.setPosition(sliderMachineState.wristScore);
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(50, -42, Math.toRadians(0)),
+                            SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
+//slow board aproch
+
+
+                    .waitSeconds(1)
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                    })
+
+
+                    .waitSeconds(1)
+                    .setReversed(true)
+
+
+
+                    // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
+
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                    .addTemporalMarker(() -> {
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .waitSeconds(1)
+
+                    .build();
+
+
+            drive.followTrajectorySequence(trajectory1);
+        } else {
+            telemetry.addLine("running zone 4 auto!");
+            telemetry.update();
+
+
+            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+
+
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                    })
+
+                    .splineTo(new Vector2d(9, -34), Math.toRadians(130))
+
+                    .waitSeconds(1)
+                    .addTemporalMarker(() -> {flicker.setPosition(0);} )
+
+
+                    .waitSeconds(1)
+
+
+                    .lineToSplineHeading(new Pose2d(15, -45, Math.toRadians(90)))
+
+                    .addTemporalMarker(() -> {
+                        moveByEncoder.powerSlider(slides, (400));
+                        arm1.setPosition(sliderMachineState.armScore);
+                        arm2.setPosition(sliderMachineState.armScore);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(40, -32, Math.toRadians(0)))
+
+                    //fast to board
+
+
+                    .addTemporalMarker(() -> {
+                        wrist.setPosition(sliderMachineState.wristScore);
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(51, -31, Math.toRadians(0)),
+                            SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
+//slow board aproch
+
+
+                    .waitSeconds(1)
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                    })
+
+
+                    .waitSeconds(1)
+                    .setReversed(true)
+
+
+
+                    // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
+
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                     .addTemporalMarker(() -> {
