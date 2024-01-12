@@ -13,11 +13,6 @@ public class Halt {
             // Handle the case where time is null (log an error, throw an exception, or any other appropriate action)
             return false;
         }else {
-           /* if(startingHalt) {
-                time.reset();
-                startingHalt = false;
-            }*/
-            // Perform background tasks here while waiting
             if (time.milliseconds() < millis) {
                 return false;
             } else {

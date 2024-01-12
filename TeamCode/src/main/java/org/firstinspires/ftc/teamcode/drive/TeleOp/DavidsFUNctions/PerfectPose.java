@@ -28,7 +28,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
-@Disabled
+//@Disabled
 @TeleOp(name = "PerfectPose", group = "TeleOp")
 public class PerfectPose extends OpMode {
 
@@ -49,12 +49,17 @@ public class PerfectPose extends OpMode {
 
     private Servo finger2;
 
+    private Servo paperAirplane;
+
 
     public static double currentFinger1 = .5;//servo pos
     public static double currentFinger2 = .5;//servo pos
 
-    public static double currentWrist = .5;//servo pos
-    public static double currentArm = 0;//servo pos
+    public static double currentWrist = 0.8;//servo pos//.3 and .75
+    public static double currentArm = 0.16;//servo p
+
+    public static double currentPaper = 0.58;
+
     //public static double currentArm2 = .5;
 
 
@@ -81,6 +86,10 @@ public class PerfectPose extends OpMode {
         finger1 = hardwareMap.servo.get("finger1");
         finger2 = hardwareMap.servo.get("finger2");
 
+        paperAirplane = hardwareMap.servo.get("paperAirplane");
+
+
+
         arm1.setDirection(Servo.Direction.REVERSE);
 
         frontLeftMotor = hardwareMap.dcMotor.get("FL");
@@ -90,8 +99,9 @@ public class PerfectPose extends OpMode {
 
         intake = hardwareMap.dcMotor.get("intake");
         slides = hardwareMap.dcMotor.get("slides");
-        slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
 
@@ -103,8 +113,9 @@ public class PerfectPose extends OpMode {
         arm1.setPosition(currentArm);
         arm2.setPosition(currentArm);
         wrist.setPosition(currentWrist);
-        finger1.setPosition(currentFinger1);
-        finger2.setPosition(currentFinger2);
+        paperAirplane.setPosition(currentPaper);
+        //finger1.setPosition(currentFinger1);
+        //finger2.setPosition(currentFinger2);
 
         //telemetry
         telemetry.update();

@@ -1,5 +1,6 @@
 
 package org.firstinspires.ftc.teamcode.drive.TeleOp;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -12,8 +13,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.PIDclass;
+import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.PIDhangClass;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
-import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
 
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.Halt;
 
@@ -25,22 +27,41 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
+@Config
 @TeleOp(name = "TeleOp2", group = "TeleOp")
 public class TeleOp2 extends OpMode {
 
 //custom funcitons, used to save code space
 
-    public ElapsedTime slidesTime = new ElapsedTime();
+    public ElapsedTime scoreWaitingTime = new ElapsedTime();
+
+    public ElapsedTime hang1Time = new ElapsedTime();
+    public ElapsedTime hang2Time = new ElapsedTime();
+
+
+    public ElapsedTime sliderTime = new ElapsedTime();
+
     public ElapsedTime matchTime = new ElapsedTime();
 
+    PIDhangClass hangPID = new PIDhangClass();
 
-    moveWithBasicEncoder moveByEncoder = new moveWithBasicEncoder();
+    public static int top = 4500;
+    public static int bottom = 800;
+
+
 
     public boolean matchTimeNotStarted = true;
     public boolean ThirtySecWarning = true;
     public boolean FifteenSecWarning = true;
 
+
+    public int hangTargetPos = 0;
+
+    private Servo paperAirplane;
+
+
     public double slow = 1;
+
 
     public ElapsedTime debounceTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
@@ -95,8 +116,14 @@ public class TeleOp2 extends OpMode {
         rearRightMotor = hardwareMap.dcMotor.get("BR");
         intake = hardwareMap.dcMotor.get("intake");
         slides = hardwareMap.dcMotor.get("slides");
-        slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+        paperAirplane = hardwareMap.servo.get("paperAirplane");
+
 
 
         hang1 = hardwareMap.dcMotor.get("hang1");
@@ -115,11 +142,14 @@ public class TeleOp2 extends OpMode {
         rearRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        hang2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hang1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //hang2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //hang1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        hang2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hang2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hang1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hang1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
 
         // Initialize the gyro sensor
@@ -136,10 +166,22 @@ public class TeleOp2 extends OpMode {
         //  IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
         //          LOGO_FACING_DIR, USB_FACING_DIR));
         //  imu.initialize(parameters);//todo; delete this comment
-        slidesTime.reset();
-        slidesTime.startTime();
+        scoreWaitingTime.reset();
+        scoreWaitingTime.startTime();
+
+        sliderTime.reset();
+        sliderTime.startTime();
+
+        hang1Time.reset();
+        hang1Time.startTime();
+        hang2Time.reset();
+        hang2Time.startTime();
+
         debounceTime.reset();
         debounceTime.startTime();
+
+
+        paperAirplane.setPosition(0.58);
 
         //waitForStart();
       //  runtime.reset();
@@ -150,45 +192,24 @@ public class TeleOp2 extends OpMode {
     public void loop() {
 
 
-        if (matchTimeNotStarted){
-            matchTime.startTime();
-            matchTime.reset();
-            matchTimeNotStarted = false;
-        }else if (ThirtySecWarning && matchTime.seconds() > 90){
- //30 seconds left
-            gamepad2.rumble(500);
-
-
-
-            ThirtySecWarning = false;
-
-        }
-        else if (FifteenSecWarning && matchTime.seconds() > 105){
-//15 seconds left
-
-
-
-            gamepad1.rumbleBlips(5);
-            gamepad2.rumbleBlips(5);
-            FifteenSecWarning = false;
-
-        }
-
-
         //telemetry
         telemetry.update();
-        telemetry.addData("Position of slides", slides.getCurrentPosition());
+        //telemetry.addData("Position of slides", slides.getCurrentPosition());
         telemetry.addData("Position of arm1", arm1.getPosition());
         telemetry.addData("Position of arm2", arm2.getPosition());
-        telemetry.addData("Position of finger1", finger1.getPosition());
-        telemetry.addData("Position of finger2", finger2.getPosition());
+        //telemetry.addData("Position of finger1", finger1.getPosition());
+        //telemetry.addData("Position of finger2", finger2.getPosition());
         telemetry.addData("Position of wrist", wrist.getPosition());
+        telemetry.addData("exocute pos", exocutePos);
+        telemetry.addData("preload pos", preloadPos);
+
+
 
         telemetry.addData("hang1", hang1.getCurrentPosition());
         telemetry.addData("hang2", hang2.getCurrentPosition());
 
-        telemetry.addData("Preload state", preloadPos);
-        telemetry.addData("debounce time", debounceTime);
+        telemetry.addData("debounce time", debounceTime.milliseconds());
+        telemetry.addData("scoreWaitingTime", scoreWaitingTime.milliseconds());
 
 
 
@@ -207,68 +228,20 @@ public class TeleOp2 extends OpMode {
             finger2.setPosition(sliderMachineState.Finger2Loose);
         }
 
-       if (gamepad2.left_bumper) {
-
-
-           moveByEncoder.powerSlider(hang1, 4800);
-           moveByEncoder.powerSlider(hang2, 4800);
-
-
-        }else if (gamepad2.right_bumper) {
-
-           moveByEncoder.powerSlider(hang1, 1500);
-
-           moveByEncoder.powerSlider(hang2, 1500);
 
 
 
-       }else if (gamepad2.b){
 
-
-           moveByEncoder.powerSlider(hang1, 0);
-           moveByEncoder.powerSlider(hang2, 0);
-        }
-
-
-/*
-if (gamepad2.left_stick_y > .2 && hang1.getCurrentPosition() <= 4800 && hang2.getCurrentPosition() <= 4800) {
-
-
-           hang2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-           hang1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
-           hang1.setPower(-gamepad1.left_stick_y);
-           hang2.setPower(-gamepad1.left_stick_y);
-
-       }else if (gamepad2.left_stick_y < -.2 && hang1.getCurrentPosition() >= 800 && hang2.getCurrentPosition() >= 800) {
-
-
-           hang2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-           hang1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-           hang1.setPower(-gamepad1.left_stick_y);
-           hang2.setPower(-gamepad1.left_stick_y);
-
-       }else if (gamepad2.b){
-
-           moveByEncoder.powerSlider(hang1, 0);
-           moveByEncoder.powerSlider(hang2, 0);
-       }else{
-           hang1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-           hang2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-       }
- */
 
        /* if(gamepad1.a){
 
             exocutePos = sliderMachineState.slidePosition.STAB;
-            slidesTime.reset();
+            scoreWaitingTime.reset();
         }*/
         if(gamepad1.b){
 
             exocutePos = sliderMachineState.slidePosition.THREATEN;
-            slidesTime.reset();
+            scoreWaitingTime.reset();
         }
 //TODO fix potential issues with ellapsed tiime, as it it called in a seprate file
 
@@ -286,20 +259,10 @@ if (gamepad2.left_stick_y > .2 && hang1.getCurrentPosition() <= 4800 && hang2.ge
        //second controller
 
 
-        /*if (gamepad2.left_bumper) {
-            finger1.setPosition(sliderMachineState.Finger1Loose);
-            //finger2.setPosition(.5);
-        }
-        if (gamepad2.right_bumper) {
-            //  finger1.setPosition(1);
-            finger2.setPosition(sliderMachineState.Finger2Loose);
-        }
-*/
-
         if (gamepad2.dpad_down) {
 
             preloadPos = sliderMachineState.slidePosition.LOW;
-            //gamepad1.rumble(1000);
+
 
         }
         if (gamepad2.dpad_left) {
@@ -319,33 +282,33 @@ if (gamepad2.left_stick_y > .2 && hang1.getCurrentPosition() <= 4800 && hang2.ge
         //exocute pos
         if(gamepad2.y){
             exocutePos = preloadPos;
-            slidesTime.reset();
+            scoreWaitingTime.reset();
         }
 //stab
         if(gamepad2.a && exocutePos == sliderMachineState.slidePosition.THREATEN && debounceTime.milliseconds() > 500){
 
 
             exocutePos = sliderMachineState.slidePosition.STAB;
-            slidesTime.reset();
+            scoreWaitingTime.reset();
             debounceTime.reset();
         }
         if(gamepad2.a && (exocutePos == sliderMachineState.slidePosition.STAB || exocutePos == sliderMachineState.slidePosition.STABAFTERSTAB) && debounceTime.milliseconds() > 500){
 
             exocutePos = sliderMachineState.slidePosition.RESTAB;
-            slidesTime.reset();
+            scoreWaitingTime.reset();
             debounceTime.reset();
         }
         if(gamepad2.a && exocutePos == sliderMachineState.slidePosition.RESTAB && debounceTime.milliseconds() > 500){
 
             exocutePos = sliderMachineState.slidePosition.STABAFTERSTAB;
-            slidesTime.reset();
+            scoreWaitingTime.reset();
             debounceTime.reset();
         }
 
         if(gamepad2.x){
 
             exocutePos = sliderMachineState.slidePosition.THREATEN;
-            slidesTime.reset();
+            scoreWaitingTime.reset();
         }
 
 
@@ -354,23 +317,38 @@ if (gamepad2.left_stick_y > .2 && hang1.getCurrentPosition() <= 4800 && hang2.ge
 
         //intake code
 
-
-
-
         if(gamepad1.a){
             slow = .5;
         }else{
             slow = 1;
         }
 
+//hang
+
+
+
+        if (gamepad2.b){
+
+            paperAirplane.setPosition(0);
+
+        }
+
+        hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 100 * (float) -gamepad2.left_stick_y));
+
+
+        hangPID.magicPID(hang1, hangTargetPos, hang1Time);
+        hangPID.magicPID(hang2, hangTargetPos, hang2Time);
+
+
 
 
 
 
 //power slides
-        if(Math.abs(gamepad2.left_stick_y) < .5) {
-            executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, exocutePos, slidesTime, false);
-        }
+
+        executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2,
+                exocutePos, scoreWaitingTime, sliderTime, false);
+
 
 //Drive Code
         double drive = gamepad1.left_stick_y;
@@ -416,7 +394,7 @@ if (gamepad2.left_stick_y > .2 && hang1.getCurrentPosition() <= 4800 && hang2.ge
 
         // Update telemetry and control motors
         telemetry.addData("Gyro Heading", heading);
-        telemetry.addData("slidesTime %2d", slidesTime.time());
+        telemetry.addData("slidesTime %2d", sliderTime.time());
         telemetry.update();
 
     }
@@ -436,4 +414,6 @@ if (gamepad2.left_stick_y > .2 && hang1.getCurrentPosition() <= 4800 && hang2.ge
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // Optional: Load a calibration file if available
         imu.initialize(parameters);
     }
+
+
 }
