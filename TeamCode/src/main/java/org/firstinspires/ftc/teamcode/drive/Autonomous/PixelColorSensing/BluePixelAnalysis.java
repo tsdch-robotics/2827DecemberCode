@@ -25,8 +25,17 @@ public class BluePixelAnalysis extends OpMode {
     public double targetPixPercent1 = 0.5;
     public double targetPixPercent2 = 0.5;
 
+    public int numberOfRuns = 0;
+
+    Mat blueMask = new Mat();
+
     @Override
     public void init() {
+
+        telemetry.addLine("THe init has begun!");
+        telemetry.update();
+
+
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
                 .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -38,24 +47,26 @@ public class BluePixelAnalysis extends OpMode {
             @Override
             public void onOpened() {
                 webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+                telemetry.addLine("The camera has started streaming");
             }
 
             @Override
             public void onError(int errorCode) {
-                // Handle error if needed
+                // Handle error if needed      ????
             }
         });
     }
 
     @Override
     public void loop() {
-        // Your logic in the main loop (if needed)
+
     }
 
     class ColorAnalysisPipeline extends OpenCvPipeline {
 
         Mat input = new Mat();
         Mat output = new Mat();
+
 
         /*Scalar redLower = new Scalar(0, 0, 100);
          * Scalar redUpper = new Scalar(50, 50, 255);
@@ -75,6 +86,10 @@ public class BluePixelAnalysis extends OpMode {
 
         @Override
         public Mat processFrame(Mat input) {
+
+            numberOfRuns = numberOfRuns + 1;
+
+
             input.copyTo(this.input);
 
             // Display the original image for debugging
@@ -98,6 +113,8 @@ public class BluePixelAnalysis extends OpMode {
             telemetry.addData("Blue Pixels in Rectangle 2", bluePixels2);
             telemetry.addData("Rectangle1 Area", rect1.area());
             telemetry.addData("Rectangle2 Area", rect2.area());
+            telemetry.addData("Number of Runs", numberOfRuns);
+            telemetry.update();
 
 
             //Compute target percents and determen if met
@@ -113,10 +130,16 @@ public class BluePixelAnalysis extends OpMode {
 
             if(bluePixels1 > bluePixels2 && greaterThanTargetPercentBluePixels1){
                 telemetry.addLine("Middle");
+                telemetry.addData("Number of Runs", numberOfRuns);
+                telemetry.update();
             }else if(bluePixels1 < bluePixels2 && greaterThanTargetPercentBluePixels2){
                 telemetry.addLine("Right");
+                telemetry.addData("Number of Runs", numberOfRuns);
+                telemetry.update();
             }else{
                 telemetry.addLine("Left");
+                telemetry.addData("Number of Runs", numberOfRuns);
+                telemetry.update();
             }
 
 
@@ -136,7 +159,7 @@ public class BluePixelAnalysis extends OpMode {
             Scalar blueUpper = new Scalar(130, 255, 255);
 
             // Create a mask for blue pixels
-            Mat blueMask = new Mat();
+            //Mat blueMask = new Mat();
             Core.inRange(image, blueLower, blueUpper, blueMask);
 
             // Count the number of blue pixels

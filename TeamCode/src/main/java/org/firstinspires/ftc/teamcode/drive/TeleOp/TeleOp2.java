@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.PIDclass;
@@ -33,6 +35,8 @@ public class TeleOp2 extends OpMode {
 
 //custom funcitons, used to save code space
 
+    TouchSensor touchSensor;
+
     public ElapsedTime scoreWaitingTime = new ElapsedTime();
 
     public ElapsedTime hang1Time = new ElapsedTime();
@@ -47,8 +51,6 @@ public class TeleOp2 extends OpMode {
 
     public static int top = 4500;
     public static int bottom = 800;
-
-
 
     public boolean matchTimeNotStarted = true;
     public boolean ThirtySecWarning = true;
@@ -124,10 +126,14 @@ public class TeleOp2 extends OpMode {
 
         paperAirplane = hardwareMap.servo.get("paperAirplane");
 
+        touchSensor = hardwareMap.get(TouchSensor.class, "touch");
+
 
 
         hang1 = hardwareMap.dcMotor.get("hang1");
         hang2 = hardwareMap.dcMotor.get("hang2");
+
+
 
         hang2.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -194,7 +200,7 @@ public class TeleOp2 extends OpMode {
 
         //telemetry
         telemetry.update();
-        //telemetry.addData("Position of slides", slides.getCurrentPosition());
+        telemetry.addData("Position of slides", slides.getCurrentPosition());
         telemetry.addData("Position of arm1", arm1.getPosition());
         telemetry.addData("Position of arm2", arm2.getPosition());
         //telemetry.addData("Position of finger1", finger1.getPosition());
@@ -202,6 +208,13 @@ public class TeleOp2 extends OpMode {
         telemetry.addData("Position of wrist", wrist.getPosition());
         telemetry.addData("exocute pos", exocutePos);
         telemetry.addData("preload pos", preloadPos);
+
+
+        if(touchSensor.isPressed()){
+            telemetry.addLine("Touchsensor is pressed");
+        }else{
+            telemetry.addLine("Touchsensor is not pressed");
+        }
 
 
 
@@ -347,7 +360,7 @@ public class TeleOp2 extends OpMode {
 //power slides
 
         executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2,
-                exocutePos, scoreWaitingTime, sliderTime, false);
+                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false);
 
 
 //Drive Code

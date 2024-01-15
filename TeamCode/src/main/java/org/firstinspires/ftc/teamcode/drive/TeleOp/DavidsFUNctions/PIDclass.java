@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 
 public class PIDclass  {
+
+    Halt halt = new Halt();
 
     public double slideKp = 0.02;
     public double slideKi = 0;
@@ -46,6 +49,19 @@ public class PIDclass  {
         slideLastError = error;
 
         timer.reset();
+
+    }
+    public void zero(DcMotor slide, ElapsedTime tima, TouchSensor touchy) {
+
+        if(touchy.isPressed()){
+            slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            slide.setPower(-0.1);
+
+        }else{
+            slide.setPower(-1);
+        }
 
     }
 }

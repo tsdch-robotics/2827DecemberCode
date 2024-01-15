@@ -114,8 +114,8 @@ public class PerfectPose extends OpMode {
         arm2.setPosition(currentArm);
         wrist.setPosition(currentWrist);
         paperAirplane.setPosition(currentPaper);
-        //finger1.setPosition(currentFinger1);
-        //finger2.setPosition(currentFinger2);
+        finger1.setPosition(currentFinger1);
+        finger2.setPosition(currentFinger2);
 
         //telemetry
         telemetry.update();

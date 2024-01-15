@@ -4,6 +4,7 @@ import android.transition.Slide;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
@@ -39,26 +40,26 @@ public class sliderMachineState {
     public static int ReallyHIGHpos = 2500;
     //todo adjust these values
 
-    public static double stabFinger1Tight = 1;//servo pos
+    public static double stabFinger1Tight = 0.82;//servo pos
     public static double stabFinger2Tight = .58;//servo pos
 
-    public static double Finger1Loose = 0.6;//servo pos
+    public static double Finger1Loose = 0.5;//servo pos
     public static double Finger2Loose = 0.51;//servo pos
 
-    public static double wristThreaten = .8;//servo pos
-    public static double wristStab = 0.63;//servo pos
+    public static double wristThreaten = .6;//servo pos
+    public static double wristStab = 0.44;//servo pos
     public static double wristScore = 0.3;//servo pos
 
-    public static double armThreaten = 0.16;//servo pos
+    public static double armThreaten = 0.2;//servo pos
     public static double armStab = 0.05;//servo pos
-    public static double armScore = .92;//servo pos
+    public static double armScore = .99;//servo pos
 
 
 
 
     public void magicalMacro (DcMotor slider, Servo arm1, Servo arm2,
                               Servo wrist, Servo stabberLeft,
-                              Servo stabberRight, slidePosition targetMachineState, ElapsedTime HaltTime, ElapsedTime PIDtime, boolean auto){
+                              Servo stabberRight, slidePosition targetMachineState, ElapsedTime HaltTime, ElapsedTime PIDtime, TouchSensor toucher, boolean auto){
 
 
         if (HaltTime == null || PIDtime == null) {
@@ -73,9 +74,8 @@ public class sliderMachineState {
                     stabberLeft.setPosition(Finger1Loose);
                     stabberRight.setPosition(Finger2Loose);
 
-
-                    slidesPID.magicPID(slider, THREATENINGpos, PIDtime);
-
+                    slidesPID.zero(slider, HaltTime, toucher);
+                    //slidesPID.magicPID(slider, THREATENINGpos, PIDtime);
 
                     wrist.setPosition(wristThreaten);
                     arm1.setPosition(armThreaten);
