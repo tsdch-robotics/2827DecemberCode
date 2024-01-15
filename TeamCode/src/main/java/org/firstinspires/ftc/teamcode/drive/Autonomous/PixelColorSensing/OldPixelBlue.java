@@ -15,7 +15,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous
-public class BluePixelAnalysis extends OpMode {
+public class OldPixelBlue extends OpMode {
 
 
 
@@ -44,7 +44,7 @@ public class BluePixelAnalysis extends OpMode {
         webcam.openCameraDeviceAsync(new OpenCvWebcam.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -66,6 +66,8 @@ public class BluePixelAnalysis extends OpMode {
         Mat roi2 = new Mat();
 
 
+        public boolean firstTime = true;
+
         Mat blueMask = new Mat();
 
         Mat inputMat = new Mat();
@@ -75,30 +77,35 @@ public class BluePixelAnalysis extends OpMode {
         Scalar blueUpper = new Scalar(130, 255, 255);  // Upper bound for blue
 
 
+        Rect rect1 = new Rect(50, 150, 250, 300);
+        Rect rect2 = new Rect(350, 150, 250, 300);
+
+
         @Override
         public Mat processFrame(Mat input) {
 
 
+            output.release();
+            inputMat.release();
+
+
+            //firstTime = false;
+
 //clear mat
-            //inputMat.release();
-            //output.release();
-            //roi1.release();
-            //roi2.release();
 
-
-          //  input.copyTo(this.inputMat);
+            input.copyTo(this.inputMat);
 
             // Display the original image for debugging
-        //    this.inputMat.copyTo(this.output);
+            this.inputMat.copyTo(this.output);// include?
 
             // Define two rectangles for blue pixel analysis
-            Rect rect1 = new Rect(50, 150, 250, 300);
-            Rect rect2 = new Rect(350, 150, 250, 300);
 
 
             // Extract the regions of interest
             roi1 = this.inputMat.submat(rect1);
             roi2 = this.inputMat.submat(rect2);
+
+
             // Count the number of blue pixels in each rectangle
             int bluePixels1 = countBluePixels(roi1);
             int bluePixels2 = countBluePixels(roi2);
@@ -132,6 +139,7 @@ public class BluePixelAnalysis extends OpMode {
             }
 
 
+
             // Draw rectangles on the output frame for visualization
             Imgproc.rectangle(this.output, rect1, new Scalar(255, 0, 0), 2); // Blue for rectangle 1
             Imgproc.rectangle(this.output, rect2, new Scalar(255, 0, 0), 2); // Blue for rectangle 2
@@ -140,7 +148,14 @@ public class BluePixelAnalysis extends OpMode {
             //Clear the mat after it has bean used
 
 
-            return this.output;
+
+                //inputMat.release();
+            roi1.release();
+            roi2.release();
+
+
+           // return this.inputMat;//was output
+            return this.output;//was output
 
 
             //Clear the mat after it has bean used
@@ -153,6 +168,10 @@ public class BluePixelAnalysis extends OpMode {
 
         private int countBluePixels(Mat image) {
             // Convert the image to HSV color space
+
+            //blueMask.release();
+
+
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2HSV);
 
             // Define the blue color range

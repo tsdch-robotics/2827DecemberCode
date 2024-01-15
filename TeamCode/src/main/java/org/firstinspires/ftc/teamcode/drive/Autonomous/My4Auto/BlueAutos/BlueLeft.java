@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.BlueAutos;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,11 +8,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -27,8 +22,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
-@Autonomous(group = "drive")
-public class TestAutoCameraBlueLeft extends LinearOpMode {
+@Autonomous(group = "drive", preselectTeleOp = "TeleOp2")
+public class BlueLeft extends LinearOpMode {
 
     public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
@@ -63,11 +58,19 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
 
     class ColorAnalysisPipeline extends OpenCvPipeline {
 
+        Mat roi1 = new Mat();
+        Mat roi2 = new Mat();
 
 
-        Mat input = new Mat();
-        Mat output = new Mat();
+        public boolean firstTime = true;
+
         Mat blueMask = new Mat();
+
+        Mat inputMat = new Mat();
+        Mat output = new Mat();
+
+
+
 
         Scalar redLower = new Scalar(0, 50, 50);
         Scalar redUpper = new Scalar(20, 255, 255);
@@ -101,18 +104,18 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
         @Override
         public Mat processFrame(Mat input) {
 
-            this.input = input;
 
-            input.copyTo(this.input);
-
-            this.input.copyTo(this.output);
-
-            Mat roi1 = this.input.submat(rect1);
-            Mat roi2 = this.input.submat(rect2);
+            output.release();
+            inputMat.release();
 
 
-           // Mat roi1 = this.input.submat(rect1); // Changed: Reuse 'input' instead of creating a new Mat
-           // Mat roi2 = this.input.submat(rect2); // Changed: Reuse 'input' instead of creating a new Mat
+            input.copyTo(this.inputMat);
+
+            this.inputMat.copyTo(this.output);
+
+            roi1 = this.inputMat.submat(rect1);
+            roi2 = this.inputMat.submat(rect2);
+
 
 
             bluePixels1 = countBluePixels(roi1);
@@ -126,6 +129,10 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
 
             Imgproc.rectangle(this.output, rect1, new Scalar(255, 0, 0), 2);
             Imgproc.rectangle(this.output, rect2, new Scalar(255, 0, 0), 2);
+
+
+            roi1.release();
+            roi2.release();
 
             return this.output;
         }
@@ -143,18 +150,33 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+
+
+
+
+        /*SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(9, 60, Math.toRadians(-90));
         drive.setPoseEstimate(startPose);
 
         drive.setPoseEstimate(startPose);
+*/
+
+
+
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
                 .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        slides = hardwareMap.dcMotor.get("slides");
+
+
+
+
+
+
+       /* slides = hardwareMap.dcMotor.get("slides");
         slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -166,6 +188,11 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
         flicker = hardwareMap.servo.get("flicker");
 
         arm1.setDirection(Servo.Direction.REVERSE);
+*/
+
+
+
+
 
         colorAnalysisPipeline = new ColorAnalysisPipeline();
         webcam1.setPipeline(colorAnalysisPipeline);
@@ -180,7 +207,12 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
 
             }
         });
+
+
         telemetry.addLine("Waiting to start");
+
+        telemetry.addData("BluePixels1", colorAnalysisPipeline.getBluePixels1());
+        telemetry.addData("BluePixels1", colorAnalysisPipeline.getBluePixels2());
         telemetry.update();
 
 
@@ -190,9 +222,10 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
         telemetry.addLine("started");
         telemetry.update();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 500; i++) {
             telemetry.addLine("Measuring Camera stream");
             telemetry.addData("totalLeft", totalLeft);
+            telemetry.addData("totalLeft", totalRight);
             telemetry.update();
 
             // Process frames and accumulate color values
@@ -200,7 +233,7 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
             totalRight += colorAnalysisPipeline.getBluePixels2();
 
             frameCount = frameCount + 1;
-            //sleep(0);
+            sleep(0);
         }
 
         webcam1.stopStreaming();//may want to remove
@@ -240,7 +273,10 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
             telemetry.update();
 
 
-            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+
+
+
+          /*  TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
 
                     .addTemporalMarker(() -> {
@@ -262,22 +298,13 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
                     .waitSeconds(1)
 
-                    /*.addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, (400));
-                        arm1.setPosition(sliderMachineState.armScore);
-                        arm2.setPosition(sliderMachineState.armScore);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
 
-                    })*/
 
                     .lineToSplineHeading(new Pose2d(40, 35, Math.toRadians(0)))
                     //fast to board
 
 
-                   /* .addTemporalMarker(() -> {
-                        wrist.setPosition(sliderMachineState.wristScore);
 
-                    })*/
 
                     .lineToSplineHeading(new Pose2d(53, 35, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
@@ -293,15 +320,7 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
                     .waitSeconds(1)
                     .setReversed(true)
 
-                   /* .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
-                        arm1.setPosition(sliderMachineState.armThreaten);
-                        arm2.setPosition(sliderMachineState.armThreaten);
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
 
-                    })*/
 
 
                     .splineTo(new Vector2d(45, 59), Math.toRadians(90),
@@ -311,11 +330,13 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
 
                     .build();
 
-            drive.followTrajectorySequence(trajectory1);
+            drive.followTrajectorySequence(trajectory1);*/
         } else if (zone == 3) {
             telemetry.addLine("running zone 3 auto!");
             telemetry.update();
 
+
+/*
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
@@ -337,22 +358,12 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
                     .waitSeconds(1)
 
-                    /*.addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, (400));
-                        arm1.setPosition(sliderMachineState.armScore);
-                        arm2.setPosition(sliderMachineState.armScore);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
 
-                    })
-*/
                     .lineToSplineHeading(new Pose2d(40, 30, Math.toRadians(0)))
                     //fast to board
 
 
-                   /* .addTemporalMarker(() -> {
-                        wrist.setPosition(sliderMachineState.wristScore);
 
-                    })*/
 
                     .lineToSplineHeading(new Pose2d(52, 30, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
@@ -367,16 +378,8 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
 
                     .waitSeconds(1)
                     .setReversed(true)
-/*
-                    .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
-                        arm1.setPosition(sliderMachineState.armThreaten);
-                        arm2.setPosition(sliderMachineState.armThreaten);
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
 
-                    })*/
+
 
 
                     .splineTo(new Vector2d(45, 59), Math.toRadians(90),
@@ -387,12 +390,14 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
                     .build();
 
 
-            drive.followTrajectorySequence(trajectory1);
+            drive.followTrajectorySequence(trajectory1);*/
         } else {
             telemetry.addLine("running zone 1 auto!");
             telemetry.update();
 
 
+
+            /*
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
 
@@ -417,22 +422,13 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(11, 38, Math.toRadians(0)))
 
 
-                  /*  .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, (400));
-                        arm1.setPosition(sliderMachineState.armScore);
-                        arm2.setPosition(sliderMachineState.armScore);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
 
-                    })*/
 
                     .lineToSplineHeading(new Pose2d(40, 40, Math.toRadians(0)))
                     //fast to board
 
 
-                   /* .addTemporalMarker(() -> {
-                        wrist.setPosition(sliderMachineState.wristScore);
 
-                    })*/
 
                     .lineToSplineHeading(new Pose2d(49, 40, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
@@ -457,21 +453,13 @@ public class TestAutoCameraBlueLeft extends LinearOpMode {
                     .splineTo(new Vector2d(45, 59), Math.toRadians(90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                  /*  .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
-                        arm1.setPosition(sliderMachineState.armThreaten);
-                        arm2.setPosition(sliderMachineState.armThreaten);
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
 
-                    })*/
                     .waitSeconds(1)
 
                     .build();
 
 
-            drive.followTrajectorySequence(trajectory1);
+            drive.followTrajectorySequence(trajectory1);*/
         }
     }
 
