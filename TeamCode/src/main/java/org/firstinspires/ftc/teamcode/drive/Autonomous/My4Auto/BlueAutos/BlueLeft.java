@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.BlueAutos;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.drive.Drive;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,8 +11,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -153,14 +159,12 @@ public class BlueLeft extends LinearOpMode {
 
 
 
-
-
-        /*SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(9, 60, Math.toRadians(-90));
         drive.setPoseEstimate(startPose);
 
         drive.setPoseEstimate(startPose);
-*/
+
 
 
 
@@ -176,7 +180,7 @@ public class BlueLeft extends LinearOpMode {
 
 
 
-       /* slides = hardwareMap.dcMotor.get("slides");
+        slides = hardwareMap.dcMotor.get("slides");
         slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -188,7 +192,7 @@ public class BlueLeft extends LinearOpMode {
         flicker = hardwareMap.servo.get("flicker");
 
         arm1.setDirection(Servo.Direction.REVERSE);
-*/
+
 
 
 
@@ -276,7 +280,7 @@ public class BlueLeft extends LinearOpMode {
 
 
 
-          /*  TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
 
                     .addTemporalMarker(() -> {
@@ -330,13 +334,15 @@ public class BlueLeft extends LinearOpMode {
 
                     .build();
 
-            drive.followTrajectorySequence(trajectory1);*/
+            drive.followTrajectorySequence(trajectory1);
+
+
         } else if (zone == 3) {
             telemetry.addLine("running zone 3 auto!");
             telemetry.update();
 
 
-/*
+
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
@@ -390,14 +396,14 @@ public class BlueLeft extends LinearOpMode {
                     .build();
 
 
-            drive.followTrajectorySequence(trajectory1);*/
+            drive.followTrajectorySequence(trajectory1);
         } else {
             telemetry.addLine("running zone 1 auto!");
             telemetry.update();
 
 
 
-            /*
+
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
 
@@ -459,7 +465,7 @@ public class BlueLeft extends LinearOpMode {
                     .build();
 
 
-            drive.followTrajectorySequence(trajectory1);*/
+            drive.followTrajectorySequence(trajectory1);
         }
     }
 
