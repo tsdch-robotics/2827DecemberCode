@@ -40,8 +40,8 @@ public class DriveConstants {
      */
     public static final boolean RUN_USING_ENCODER = false;
 
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0.003, 0.00001, 0.00001,
-            9.85);//12.7545
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
+            12.754544579697145);
 
 //old version of the above:
   /*  public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
@@ -57,19 +57,19 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.88976; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 14.19;//(14.62 + 14.51 )/2 ;//14.51;//measured16.34; // in
+    public static double TRACK_WIDTH = 14.9;//(14.62 + 14.51 )/2 ;//14.51;//measured16.34; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
      * the built-in velocity PID, *these values are fine as is*. However, if you do not have drive
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
-     *///0.01291
-    public static double kV = 0.012438;//1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0.0006325;
+     */
+    public static double kV = 0.01256;//1.0 / rpmToVelocity(MAX_RPM);
+    public static double kA = 0.00021;
 
-    public static double kStatic = 0.100481;
-//t
+    public static double kStatic = 0.07949;
+
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
      * the constraints should never exceed ~80% of the robot's actual capabilities. While Road
@@ -77,11 +77,11 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 60;//what? should be 60? was 136
-    public static double MAX_ACCEL = 52.48180821614297;//tune?
-    public static double MAX_ANG_VEL = Math.toRadians(180);//on 1-20 this is 261, //896.303?
-    public static double MAX_ANG_ACCEL = Math.toRadians(180);//on 1-20 this is 184//180
-//technically 259
+    public static double MAX_VEL = 136;//what? should be 60?
+    public static double MAX_ACCEL = 52.48180821614297;
+    public static double MAX_ANG_VEL = Math.toRadians(896.303);
+    public static double MAX_ANG_ACCEL = Math.toRadians(184.02607784577722);
+
     /*
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.
      */
