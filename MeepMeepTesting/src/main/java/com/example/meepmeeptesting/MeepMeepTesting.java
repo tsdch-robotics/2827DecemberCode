@@ -24,91 +24,65 @@ public class MeepMeepTesting {
 
 
 
+                               
+
+                                .lineToSplineHeading(new Pose2d(-49, -49, Math.toRadians(90)))
+
+                                .lineToSplineHeading(new Pose2d(-70, -30, Math.toRadians(90)))
 
 
+                                // .lineToSplineHeading(new Pose2d(-52, -40, Math.toRadians(0)))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                //Zone 1
-
-                               /* .lineToSplineHeading(new Pose2d(-38, -58, Math.toRadians(90)))
-
-                                .splineTo(new Vector2d(-47, -48), Math.toRadians(160))
-
-                                .lineToSplineHeading(new Pose2d(-37, -35, Math.toRadians(180)))
-
-                                .lineToSplineHeading(new Pose2d(-45, -58, Math.toRadians(.0001)))
-
-                                .lineToSplineHeading(new Pose2d(18, -58, Math.toRadians(0)))
-
-                                .splineTo(new Vector2d(49, -28), Math.toRadians(0))
-*/
-
-                        //middle
-                                /*.lineToSplineHeading(new Pose2d(-38, -58, Math.toRadians(90)))
-
-                                .lineToSplineHeading(new Pose2d(-38, -33, Math.toRadians(90)))
 
                                 .waitSeconds(1)
 
-                               // .lineToSplineHeading(new Pose2d(-37, -35, Math.toRadians(180)))
 
-                                .lineToSplineHeading(new Pose2d(-45, -58, Math.toRadians(.0001)))
+                                .lineToSplineHeading(new Pose2d(-70, -40, Math.toRadians(90)))
 
-                                .lineToSplineHeading(new Pose2d(18, -58, Math.toRadians(0)))
+                                /*.lineToSplineHeading(new Pose2d(-47, -40, Math.toRadians(0)),
+                                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL,
+                                                DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL))
 
-                                .splineTo(new Vector2d(49, -34), Math.toRadians(0))
-*/
+                                )*/
 
+                                /* .lineToSplineHeading(new Pose2d(-44, -70, Math.toRadians(0)),
+                                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL,
+                                                 DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL))
 
+                                 )
+             */
 
-                                //right/zone6
+                                .lineToSplineHeading(new Pose2d(-45, -70, Math.toRadians(0)))
 
-                                .lineToSplineHeading(new Pose2d(-44, -49, Math.toRadians(90)))
+                                .lineToSplineHeading(new Pose2d(-45, -59, Math.toRadians(0)))
+                                .waitSeconds(1)
 
-                                .lineToSplineHeading(new Pose2d(-44, -30, Math.toRadians(90)))
-
-                                // .waitSeconds(3)
-
-                                // .lineToSplineHeading(new Pose2d(-41.1, -35.1, Math.toRadians(0)))
-
-                                .turn(0)
-
-                                // .waitSeconds(3)
+                                .lineToSplineHeading(new Pose2d(14, -59, Math.toRadians(0)))
 
 
-                                .lineToSplineHeading(new Pose2d(-39, -30, Math.toRadians(0)))
 
-                                //.addTemporalMarker(() -> {flicker.setPosition(0);} )
+
+                                .lineToSplineHeading(new Pose2d(35, -29, Math.toRadians(0)))
+
+
+                                .lineToSplineHeading(new Pose2d(45, -29, Math.toRadians(0)))
 
                                 .waitSeconds(1)
 
-                                .lineToSplineHeading(new Pose2d(-46, -30, Math.toRadians(0)))
-
-                                .lineToSplineHeading(new Pose2d(-46, -60, Math.toRadians(-1)))//-10?
-
-                                .lineToSplineHeading(new Pose2d(14, -58, Math.toRadians(0)))
 
 
-                                .splineTo(new Vector2d(42, -29), Math.toRadians(0))
+                                .waitSeconds(1)
+
+                                .setReversed(true)
 
 
 
 
+                                .splineTo(new Vector2d(45, -60), Math.toRadians(-90))
 
+
+
+                                .waitSeconds(5)
 
 
                                 .build()
