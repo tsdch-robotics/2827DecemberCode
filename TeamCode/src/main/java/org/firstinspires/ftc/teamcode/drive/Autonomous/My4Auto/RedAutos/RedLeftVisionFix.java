@@ -494,9 +494,12 @@ public class RedLeftVisionFix extends LinearOpMode {
 
 
 
-                    .splineTo(new Vector2d(44.5, -43), Math.toRadians(0))
+                    .splineTo(new Vector2d(44.5, -42), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(51.2, -43), Math.toRadians(0))//slow to board
+                    .splineTo(new Vector2d(50.6, -42), Math.toRadians(0),
+            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+//slow to board
 
 
                     .waitSeconds(1)
@@ -510,6 +513,9 @@ public class RedLeftVisionFix extends LinearOpMode {
 
                     .waitSeconds(1)
 
+
+
+                    .lineToSplineHeading(new Pose2d(45, -43, Math.toRadians(0)))
 
 
                     .setReversed(true)
