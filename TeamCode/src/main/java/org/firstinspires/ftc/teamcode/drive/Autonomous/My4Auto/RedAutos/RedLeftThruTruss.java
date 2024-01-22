@@ -1,18 +1,15 @@
 package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.RedAutos;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -32,7 +29,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
 @Autonomous(group = "drive", preselectTeleOp = "TeleOp2")
-public class RedLeftVisionFix extends LinearOpMode {
+public class RedLeftThruTruss extends LinearOpMode {
 
 
     TouchSensor touchSensor;
@@ -346,14 +343,14 @@ public class RedLeftVisionFix extends LinearOpMode {
 
                     })
 
-                    .splineTo(new Vector2d(44.5, -35.7), Math.toRadians(0))
+                    .splineTo(new Vector2d(44.5, -33), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(51.21, -35.71), Math.toRadians(0),
+                    .splineTo(new Vector2d(51.21, -33.5), Math.toRadians(0),
             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                                 //slow to board
 
-                    .lineToSplineHeading(new Pose2d(51.2, -35.7, Math.toRadians(0)))//confirm 0
+                    .lineToSplineHeading(new Pose2d(51.2, -33.5, Math.toRadians(0)))//confirm 0
 
                     .waitSeconds(1)
 
@@ -367,6 +364,8 @@ public class RedLeftVisionFix extends LinearOpMode {
 
                     .waitSeconds(1)
 
+                    .lineToSplineHeading(new Pose2d(45, -33.5, Math.toRadians(0)))//confirm 0
+                    .waitSeconds(.01)
                     .setReversed(true)
                     .splineTo(new Vector2d(46.5, -59.8), Math.toRadians(-90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
@@ -430,9 +429,9 @@ public class RedLeftVisionFix extends LinearOpMode {
 
 
 
-                    .splineTo(new Vector2d(44.5, -42), Math.toRadians(0))
+                    .splineTo(new Vector2d(44.5, -44.2), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(50.6, -42), Math.toRadians(0),
+                    .splineTo(new Vector2d(50.6, -44.2), Math.toRadians(0),
             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 //slow to board
@@ -529,16 +528,16 @@ public class RedLeftVisionFix extends LinearOpMode {
                     })
 
 
-                    .splineTo(new Vector2d(44.5, -29.6), Math.toRadians(0))
+                    .splineTo(new Vector2d(44.5, -31.4), Math.toRadians(0))
 
                     .waitSeconds(1)
 
-                    .splineTo(new Vector2d(52, -30.2), Math.toRadians(0),
+                    .splineTo(new Vector2d(52, -31.4), Math.toRadians(0),
             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                         //slow to board
 
-                    .lineToSplineHeading(new Pose2d(52, -30.6, Math.toRadians(0)))//correct on board
+                    .lineToSplineHeading(new Pose2d(52, -30.4, Math.toRadians(0)))//correct on board
 
 
                     .waitSeconds(2)

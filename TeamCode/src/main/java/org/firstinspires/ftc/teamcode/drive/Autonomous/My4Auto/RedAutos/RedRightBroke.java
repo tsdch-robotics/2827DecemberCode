@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -27,8 +28,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
+@Disabled
 @Autonomous(group = "drive")
-public class RedLeft extends LinearOpMode {
+public class RedRightBroke extends LinearOpMode {
 
     public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
@@ -239,46 +241,39 @@ public class RedLeft extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
-                    .splineTo(new Vector2d(17, -24), Math.toRadians(90))
+
+
+                    .splineTo(new Vector2d(13, -30), Math.toRadians(90))
 
                     .waitSeconds(1)
-                    .addTemporalMarker(() -> {flicker.setPosition(0);} )
-
-
+                    //place purple
                     .waitSeconds(1)
 
 
-                    .lineToSplineHeading(new Pose2d(15, -45, Math.toRadians(90)))
+                    .lineToSplineHeading(new Pose2d(13, -46, Math.toRadians(0)))
 
-                    .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, (400));
-                        arm1.setPosition(sliderMachineState.armScore);
-                        arm2.setPosition(sliderMachineState.armScore);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
+                    .waitSeconds(.1)
+                    //raise lift
 
-                    })
-
-                    .lineToSplineHeading(new Pose2d(40, -32, Math.toRadians(0)))
-
-                    //fast to board
+                    .splineTo(new Vector2d(51, -39), Math.toRadians(0))//slow to board
 
 
-                    .addTemporalMarker(() -> {
-                        wrist.setPosition(sliderMachineState.wristScore);
 
-                    })
-
-                    .lineToSplineHeading(new Pose2d(51, -25, Math.toRadians(0)),
-                            SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
-//slow board aproch
-
-
+                    .splineTo(new Vector2d(51.21, -35.71), Math.toRadians(0),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                    //slow to board
                     .waitSeconds(1)
+                    //score
+
+
                     .addTemporalMarker(() -> {
+
                         finger1.setPosition(sliderMachineState.Finger1Loose);
                         finger2.setPosition(sliderMachineState.Finger2Loose);
+                        //release pixel
                     })
+
 
 
                     .waitSeconds(1)
@@ -288,19 +283,10 @@ public class RedLeft extends LinearOpMode {
 
                     // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
-                        arm1.setPosition(sliderMachineState.armThreaten);
-                        arm2.setPosition(sliderMachineState.armThreaten);
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
-
-                    })
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90))
                     .waitSeconds(1)
+
+
                     .build();
 
             drive.followTrajectorySequence(trajectory1);
@@ -318,48 +304,51 @@ public class RedLeft extends LinearOpMode {
 
 
 
-                    .lineTo(new Vector2d(18, -50))
 
-                    .lineToSplineHeading(new Pose2d(17.5, -40, Math.toRadians(20)))
 
+                    .splineTo(new Vector2d(29, -30), Math.toRadians(180))
 
                     .waitSeconds(1)
-                    .addTemporalMarker(() -> {flicker.setPosition(0);} )
-
-
+                    //place purple
                     .waitSeconds(1)
 
 
-                    .lineToSplineHeading(new Pose2d(15, -45, Math.toRadians(90)))
+                    .lineToSplineHeading(new Pose2d(36, -31, Math.toRadians(180)))
+
+
+                    .lineToSplineHeading(new Pose2d(37, -31, Math.toRadians(0)))
+
+                    //raise lift
 
                     .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, (400));
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
-
-                    })
-
-                    .lineToSplineHeading(new Pose2d(40, -42, Math.toRadians(0)))
-
-                    //fast to board
-
-
-                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
                         wrist.setPosition(sliderMachineState.wristScore);
 
                     })
 
-                    .lineToSplineHeading(new Pose2d(50, -42, Math.toRadians(0)),
-                            SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
-//slow board aproch
+
+                    //.lineToSplineHeading(new Pose2d(51, -39, Math.toRadians(0)))//slow to board
+                    .splineTo(new Vector2d(50.6, -42), Math.toRadians(0),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+//slow to board
 
 
                     .waitSeconds(1)
+                    //score
+
+
                     .addTemporalMarker(() -> {
+
                         finger1.setPosition(sliderMachineState.Finger1Loose);
                         finger2.setPosition(sliderMachineState.Finger2Loose);
+                        //release pixel
                     })
 
 
@@ -370,18 +359,7 @@ public class RedLeft extends LinearOpMode {
 
                     // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
-                        arm1.setPosition(sliderMachineState.armThreaten);
-                        arm2.setPosition(sliderMachineState.armThreaten);
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
-
-                    })
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90))
                     .waitSeconds(1)
 
                     .build();
@@ -401,51 +379,55 @@ public class RedLeft extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
-                    .splineTo(new Vector2d(9, -34), Math.toRadians(130))
+                    .splineTo(new Vector2d(7, -33), Math.toRadians(180))
 
                     .waitSeconds(1)
-                    .addTemporalMarker(() -> {flicker.setPosition(0);} )
-
-
+                    //place purple
                     .waitSeconds(1)
 
 
-                    .lineToSplineHeading(new Pose2d(15, -45, Math.toRadians(90)))
+                    .lineToSplineHeading(new Pose2d(17, -33, Math.toRadians(180)))
+
+
+                    .lineToSplineHeading(new Pose2d(37, -31, Math.toRadians(180)))
+
+                    //raise lift
 
                     .addTemporalMarker(() -> {
-                        moveByEncoder.powerSlider(slides, (400));
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
-
-                    })
-
-                    .lineToSplineHeading(new Pose2d(40, -32, Math.toRadians(0)))
-
-                    //fast to board
-
-
-                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
                         wrist.setPosition(sliderMachineState.wristScore);
 
                     })
 
-                    .lineToSplineHeading(new Pose2d(51, -31, Math.toRadians(0)),
-                            SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
-//slow board aproch
+                    .lineToSplineHeading(new Pose2d(37.1, -31.1, Math.toRadians(0)))//turn toward sboard
+
+                    .splineTo(new Vector2d(52, -30.2), Math.toRadians(0),
+                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                    //slow to board
+
 
 
                     .waitSeconds(1)
+                    //score
+
+
                     .addTemporalMarker(() -> {
+
                         finger1.setPosition(sliderMachineState.Finger1Loose);
                         finger2.setPosition(sliderMachineState.Finger2Loose);
+                        //release pixel
                     })
 
 
                     .waitSeconds(1)
                     .setReversed(true)
-
 
 
                     // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
@@ -462,7 +444,7 @@ public class RedLeft extends LinearOpMode {
                         wrist.setPosition(sliderMachineState.wristThreaten);
 
                     })
-                    .waitSeconds(1)
+                    .waitSeconds(2)
 
                     .build();
 
