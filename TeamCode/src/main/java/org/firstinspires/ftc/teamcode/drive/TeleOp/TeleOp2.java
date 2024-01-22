@@ -267,8 +267,21 @@ public class TeleOp2 extends OpMode {
         }
         if (gamepad1.right_trigger < .5) {
             intake.setPower(-gamepad1.left_trigger);
-
+//1 to 3     20 1/3 in 8 seconds, so 60rotations in 8 seconds
         }
+
+
+        //7.5
+
+        // 10.5-14.9
+
+        //4.4, 32 rotations
+
+        //32/4.4sec == 7.27 rotations per second * 60 = 436rpm
+        //1150/60sec == 19.6 rotations per second = 1150 rpm
+        //320/60sed == 5.33 rotations per second = 320rpm
+        //435/60sed == 7.25 rotations per second = 435rpm
+
        //second controller
 
 

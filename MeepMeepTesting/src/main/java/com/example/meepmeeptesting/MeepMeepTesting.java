@@ -25,38 +25,35 @@ public class MeepMeepTesting {
 
 
 
+                                //initialize servos
+                                .lineToSplineHeading(new Pose2d(-42.5, -51.4, Math.toRadians(90)))//54 or 51?a
 
-                                .lineToSplineHeading(new Pose2d(-40.9, -51.8, Math.toRadians(90)))
-
-
-
-                                .splineTo(new Vector2d(-32.4, -34.3), Math.toRadians(0))
-                                .lineToSplineHeading(new Pose2d(-32.41, -34.31, Math.toRadians(0)))
-
-
+                                .splineTo(new Vector2d(-46.71, -36.71), Math.toRadians(90))
+                                .lineToSplineHeading(new Pose2d (-46.7, -36.7, Math.toRadians(90)))//ensure 90
                                 .waitSeconds(1)
-
-                                .lineToSplineHeading(new Pose2d(-38.5, -34.3, Math.toRadians(0)))
-
-                                .lineToSplineHeading(new Pose2d(-36.9, -58.7, Math.toRadians(0)))
-
-                                .lineToSplineHeading(new Pose2d(13.1, -58.7, Math.toRadians(0)))
+                                //place pixel
 
 
-                                .splineTo(new Vector2d(44.5, -40.5), Math.toRadians(0))
+                                .lineToSplineHeading(new Pose2d (-46.7, -44.7, Math.toRadians(90)))//back off
 
-                                .splineTo(new Vector2d(51.2, -40.5), Math.toRadians(0))//slow
+
+                                .lineToSplineHeading(new Pose2d (-43.5, -58.9, Math.toRadians(0)))//allign with wall
+
+
+                                .lineToSplineHeading(new Pose2d(13.1, -58.7, Math.toRadians(0)))//out of truss
+                                //raise lift
+
+                                .splineTo(new Vector2d(44.5, -29.6), Math.toRadians(0))
+
+                                .splineTo(new Vector2d(51.2, -29.6), Math.toRadians(0))//slow to board
 
                                 .setReversed(true)
-                                .splineTo(new Vector2d(46.5, -59.8), Math.toRadians(-90))//slow
-
-
-
+                                .splineTo(new Vector2d(46.5, -59.8), Math.toRadians(-90))//slow to park
 
                                 .build()
                 );
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_LIGHT)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_OFFICIAL)
                 .setDarkMode(false)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)

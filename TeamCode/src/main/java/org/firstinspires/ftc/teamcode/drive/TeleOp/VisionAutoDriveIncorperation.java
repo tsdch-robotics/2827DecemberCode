@@ -178,16 +178,25 @@ public class VisionAutoDriveIncorperation extends LinearOpMode {
                     enableAuto = true;
                     telemetry.addLine("enabling Auto");
                     cycle += 1;
+
+
                     double yaw = -tag.ftcPose.yaw;
                     double xValue = tag.ftcPose.x;
+
+
                     double yValue = tag.ftcPose.y + webcamOriginOffset;//offset, this might not work
 
-                    //y value + origin offset
 
-                    double vectorRotatedXvalue = xValue * Math.cos(Math.toRadians(yaw)) - yValue * Math.sin(Math.toRadians(yaw));
-                    double vectorRotatedYValue = xValue * Math.sin(Math.toRadians(yaw)) + yValue * Math.cos(Math.toRadians(yaw));
+                    double vectorRotatedXvalue = xValue
+                            * Math.cos(Math.toRadians(yaw)) - yValue
+                            * Math.sin(Math.toRadians(yaw));
 
-                    robotVectorTagRelative = new Vector2d(vectorRotatedXvalue, vectorRotatedYValue);
+                    double vectorRotatedYValue = xValue
+                            * Math.sin(Math.toRadians(yaw)) + yValue
+                            * Math.cos(Math.toRadians(yaw));
+
+                    robotVectorTagRelative =
+                            new Vector2d(vectorRotatedXvalue, vectorRotatedYValue);
 
 
                     telemetry.addData("vector:", robotVectorTagRelative);
