@@ -57,7 +57,7 @@ public class MeepMeepTesting {
 
                 );
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_LIGHT)
                 .setDarkMode(false)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)

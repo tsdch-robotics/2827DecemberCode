@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.Autonomous.Misc.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
@@ -563,6 +564,12 @@ public class RedLeftThruTruss extends LinearOpMode {
 
             drive.followTrajectorySequence(trajectory1);
         }
+
+
+        /*while(!isStopRequested()){
+            PoseStorage.currentPose = drive.getPoseEstimate();
+        }*/
+
     }
 
 

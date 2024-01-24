@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,6 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import org.firstinspires.ftc.teamcode.drive.Autonomous.Misc.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.PIDclass;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.PIDhangClass;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
@@ -90,7 +92,9 @@ public class TeleOp2 extends OpMode {
 
     private boolean gyroSquareRequested = false;
     private BNO055IMU imu; // Gyro sensor
+    public double IMUposeTransfercorrection = 0;
     private boolean gyroResetRequested = false;
+
 
     public static double release = 0;
 
@@ -169,9 +173,16 @@ public class TeleOp2 extends OpMode {
         imuParams.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(imuParams);
+
+
+        IMUposeTransfercorrection = (Math.toDegrees(PoseStorage.currentPose.getHeading()) + 90);
+
         //  IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
         //          LOGO_FACING_DIR, USB_FACING_DIR));
         //  imu.initialize(parameters);//todo; delete this comment
+
+
+
         scoreWaitingTime.reset();
         scoreWaitingTime.startTime();
 
@@ -198,6 +209,9 @@ public class TeleOp2 extends OpMode {
     public void loop() {
 
 
+
+
+
         //telemetry
         telemetry.update();
         telemetry.addData("Position of slides", slides.getCurrentPosition());
@@ -208,6 +222,7 @@ public class TeleOp2 extends OpMode {
         telemetry.addData("Position of wrist", wrist.getPosition());
         telemetry.addData("exocute pos", exocutePos);
         telemetry.addData("preload pos", preloadPos);
+        telemetry.addData("IMU correction", IMUposeTransfercorrection);
 
 
         if(touchSensor.isPressed()){
@@ -353,7 +368,7 @@ public class TeleOp2 extends OpMode {
 
 
 
-        if (gamepad2.b){
+        if (gamepad2.left_bumper && gamepad2.right_bumper){
 
             paperAirplane.setPosition(0);
 
@@ -382,14 +397,15 @@ public class TeleOp2 extends OpMode {
         double rotate = -gamepad1.right_stick_x;
 
         // reset gyro button
-   /*     if (gamepad1.a) {
+        if (gamepad1.back) {
             gyroResetRequested = true;
-        }*/
+        }
 
         //TODO: update gyro reset?
 
         // Perform gyro reset if requested
         if (gyroResetRequested) {
+            IMUposeTransfercorrection = 0;
             resetGyro();
             gyroResetRequested = false; // Reset the request
         }
@@ -428,7 +444,20 @@ public class TeleOp2 extends OpMode {
     //This is used for field centric code but is outside of the loop
     private double getPitch() {
         // Get the robot's heading from the gyro sensor
-        return imu.getAngularOrientation().firstAngle;
+
+
+
+/*
+        double finalCorrectedHeading = imu.getAngularOrientation().firstAngle + IMUposeTransfercorrection;
+
+        if (finalCorrectedHeading > 360){
+            finalCorrectedHeading -= 360;
+        }
+        if (finalCorrectedHeading < 0){
+            finalCorrectedHeading += 360;
+        }
+*/
+        return (imu.getAngularOrientation().firstAngle);
     }
 
     private void resetGyro() {

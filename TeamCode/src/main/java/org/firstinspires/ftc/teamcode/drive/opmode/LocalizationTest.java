@@ -27,10 +27,11 @@ public class LocalizationTest extends LinearOpMode {
 
 
 
-        Pose2d startPose = new Pose2d(14.5, -60, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-38, 60, Math.toRadians(-90));
         drive.setPoseEstimate(startPose);
 
-
+//-38----9
+        //+38+9 = 47
 
         waitForStart();
 
