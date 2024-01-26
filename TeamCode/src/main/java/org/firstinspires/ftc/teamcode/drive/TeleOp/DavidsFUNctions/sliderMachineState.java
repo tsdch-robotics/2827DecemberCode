@@ -35,9 +35,9 @@ public class sliderMachineState {
     public static int THREATENINGpos = 10;
     public static int midSTABpos = 200;
     public static int STABBINGpos = 0;
-    public static int MEDIUMpos = 1000;
+    public static int MEDIUMpos = 1300;
     public static int HIGHpos = 1800;
-    public static int ReallyHIGHpos = 2500;
+    public static int ReallyHIGHpos = 3000;
     //todo adjust these values
 
     public static double stabFinger1Tight = 0.82;//servo pos
