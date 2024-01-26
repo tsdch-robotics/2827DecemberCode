@@ -430,9 +430,9 @@ public class RedLeftThruTruss extends LinearOpMode {
 
 
 
-                    .splineTo(new Vector2d(44.5, -44.2), Math.toRadians(0))
+                    .splineTo(new Vector2d(44.5, -40), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(50.6, -44.2), Math.toRadians(0),
+                    .splineTo(new Vector2d(50.6, -40), Math.toRadians(0),
             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 //slow to board
@@ -451,13 +451,9 @@ public class RedLeftThruTruss extends LinearOpMode {
 
 
 
-                    .lineToSplineHeading(new Pose2d(45, -43, Math.toRadians(0)))
+                    /*.lineToSplineHeading(new Pose2d(45, -43, Math.toRadians(0)))
 
-
-                    .setReversed(true)
-                    .splineTo(new Vector2d(46.5, -59.8), Math.toRadians(-90))//slow
-
-                /*    .addTemporalMarker(() -> {
+                    .addTemporalMarker(() -> {
 
 
                         moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
@@ -467,8 +463,10 @@ public class RedLeftThruTruss extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.Finger2Loose);
                         wrist.setPosition(sliderMachineState.wristThreaten);
 
-
                     })*/
+
+                    .setReversed(true)
+                    .splineTo(new Vector2d(46.5, -55), Math.toRadians(-90))//slow
 
 
                     .build();

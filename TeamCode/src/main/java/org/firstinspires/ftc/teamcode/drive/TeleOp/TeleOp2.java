@@ -368,13 +368,19 @@ public class TeleOp2 extends OpMode {
 
 
 
-        if (gamepad2.left_bumper && gamepad2.right_bumper){
+        /*if (gamepad2.left_bumper && gamepad2.right_bumper){
 
             paperAirplane.setPosition(0);
 
+        }*/
+
+        if (gamepad1.b) {
+
+            paperAirplane.setPosition(0);
         }
 
-        hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 100 * (float) -gamepad2.left_stick_y));
+
+            hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 100 * (float) -gamepad2.left_stick_y));
 
 
         hangPID.magicPID(hang1, hangTargetPos, hang1Time);
