@@ -323,14 +323,14 @@ public class BlueRight extends LinearOpMode {
 
 
                     //fast to board
-                    .splineTo(new Vector2d(48.6, 34), Math.toRadians(0))
+                    .splineTo(new Vector2d(48.6, 33.5), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(53, 34), Math.toRadians(0),
+                    .lineToSplineHeading(new Pose2d(53, 33.5, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
 
-                    .waitSeconds(.5)
+                    .waitSeconds(.8)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -343,7 +343,7 @@ public class BlueRight extends LinearOpMode {
 
 
 
-                    .lineToSplineHeading(new Pose2d(45, 32.58, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, 33.5, Math.toRadians(0)))
                     .waitSeconds(.5)
                     .splineTo(new Vector2d(45, 60), Math.toRadians(90),
                             SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL,
@@ -409,10 +409,11 @@ public class BlueRight extends LinearOpMode {
                     })
 
                     //fast to board
-                    .splineTo(new Vector2d(45.5, 28), Math.toRadians(0))
+                    .splineTo(new Vector2d(45.5, 27), Math.toRadians(0))
 
+                    .waitSeconds(1)
                     //slow to board
-                    .splineTo(new Vector2d(52.8, 28), Math.toRadians(0),
+                    .lineToSplineHeading(new Pose2d(52.8, 27, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
@@ -430,7 +431,7 @@ public class BlueRight extends LinearOpMode {
 
 
 
-                    .lineToSplineHeading(new Pose2d(45, 28, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, 27, Math.toRadians(0)))
                     .splineTo(new Vector2d(45, 55), Math.toRadians(90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
@@ -486,6 +487,7 @@ public class BlueRight extends LinearOpMode {
                         wrist.setPosition(sliderMachineState.wristScore);
 
                     })
+                    .waitSeconds(.5)
 
 
 
@@ -507,12 +509,19 @@ public class BlueRight extends LinearOpMode {
 
 
                     .waitSeconds(1)
-                    .setReversed(true)
 
-                    .lineToSplineHeading(new Pose2d(45, 50, Math.toRadians(0)))
+
+                    .lineToSplineHeading(new Pose2d(45, 40.23, Math.toRadians(0)))
+                    /*.splineTo(new Vector2d(45, 59), Math.toRadians(90),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+*/
+                    .setReversed(true)
                     .splineTo(new Vector2d(45, 59), Math.toRadians(90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+
+
 
                     .waitSeconds(1)
 
