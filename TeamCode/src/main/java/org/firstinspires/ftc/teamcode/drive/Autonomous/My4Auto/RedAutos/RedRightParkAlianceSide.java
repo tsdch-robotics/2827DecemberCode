@@ -430,9 +430,9 @@ public class RedRightParkAlianceSide extends LinearOpMode {
                     })
 
 
-                    .lineToSplineHeading(new Pose2d(45, -41, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, -40.5, Math.toRadians(0)))
                     .waitSeconds(.1)
-                    .splineTo(new Vector2d(50.6, -41), Math.toRadians(0),
+                    .splineTo(new Vector2d(51.3, -40.5), Math.toRadians(0),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 //slow to board
@@ -515,9 +515,9 @@ public class RedRightParkAlianceSide extends LinearOpMode {
                     })
 
 
-                    .splineTo(new Vector2d(45, -30.2), Math.toRadians(0))
+                    .splineTo(new Vector2d(45, -29.1), Math.toRadians(0))
                     .waitSeconds(.01)
-                    .splineTo(new Vector2d(51, -30.2), Math.toRadians(0),
+                    .splineTo(new Vector2d(51, -29.2), Math.toRadians(0),
             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
             //slow to board

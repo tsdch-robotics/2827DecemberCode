@@ -308,12 +308,12 @@ public class BlueLeft extends LinearOpMode {
 
 
                     .waitSeconds(1)
-                    .lineToSplineHeading(new Pose2d(15, 45, Math.toRadians(-80)))
+                    .lineToSplineHeading(new Pose2d(18, 45, Math.toRadians(-80)))
                     .waitSeconds(1)
 
                     .addTemporalMarker(() -> {
 
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos + 100);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -324,10 +324,10 @@ public class BlueLeft extends LinearOpMode {
 
 
 
-                    .lineToSplineHeading(new Pose2d(40, 33, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(40, 35, Math.toRadians(0)))
                     //fast to board
                     .waitSeconds(.5)
-                    .lineToSplineHeading(new Pose2d(52, 33.4, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(53, 35, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
@@ -385,7 +385,7 @@ public class BlueLeft extends LinearOpMode {
                     .waitSeconds(.1)
 
 
-                    .lineToSplineHeading(new Pose2d(40, 27.4, Math.toRadians(0)))//
+                    .lineToSplineHeading(new Pose2d(40, 28.51, Math.toRadians(0)))//
                     //fast to board
 
                     .addTemporalMarker(() -> {
@@ -401,7 +401,7 @@ public class BlueLeft extends LinearOpMode {
                     })
 
 
-                    .lineToSplineHeading(new Pose2d(52.3, 28, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(52.3, 28.52, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
@@ -515,14 +515,14 @@ public class BlueLeft extends LinearOpMode {
         }
 
 
-        while(poseTransferTime.seconds() <= 28){
+       /* while(poseTransferTime.seconds() <= 28){
 
         }
 
         /*Pose2d thePose = new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(),
                 Math.toRadians((Math.toDegrees(drive.getPoseEstimate().getHeading()) + 90)));
 */
-        PoseStorage.currentPose = drive.getPoseEstimate();//thePose;
+        PoseStorage.currentPose = drive.getPoseEstimate();//thePose;*/
 
         //Math.toRadians((Math.toDegrees(drive.getPoseEstimate()) + 90))
 

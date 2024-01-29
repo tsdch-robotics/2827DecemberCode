@@ -321,6 +321,8 @@ public class BlueRight extends LinearOpMode {
 
                     })
 
+                    .waitSeconds(1)
+
 
                     //fast to board
                     .splineTo(new Vector2d(48.6, 33.5), Math.toRadians(0))
@@ -413,7 +415,7 @@ public class BlueRight extends LinearOpMode {
 
                     .waitSeconds(1)
                     //slow to board
-                    .lineToSplineHeading(new Pose2d(52.8, 27, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(53.5, 27, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
@@ -471,6 +473,10 @@ public class BlueRight extends LinearOpMode {
                     .waitSeconds(1)
 
 
+                    .lineToSplineHeading(new Pose2d(-45, 34.45, Math.toRadians(0)))//to avoid the pole
+
+                    //w
+
                     .lineToSplineHeading(new Pose2d(-41.9, 58.65, Math.toRadians(0)))
 
                     .lineToSplineHeading(new Pose2d(14.7, 58.05, Math.toRadians(0)))
@@ -494,8 +500,8 @@ public class BlueRight extends LinearOpMode {
 
 
 
-                    .splineTo(new Vector2d(45, 40.23), Math.toRadians(0))
-                    .splineTo(new Vector2d(53.95, 40.23), Math.toRadians(0),
+                    .splineTo(new Vector2d(45, 39.2), Math.toRadians(0))
+                    .splineTo(new Vector2d(53.95, 39.2), Math.toRadians(0),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
@@ -511,7 +517,7 @@ public class BlueRight extends LinearOpMode {
                     .waitSeconds(1)
 
 
-                    .lineToSplineHeading(new Pose2d(45, 40.23, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, 38.5, Math.toRadians(0)))
                     /*.splineTo(new Vector2d(45, 59), Math.toRadians(90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))

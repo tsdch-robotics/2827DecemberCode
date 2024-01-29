@@ -18,7 +18,7 @@ public class PIDclass  {
     //public final int CUTOFF = 20;
 
     public int minSlides = -100;
-    public int maxSlides = 2700;
+    public int maxSlides = 3000;
 
     public double out = 0;
 
@@ -49,6 +49,8 @@ public class PIDclass  {
         slideLastError = error;
 
         timer.reset();
+
+
 
     }
     public void zero(DcMotor slide, ElapsedTime tima, TouchSensor touchy) {

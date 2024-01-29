@@ -37,6 +37,10 @@ public class TeleOp2 extends OpMode {
 
 //custom funcitons, used to save code space
 
+
+    int heightOffset = 0;
+    private boolean currentlyScoring = false;
+
     TouchSensor touchSensor;
 
     public ElapsedTime scoreWaitingTime = new ElapsedTime();
@@ -300,25 +304,54 @@ public class TeleOp2 extends OpMode {
        //second controller
 
 
-        if (gamepad2.dpad_down) {
+        if (gamepad2.dpad_down && !currentlyScoring) {
 
+            heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.LOW;
+        }else if (gamepad2.dpad_down && currentlyScoring){
+
+
+            heightOffset = heightOffset - 1;
 
 
         }
-        if (gamepad2.dpad_left) {
 
+
+        if (gamepad2.dpad_left && !currentlyScoring) {
+
+            heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.MEDIUM;
-        }
-        if (gamepad2.dpad_up) {
+        }else if (gamepad2.dpad_left && currentlyScoring){
 
+            heightOffset = heightOffset - 3;
+        }
+
+
+        if (gamepad2.dpad_up && !currentlyScoring) {
+
+            heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.HIGH;
-        }
-        if (gamepad2.dpad_right) {
+        }else if (gamepad2.dpad_up && currentlyScoring){
 
+            heightOffset = heightOffset + 1;
+
+        }
+
+
+
+        if (gamepad2.dpad_right && !currentlyScoring) {
+
+            heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.REALLYHIGH;
 
+        }else if (gamepad2.dpad_right && currentlyScoring){
+
+            heightOffset = heightOffset + 3;
+
         }
+
+
+
 
         //exocute pos
         if(gamepad2.y){
@@ -394,7 +427,20 @@ public class TeleOp2 extends OpMode {
 //power slides
 
         executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2,
-                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false);
+                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false, heightOffset);
+
+
+        //chekc if scoring
+        if(exocutePos == sliderMachineState.slidePosition.HIGH ||
+                exocutePos == sliderMachineState.slidePosition.REALLYHIGH ||
+                exocutePos == sliderMachineState.slidePosition.LOW ||
+                exocutePos == sliderMachineState.slidePosition.MEDIUM){
+
+            currentlyScoring = true;
+        }else{
+            currentlyScoring = false;
+        }
+
 
 
 //Drive Code

@@ -191,9 +191,9 @@ public class VisionAutoDriveIncorperation extends LinearOpMode {
                             * Math.cos(Math.toRadians(yaw)) - yValue
                             * Math.sin(Math.toRadians(yaw));
 
-                    double vectorRotatedYValue = xValue
-                            * Math.sin(Math.toRadians(yaw)) + yValue
-                            * Math.cos(Math.toRadians(yaw));
+                    double vectorRotatedYValue = xValue//?
+                            * Math.sin(Math.toRadians(yaw)) +
+                            yValue * Math.cos(Math.toRadians(yaw));
 
                     robotVectorTagRelative =
                             new Vector2d(vectorRotatedXvalue, vectorRotatedYValue);

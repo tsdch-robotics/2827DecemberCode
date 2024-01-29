@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions;
 
 import android.transition.Slide;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -11,12 +12,16 @@ import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasic
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.Halt;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sleep;
 
-
+@Config
 public class sliderMachineState {
 
     //moveWithBasicEncoder moveByEncoder = new moveWithBasicEncoder();
     PIDclass slidesPID = new PIDclass();
     Halt halt = new Halt();
+
+
+    public static int rowHeightVal = 50;
+    public int finalHeight;
 
     sleep sleep = new sleep();
    public enum slidePosition {
@@ -59,7 +64,7 @@ public class sliderMachineState {
 
     public void magicalMacro (DcMotor slider, Servo arm1, Servo arm2,
                               Servo wrist, Servo stabberLeft,
-                              Servo stabberRight, slidePosition targetMachineState, ElapsedTime HaltTime, ElapsedTime PIDtime, TouchSensor toucher, boolean auto){
+                              Servo stabberRight, slidePosition targetMachineState, ElapsedTime HaltTime, ElapsedTime PIDtime, TouchSensor toucher, boolean auto, int heightOffsetter){
 
 
         if (HaltTime == null || PIDtime == null) {
@@ -142,7 +147,10 @@ public class sliderMachineState {
                 case LOW:
 
 
-                    slidesPID.magicPID(slider, LOWpos, PIDtime);
+                    finalHeight = LOWpos + heightOffsetter * rowHeightVal;
+
+                    slidesPID.magicPID(slider, finalHeight, PIDtime);
+
 
 
                     arm1.setPosition(armScore);
@@ -154,7 +162,11 @@ public class sliderMachineState {
                     break;
                 case MEDIUM:
 
-                    slidesPID.magicPID(slider, MEDIUMpos, PIDtime);
+                    finalHeight = MEDIUMpos + heightOffsetter * rowHeightVal;
+
+                    slidesPID.magicPID(slider, finalHeight, PIDtime);
+
+
 
                     arm1.setPosition(armScore);
                     arm2.setPosition(armScore);
@@ -165,7 +177,10 @@ public class sliderMachineState {
                     break;
                 case HIGH:
 
-                    slidesPID.magicPID(slider, HIGHpos, PIDtime);
+
+                    finalHeight = HIGHpos + heightOffsetter * rowHeightVal;
+
+                    slidesPID.magicPID(slider, finalHeight, PIDtime);
 
                     arm1.setPosition(armScore);
                     arm2.setPosition(armScore);
@@ -175,7 +190,10 @@ public class sliderMachineState {
                     break;
                 case REALLYHIGH:
 
-                    slidesPID.magicPID(slider, ReallyHIGHpos, PIDtime);
+
+                    finalHeight = ReallyHIGHpos + heightOffsetter * rowHeightVal;
+
+                    slidesPID.magicPID(slider, finalHeight, PIDtime);
 
                     arm1.setPosition(armScore);
                     arm2.setPosition(armScore);
