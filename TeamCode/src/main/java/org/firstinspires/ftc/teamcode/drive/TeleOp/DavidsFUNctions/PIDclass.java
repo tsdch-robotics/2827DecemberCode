@@ -1,18 +1,21 @@
 package org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-
+@Config
 public class PIDclass  {
 
     Halt halt = new Halt();
 
-    public double slideKp = 0.02;
-    public double slideKi = 0;
-    public double slideKd = 0;
+    public static double slideKp = 0.001;
+    public static double slideKi = 0;
+    public static double slideKd = 0;
+
+
     public double slideIntegralSum = 0;
     public double slideLastError = 0;
     //public final int CUTOFF = 20;
