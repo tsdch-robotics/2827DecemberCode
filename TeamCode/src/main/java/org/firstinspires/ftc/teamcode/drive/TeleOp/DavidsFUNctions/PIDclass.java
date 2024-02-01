@@ -62,7 +62,7 @@ public class PIDclass  {
             slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            slide.setPower(-0.1);
+            magicPID(slide, -50, tima);
 
         }else{
             slide.setPower(-1);

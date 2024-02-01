@@ -38,8 +38,8 @@ public class sliderMachineState {
 
     public static int LOWpos = 700;
     public static int THREATENINGpos = 10;
-    public static int midSTABpos = 200;
-    public static int STABBINGpos = 0;
+    public static int midSTABpos = 1000;
+    public static int STABBINGpos = -200;
     public static int MEDIUMpos = 1300;
     public static int HIGHpos = 1800;
     public static int ReallyHIGHpos = 3000;
@@ -121,25 +121,32 @@ public class sliderMachineState {
 
                 case STAB:
 
-                    if (!halt.halt(100, HaltTime)){
+                    if (!halt.halt(500, HaltTime)){
 
-                        slidesPID.magicPID(slider, midSTABpos, PIDtime);
-                    }
-                    if (halt.halt(100, HaltTime)) {
-
-                        wrist.setPosition(wristStab);//unfortunalty this will use combine time so a second step has to acound for the time that has already been taken
+                        //slidesPID.magicPID(slider, midSTABpos, PIDtime);
+                        if(slider.getCurrentPosition() < 800){
+                            slider.setPower(1);
+                        }else{
+                            slider.setPower(0);
+                        }
+                        wrist.setPosition(wristStab);
                         arm1.setPosition(armStab);
                         arm2.setPosition(armStab);
+                    }
 
-                        if (halt.halt(300, HaltTime)) {//so really this is only halting by this - the previous halt
 
-                            slidesPID.magicPID(slider, STABBINGpos, PIDtime);
+                    if (halt.halt(500, HaltTime)) {//so really this is only halting by this - the previous halt
 
-                            if (halt.halt(400, HaltTime) && slider.getCurrentPosition() <= (midSTABpos + 10)) {//so really this is only halting by this - the previous halt
-                                stabberLeft.setPosition(stabFinger1Tight);
-                                stabberRight.setPosition(stabFinger2Tight);
-                            }
+                        slidesPID.zero(slider, PIDtime, toucher);
+
+                        if (halt.halt(600, HaltTime)){
+
+                            slidesPID.zero(slider, PIDtime, toucher);
+
+                            stabberLeft.setPosition(stabFinger1Tight);
+                            stabberRight.setPosition(stabFinger2Tight);
                         }
+
                     }
 
 
@@ -147,7 +154,7 @@ public class sliderMachineState {
                 case LOW:
 
 
-                    finalHeight = LOWpos + heightOffsetter * rowHeightVal;
+                    finalHeight = LOWpos + heightOffsetter;
 
                     slidesPID.magicPID(slider, finalHeight, PIDtime);
 
@@ -162,7 +169,7 @@ public class sliderMachineState {
                     break;
                 case MEDIUM:
 
-                    finalHeight = MEDIUMpos + heightOffsetter * rowHeightVal;
+                    finalHeight = MEDIUMpos + heightOffsetter;
 
                     slidesPID.magicPID(slider, finalHeight, PIDtime);
 
@@ -178,7 +185,7 @@ public class sliderMachineState {
                 case HIGH:
 
 
-                    finalHeight = HIGHpos + heightOffsetter * rowHeightVal;
+                    finalHeight = HIGHpos + heightOffsetter;
 
                     slidesPID.magicPID(slider, finalHeight, PIDtime);
 
@@ -191,7 +198,7 @@ public class sliderMachineState {
                 case REALLYHIGH:
 
 
-                    finalHeight = ReallyHIGHpos + heightOffsetter * rowHeightVal;
+                    finalHeight = ReallyHIGHpos + heightOffsetter;
 
                     slidesPID.magicPID(slider, finalHeight, PIDtime);
 

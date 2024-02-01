@@ -32,8 +32,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
-@TeleOp(name = "TeleOp2", group = "TeleOp")
-public class TeleOp2 extends OpMode {
+@TeleOp(name = "OneDriver", group = "TeleOp")
+public class OneDriver extends OpMode {
 
 //custom funcitons, used to save code space
 
@@ -205,7 +205,7 @@ public class TeleOp2 extends OpMode {
         paperAirplane.setPosition(0.58);
 
         //waitForStart();
-      //  runtime.reset();
+        //  runtime.reset();
 
     }
 
@@ -270,11 +270,11 @@ public class TeleOp2 extends OpMode {
             exocutePos = sliderMachineState.slidePosition.STAB;
             scoreWaitingTime.reset();
         }*/
-        if(gamepad1.b){
+        /*if(gamepad1.x){
 
             exocutePos = sliderMachineState.slidePosition.THREATEN;
             scoreWaitingTime.reset();
-        }
+        }*/
 //TODO fix potential issues with ellapsed tiime, as it it called in a seprate file
 
 
@@ -301,69 +301,106 @@ public class TeleOp2 extends OpMode {
         //320/60sed == 5.33 rotations per second = 320rpm
         //435/60sed == 7.25 rotations per second = 435rpm
 
-       //second controller
+        //second controller
 
 
-        if (gamepad2.dpad_down && !currentlyScoring) {
+        if (gamepad1.dpad_down && !currentlyScoring) {
+           //
+            exocutePos = preloadPos;
+            scoreWaitingTime.reset();
+            //
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.LOW;
+
+
+        }else if (gamepad1.dpad_down && currentlyScoring){
+
+
+            heightOffset = heightOffset - 1;
+
+
         }
-        if (gamepad2.dpad_left && !currentlyScoring) {
+
+
+        if (gamepad1.dpad_left && !currentlyScoring) {
+
+            //
+            exocutePos = preloadPos;
+            scoreWaitingTime.reset();
+            //
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.MEDIUM;
+        }else if (gamepad1.dpad_left && currentlyScoring){
+
+            heightOffset = heightOffset - 3;
         }
 
 
-        if (gamepad2.dpad_up && !currentlyScoring) {
+        if (gamepad1.dpad_up && !currentlyScoring) {
+
+            //
+            exocutePos = preloadPos;
+            scoreWaitingTime.reset();
+            //
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.HIGH;
+        }else if (gamepad1.dpad_up && currentlyScoring){
+
+            heightOffset = heightOffset + 1;
+
         }
 
 
 
-        if (gamepad2.dpad_right && !currentlyScoring) {
+        if (gamepad1.dpad_right && !currentlyScoring) {
 
+            //
+            exocutePos = preloadPos;
+            scoreWaitingTime.reset();
+            //
+            
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.REALLYHIGH;
+
+        }else if (gamepad1.dpad_right && currentlyScoring){
+
+            heightOffset = heightOffset + 3;
+
         }
-
-        heightOffset = (int) (Math.round(heightOffset + 100 * (float) -gamepad2.right_stick_y));
-
-
 
 
 
 
         //exocute pos
-        if(gamepad2.y){
+        if(gamepad1.y){
             exocutePos = preloadPos;
             scoreWaitingTime.reset();
         }
 //stab
-        if(gamepad2.a && exocutePos == sliderMachineState.slidePosition.THREATEN && debounceTime.milliseconds() > 500){
+        if(gamepad1.a && exocutePos == sliderMachineState.slidePosition.THREATEN && debounceTime.milliseconds() > 500){
 
 
             exocutePos = sliderMachineState.slidePosition.STAB;
             scoreWaitingTime.reset();
             debounceTime.reset();
         }
-        if(gamepad2.a && (exocutePos == sliderMachineState.slidePosition.STAB || exocutePos == sliderMachineState.slidePosition.STABAFTERSTAB) && debounceTime.milliseconds() > 500){
+        if(gamepad1.a && (exocutePos == sliderMachineState.slidePosition.STAB || exocutePos == sliderMachineState.slidePosition.STABAFTERSTAB) && debounceTime.milliseconds() > 500){
 
             exocutePos = sliderMachineState.slidePosition.RESTAB;
             scoreWaitingTime.reset();
             debounceTime.reset();
         }
-        if(gamepad2.a && exocutePos == sliderMachineState.slidePosition.RESTAB && debounceTime.milliseconds() > 500){
+        if(gamepad1.a && exocutePos == sliderMachineState.slidePosition.RESTAB && debounceTime.milliseconds() > 500){
 
             exocutePos = sliderMachineState.slidePosition.STABAFTERSTAB;
             scoreWaitingTime.reset();
             debounceTime.reset();
         }
 
-        if(gamepad2.x){
+        if(gamepad1.x){
 
             exocutePos = sliderMachineState.slidePosition.THREATEN;
             scoreWaitingTime.reset();
@@ -375,7 +412,7 @@ public class TeleOp2 extends OpMode {
 
         //intake code
 
-        if(gamepad1.a){
+        if(gamepad1.start){
             slow = .5;
         }else{
             slow = 1;
@@ -391,13 +428,13 @@ public class TeleOp2 extends OpMode {
 
         }*/
 
-        if (gamepad1.b) {
+        if (gamepad2.b) {
 
             paperAirplane.setPosition(0);
         }
 
 
-            hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 100 * (float) -gamepad2.left_stick_y));
+        hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 100 * (float) -gamepad2.left_stick_y));
 
 
         hangPID.magicPID(hang1, hangTargetPos, hang1Time);
