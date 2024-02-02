@@ -65,6 +65,7 @@ public class PIDclass  {
             magicPID(slide, -50, tima);
 
         }else{
+            //magicPID(slide, , tima);
             slide.setPower(-1);
         }
 

@@ -20,12 +20,17 @@ public class sliderMachineState {
     Halt halt = new Halt();
 
 
-    public static int rowHeightVal = 50;
+    public static int rowHeightVal = 300;
+
+    public static int zeroToBaseOffset = 600;
+
+
     public int finalHeight;
 
     sleep sleep = new sleep();
    public enum slidePosition {
 
+        ROWSCORING,
         MANUAL,
         THREATEN, //waiting to stab
         STAB, //stabing
@@ -39,7 +44,7 @@ public class sliderMachineState {
 
     public static int LOWpos = 800;
     public static int THREATENINGpos = 10;
-    public static int midSTABpos = 1000;
+    public static int midSTABpos = 800;
     public static int STABBINGpos = -200;
     public static int MEDIUMpos = 1300;
     public static int HIGHpos = 1800;
@@ -65,7 +70,7 @@ public class sliderMachineState {
 
     public void magicalMacro (DcMotor slider, Servo arm1, Servo arm2,
                               Servo wrist, Servo stabberLeft,
-                              Servo stabberRight, slidePosition targetMachineState, ElapsedTime HaltTime, ElapsedTime PIDtime, TouchSensor toucher, boolean auto, int heightOffsetter){
+                              Servo stabberRight, slidePosition targetMachineState, ElapsedTime HaltTime, ElapsedTime PIDtime, TouchSensor toucher, boolean auto, int rowHeight){
 
 
         if (HaltTime == null || PIDtime == null) {
@@ -134,11 +139,14 @@ public class sliderMachineState {
                     if (!halt.halt(400, HaltTime)){
 
                         //slidesPID.magicPID(slider, midSTABpos, PIDtime);
-                        if(slider.getCurrentPosition() < 600){
-                            slider.setPower(1);
+                        /*if(slider.getCurrentPosition() < 500){
+                            slider.setPower(.5);
                         }else{
                             slider.setPower(0);
-                        }
+                        }*/
+
+                        slidesPID.magicPID(slider, midSTABpos, PIDtime);
+
                         wrist.setPosition(wristStab);
                         arm1.setPosition(armStab);
                         arm2.setPosition(armStab);
@@ -164,7 +172,7 @@ public class sliderMachineState {
                 case LOW:
 
 
-                    finalHeight = LOWpos + heightOffsetter;
+                    finalHeight = LOWpos;
 
                     slidesPID.magicPID(slider, finalHeight, PIDtime);
 
@@ -179,7 +187,7 @@ public class sliderMachineState {
                     break;
                 case MEDIUM:
 
-                    finalHeight = MEDIUMpos + heightOffsetter;
+                    finalHeight = MEDIUMpos;
 
                     slidesPID.magicPID(slider, finalHeight, PIDtime);
 
@@ -195,7 +203,7 @@ public class sliderMachineState {
                 case HIGH:
 
 
-                    finalHeight = HIGHpos + heightOffsetter;
+                    finalHeight = HIGHpos;
 
                     slidesPID.magicPID(slider, finalHeight, PIDtime);
 
@@ -208,7 +216,7 @@ public class sliderMachineState {
                 case REALLYHIGH:
 
 
-                    finalHeight = ReallyHIGHpos + heightOffsetter;
+                    finalHeight = ReallyHIGHpos;
 
                     slidesPID.magicPID(slider, finalHeight, PIDtime);
 
@@ -222,6 +230,23 @@ public class sliderMachineState {
                 case MANUAL:
 
                     break;
+
+                case ROWSCORING:
+
+                    finalHeight = (rowHeight * rowHeightVal) + zeroToBaseOffset ;
+
+                    slidesPID.magicPID(slider, finalHeight, PIDtime);
+
+                    arm1.setPosition(armScore);
+                    arm2.setPosition(armScore);
+
+                    wrist.setPosition(wristScore);
+
+
+
+                    break;
+
+
 
 
             }
