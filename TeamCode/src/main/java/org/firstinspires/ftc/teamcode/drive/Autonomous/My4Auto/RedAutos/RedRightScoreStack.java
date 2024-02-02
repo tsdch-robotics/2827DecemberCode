@@ -4,13 +4,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.Autonomous.Misc.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
@@ -28,15 +29,22 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
-@Disabled
-@Autonomous(group = "drive")
-public class RedRightBroke extends LinearOpMode {
+@Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
+public class RedRightScoreStack extends LinearOpMode {
+
+
+    TouchSensor touchSensor;
 
     public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
 
+
+    sliderMachineState.slidePosition executePos = sliderMachineState.slidePosition.THREATEN;
+
     OpenCvWebcam webcam1 = null;
     ElapsedTime elapsedTime = new ElapsedTime(); // Add ElapsedTime to track time
+
+    public ElapsedTime scoreWaitingTime = new ElapsedTime();
 
     moveWithBasicEncoder moveByEncoder = new moveWithBasicEncoder();
 
@@ -45,8 +53,8 @@ public class RedRightBroke extends LinearOpMode {
     int totalLeft;
     int totalRight;
 
-    public boolean greaterThanTargetPercentBluePixels1 = false;
-    public boolean greaterThanTargetPercentBluePixels2 = false;
+    public boolean greaterThanTargetPercentRedPixels1 = false;
+    public boolean greaterThanTargetPercentRedPixels2 = false;
 
     ColorAnalysisPipeline colorAnalysisPipeline;
 
@@ -54,6 +62,7 @@ public class RedRightBroke extends LinearOpMode {
     private double targetPixPercent2 = .2;
 
     private DcMotor slides;
+    private DcMotor intake;
 
     private Servo arm1;
     private Servo arm2;
@@ -65,27 +74,42 @@ public class RedRightBroke extends LinearOpMode {
 
     class ColorAnalysisPipeline extends OpenCvPipeline {
 
-        Mat input = new Mat();
+        Mat roi1 = new Mat();
+        Mat roi2 = new Mat();
+
+
+        public boolean firstTime = true;
+
+        Mat redMask = new Mat();
+
+        Mat inputMat = new Mat();
         Mat output = new Mat();
 
-        Scalar redLower = new Scalar(0, 50, 100);
-        Scalar redUpper = new Scalar(10, 255, 255);
+
+
+
+        Scalar redLower = new Scalar(0, 50, 50);
+        Scalar redUpper = new Scalar(20, 255, 255);
         Scalar yellowLower = new Scalar(20, 50, 50);
         Scalar yellowUpper = new Scalar(40, 255, 255);
         //Scalar blueLower = new Scalar(90, 50, 50);
         //Scalar blueUpper = new Scalar(130, 255, 255);
 
-        private Rect rect1 = new Rect(50, 150, 300, 150);
+
+        private Rect rect1 = new Rect(50, 100, 250, 150);
         private Rect rect2 = new Rect(440, 120, 190, 180);
+
+        //private Rect rect1 = new Rect(50, 150, 300, 150);
+        //private Rect rect2 = new Rect(440, 120, 190, 180);
 
         private int redPixels1;
         private int redPixels2;
 
-        public int getBluePixels1() {
+        public int getRedPixels1() {
             return redPixels1;
         }
 
-        public int getBluePixels2() {
+        public int getRedPixels2() {
             return redPixels2;
         }
 
@@ -99,53 +123,81 @@ public class RedRightBroke extends LinearOpMode {
 
         @Override
         public Mat processFrame(Mat input) {
-            input.copyTo(this.input);
 
-            this.input.copyTo(this.output);
 
-            Mat roi1 = this.input.submat(rect1);
-            Mat roi2 = this.input.submat(rect2);
+            output.release();
+            inputMat.release();
 
-            redPixels1 = countBluePixels(roi1);
-            redPixels2 = countBluePixels(roi2);
+            input.copyTo(this.inputMat);
+
+            this.inputMat.copyTo(this.output);
+
+            roi1 = this.inputMat.submat(rect1);
+            roi2 = this.inputMat.submat(rect2);
+
+            redPixels1 = countRedPixels(roi1);
+            redPixels2 = countRedPixels(roi2);
 
             telemetry.addData("ProcessFrame Called", true);
-            telemetry.addData("Blue Pixels in Rectangle 1", redPixels1);
-            telemetry.addData("Blue Pixels in Rectangle 2", redPixels2);
+            telemetry.addData("Red Pixels in Rectangle 1", redPixels1);
+            telemetry.addData("Red Pixels in Rectangle 2", redPixels2);
             telemetry.addData("Rectangle1 Area", rect1.area());
+
             telemetry.addData("Rectangle2 Area", rect2.area());
 
             Imgproc.rectangle(this.output, rect1, new Scalar(255, 0, 0), 2);
             Imgproc.rectangle(this.output, rect2, new Scalar(255, 0, 0), 2);
 
+
+            roi1.release();
+            roi2.release();
+
             return this.output;
         }
 
 
-        private int countBluePixels(Mat image) {
+        private int countRedPixels(Mat image) {
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2HSV);
 
-            Mat blueMask = new Mat();
-            Core.inRange(image, redLower, redUpper, blueMask);
+            //Mat blueMask = new Mat();
+            Core.inRange(image, redLower, redUpper, redMask);
 
-            return Core.countNonZero(blueMask);
+            return Core.countNonZero(redMask);
         }
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(14.5, -60, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
         drive.setPoseEstimate(startPose);
 
+
+
+
+
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
                 .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
+
+
+
+        touchSensor = hardwareMap.get(TouchSensor.class, "touch");
+
+
+
+
+
+
         slides = hardwareMap.dcMotor.get("slides");
+        intake = hardwareMap.dcMotor.get("intake");
         slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -157,6 +209,16 @@ public class RedRightBroke extends LinearOpMode {
         flicker = hardwareMap.servo.get("flicker");
 
         arm1.setDirection(Servo.Direction.REVERSE);
+
+        scoreWaitingTime.reset();
+        scoreWaitingTime.startTime();
+
+        slidesTime.reset();
+        slidesTime.startTime();
+
+
+
+
 
         colorAnalysisPipeline = new ColorAnalysisPipeline();
         webcam1.setPipeline(colorAnalysisPipeline);
@@ -171,29 +233,36 @@ public class RedRightBroke extends LinearOpMode {
 
             }
         });
+
+
         telemetry.addLine("Waiting to start");
+
+        telemetry.addData("RedPixels1", colorAnalysisPipeline.getRedPixels1());
+        telemetry.addData("RedPixels1", colorAnalysisPipeline.getRedPixels2());
         telemetry.update();
 
 
-        //executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2, sliderMachineState.slidePosition.STAB, slidesTime, true);
 
 
-        sleep(2000);
+
         waitForStart();
+
+
         telemetry.addLine("started");
         telemetry.update();
 
-        for (int i = 0; i < 25; i++) {
+        for (int i = 0; i < 500; i++) {
             telemetry.addLine("Measuring Camera stream");
             telemetry.addData("totalLeft", totalLeft);
+            telemetry.addData("totalLeft", totalRight);
             telemetry.update();
 
             // Process frames and accumulate color values
-            totalLeft += colorAnalysisPipeline.getBluePixels1();
-            totalRight += colorAnalysisPipeline.getBluePixels2();
+            totalLeft += colorAnalysisPipeline.getRedPixels1();
+            totalRight += colorAnalysisPipeline.getRedPixels2();
 
             frameCount = frameCount + 1;
-            sleep(10);
+            sleep(0);
         }
 
         webcam1.stopStreaming();//may want to remove
@@ -202,18 +271,18 @@ public class RedRightBroke extends LinearOpMode {
         double averageRight = totalRight / frameCount;
 
         if (averageLeft / colorAnalysisPipeline.getRect1().area() > targetPixPercent1) {
-            greaterThanTargetPercentBluePixels1 = true;
+            greaterThanTargetPercentRedPixels1 = true;
         } else if (averageRight / colorAnalysisPipeline.getRect2().area() > targetPixPercent2) {
-            greaterThanTargetPercentBluePixels2 = true;
+            greaterThanTargetPercentRedPixels2 = true;
         } else {
-            greaterThanTargetPercentBluePixels1 = false;
-            greaterThanTargetPercentBluePixels2 = false;
+            greaterThanTargetPercentRedPixels1 = false;
+            greaterThanTargetPercentRedPixels2 = false;
         }
 
-        if (averageLeft > averageRight && greaterThanTargetPercentBluePixels1) {
+        if (averageLeft > averageRight && greaterThanTargetPercentRedPixels1) {
             telemetry.addLine("Middle");
             zone = 2;
-        } else if (averageLeft < averageRight && greaterThanTargetPercentBluePixels2) {
+        } else if (averageLeft < averageRight && greaterThanTargetPercentRedPixels2) {
             telemetry.addLine("Right");
             zone = 3;
         } else {
@@ -233,6 +302,8 @@ public class RedRightBroke extends LinearOpMode {
             telemetry.update();
 
 
+
+
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
 
@@ -242,31 +313,42 @@ public class RedRightBroke extends LinearOpMode {
                     })
 
 
-
-                    .splineTo(new Vector2d(13, -30), Math.toRadians(90))
+                    .splineTo(new Vector2d(13, -30), Math.toRadians(90))//13
 
                     .waitSeconds(1)
                     //place purple
+                    .addTemporalMarker(() -> {
+                        flicker.setPosition(.8);
+                    })
                     .waitSeconds(1)
 
-
-                    .lineToSplineHeading(new Pose2d(13, -46, Math.toRadians(0)))
-
+                    .lineToSplineHeading(new Pose2d(13, -38, Math.toRadians(90)))
+                    .waitSeconds(.01)
+                    .lineToSplineHeading(new Pose2d(13.1, -38, Math.toRadians(0)))
                     .waitSeconds(.1)
+
                     //raise lift
-
-                    .splineTo(new Vector2d(51, -39), Math.toRadians(0))//slow to board
-
+                    .addTemporalMarker(() -> {
 
 
-                    .splineTo(new Vector2d(51.21, -35.71), Math.toRadians(0),
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        arm1.setPosition(sliderMachineState.armScore);
+                        arm2.setPosition(sliderMachineState.armScore);
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                        wrist.setPosition(sliderMachineState.wristScore);
+
+                    })
+
+                    .splineTo(new Vector2d(45, -35), Math.toRadians(0))
+                    .splineTo(new Vector2d(51, -35), Math.toRadians(0),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to board
+                    //slow to park//slow to board, middle
+
+
                     .waitSeconds(1)
                     //score
-
-
                     .addTemporalMarker(() -> {
 
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -275,27 +357,40 @@ public class RedRightBroke extends LinearOpMode {
                     })
 
 
-
                     .waitSeconds(1)
+
+                    .lineToSplineHeading(new Pose2d(45, -34, Math.toRadians(0)))//back off
+
+
                     .setReversed(true)
 
 
 
                     // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90))
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                    //slow to park
                     .waitSeconds(1)
 
 
                     .build();
 
+
+
+
             drive.followTrajectorySequence(trajectory1);
+
+
+
+//TODO: do not touich ozned 6!
         } else if (zone == 3) {
             telemetry.addLine("running zone 6 auto!");
             telemetry.update();
 
-
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -304,19 +399,21 @@ public class RedRightBroke extends LinearOpMode {
 
 
 
-
-
-                    .splineTo(new Vector2d(29, -30), Math.toRadians(180))
+                    .splineTo(new Vector2d(30.5, -30), Math.toRadians(180))
 
                     .waitSeconds(1)
                     //place purple
+                    .addTemporalMarker(() -> {
+                        flicker.setPosition(.8);
+                    })
                     .waitSeconds(1)
 
 
-                    .lineToSplineHeading(new Pose2d(36, -31, Math.toRadians(180)))
+                    .lineToSplineHeading(new Pose2d(45, -31.1, Math.toRadians(180)))
 
+                    .waitSeconds(.5)
 
-                    .lineToSplineHeading(new Pose2d(37, -31, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, -31, Math.toRadians(0)))
 
                     //raise lift
 
@@ -333,8 +430,9 @@ public class RedRightBroke extends LinearOpMode {
                     })
 
 
-                    //.lineToSplineHeading(new Pose2d(51, -39, Math.toRadians(0)))//slow to board
-                    .splineTo(new Vector2d(50.6, -42), Math.toRadians(0),
+                    .lineToSplineHeading(new Pose2d(45, -40.5, Math.toRadians(0)))
+                    .waitSeconds(.1)
+                    .splineTo(new Vector2d(51.3, -40.5), Math.toRadians(0),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 //slow to board
@@ -356,19 +454,28 @@ public class RedRightBroke extends LinearOpMode {
                     .setReversed(true)
 
 
+                    .lineToSplineHeading(new Pose2d(45, -42, Math.toRadians(0)))//back off
 
-                    // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90))
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                    //slow to park
                     .waitSeconds(1)
+
+
 
                     .build();
 
 
             drive.followTrajectorySequence(trajectory1);
+
+
         } else {
             telemetry.addLine("running zone 4 auto!");
             telemetry.update();
+
+
 
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
@@ -379,20 +486,22 @@ public class RedRightBroke extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
-                    .splineTo(new Vector2d(7, -33), Math.toRadians(180))
+                    .splineTo(new Vector2d(15, -33), Math.toRadians(180))
+                    .waitSeconds(.1)
+                    .lineToSplineHeading(new Pose2d(7, -33, Math.toRadians(180)))
 
                     .waitSeconds(1)
                     //place purple
+                    .addTemporalMarker(() -> {
+                        flicker.setPosition(.8);
+                    })
                     .waitSeconds(1)
 
+                    .lineToSplineHeading(new Pose2d(18, -33.01, Math.toRadians(180)))
+                    .lineToSplineHeading(new Pose2d(18, -33, Math.toRadians(0.1)))
 
-                    .lineToSplineHeading(new Pose2d(17, -33, Math.toRadians(180)))
-
-
-                    .lineToSplineHeading(new Pose2d(37, -31, Math.toRadians(180)))
-
+                    .waitSeconds(.1)
                     //raise lift
-
                     .addTemporalMarker(() -> {
 
 
@@ -405,19 +514,17 @@ public class RedRightBroke extends LinearOpMode {
 
                     })
 
-                    .lineToSplineHeading(new Pose2d(37.1, -31.1, Math.toRadians(0)))//turn toward sboard
 
-                    .splineTo(new Vector2d(52, -30.2), Math.toRadians(0),
-                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
+                    .splineTo(new Vector2d(45, -29.1), Math.toRadians(0))
+                    .waitSeconds(.01)
+                    .splineTo(new Vector2d(51, -29.2), Math.toRadians(0),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                     //slow to board
 
 
-
                     .waitSeconds(1)
                     //score
-
-
                     .addTemporalMarker(() -> {
 
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -427,15 +534,20 @@ public class RedRightBroke extends LinearOpMode {
 
 
                     .waitSeconds(1)
-                    .setReversed(true)
+
+                    .lineToSplineHeading(new Pose2d(45, -28, Math.toRadians(0.1)))//back off
 
 
-                    // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+
+//trying to score stack
+                    .lineToSplineHeading(new Pose2d(45, -34, Math.toRadians(0)))
+                    .waitSeconds(.1)
+
+                    //retract lift
                     .addTemporalMarker(() -> {
+
+
                         moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
                         arm1.setPosition(sliderMachineState.armThreaten);
                         arm2.setPosition(sliderMachineState.armThreaten);
@@ -444,14 +556,58 @@ public class RedRightBroke extends LinearOpMode {
                         wrist.setPosition(sliderMachineState.wristThreaten);
 
                     })
+
+                    .lineToSplineHeading(new Pose2d(45, -5, Math.toRadians(0)))
+                    .waitSeconds(.1)
+                    .lineToSplineHeading(new Pose2d(-50, -5, Math.toRadians(0)))
+                    .waitSeconds(.1)
+
+
+                    //turn on slow
+                    //.lineToSplineHeading(new Pose2d(-55, -12, Math.toRadians(0)))
                     .waitSeconds(2)
+
+                    //intake
+                    .addTemporalMarker(() -> {
+
+                        intake.setPower(.5);
+
+                    })
+
+                    .waitSeconds(2)
+                    .lineToSplineHeading(new Pose2d(-50, -10, Math.toRadians(0)))
+                    .waitSeconds(.1)
+                    //stab
+
+                    .lineToSplineHeading(new Pose2d(45, -10, Math.toRadians(0)))
+                    .waitSeconds(.1)
+                    //raise lift
+
+
+                    .lineToSplineHeading(new Pose2d(45, -30, Math.toRadians(0)))//insert custom y here
+                    .waitSeconds(.1)
+
+                    //go slow
+                    .lineToSplineHeading(new Pose2d(52, -30, Math.toRadians(0)))//insert custom y here
+                    .waitSeconds(.1)
+
+
+
+
 
                     .build();
 
 
             drive.followTrajectorySequence(trajectory1);
         }
+
+        /*while(!isStopRequested()){
+            PoseStorage.currentPose = drive.getPoseEstimate();
+        }*/
+
+
     }
+
 
 
 }

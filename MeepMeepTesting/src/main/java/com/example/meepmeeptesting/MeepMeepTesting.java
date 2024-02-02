@@ -62,8 +62,18 @@ public class MeepMeepTesting {
                                 .waitSeconds(.1)
                                 //stab
 
-                                .lineToSplineHeading(new Pose2d(-50, -10, Math.toRadians(0)))
+                                .lineToSplineHeading(new Pose2d(45, -10, Math.toRadians(0)))
                                 .waitSeconds(.1)
+                                //raise lift
+
+
+                                .lineToSplineHeading(new Pose2d(45, -30, Math.toRadians(0)))//insert custom y here
+                                .waitSeconds(.1)
+
+                                //go slow
+                                .lineToSplineHeading(new Pose2d(52, -30, Math.toRadians(0)))//insert custom y here
+                                .waitSeconds(.1)
+
 
 
 

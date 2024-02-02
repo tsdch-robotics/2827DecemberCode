@@ -20,9 +20,9 @@ public class sliderMachineState {
     Halt halt = new Halt();
 
 
-    public static int rowHeightVal = 300;
+    public static int rowHeightVal = 200;
 
-    public static int zeroToBaseOffset = 600;
+    public static int zeroToBaseOffset = 700;
 
 
     public int finalHeight;

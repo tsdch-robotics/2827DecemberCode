@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
-@TeleOp(name = "TeleOpOld", group = "TeleOp")
+@TeleOp(name = "Run this TeleOp!", group = "TeleOp")
 public class TeleOpOld extends OpMode {
 
 //custom funcitons, used to save code space
@@ -210,7 +210,7 @@ public class TeleOpOld extends OpMode {
         debounceTime.startTime();
 
 
-        paperAirplane.setPosition(0.58);
+        paperAirplane.setPosition(.5);
 
         //waitForStart();
         //  runtime.reset();
@@ -435,7 +435,7 @@ public class TeleOpOld extends OpMode {
 
         if (gamepad1.b) {
 
-            paperAirplane.setPosition(0);
+            paperAirplane.setPosition(.6);
         }
 
 

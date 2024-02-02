@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
-@TeleOp(name = "TeleOp2", group = "TeleOp")
+@TeleOp(name = "DONOTRUN", group = "TeleOp")
 public class TeleOp2 extends OpMode {
 
 //custom funcitons, used to save code space
@@ -328,7 +328,10 @@ public class TeleOp2 extends OpMode {
             preloadPos = sliderMachineState.slidePosition.ROWSCORING;
             rowPreloadLevel -= 1;
             pressableUp = false;
-        }else if (!gamepad1.dpad_down){
+        }
+
+
+        if (!gamepad1.dpad_down){
 
             pressableUp = true;
         }
@@ -355,7 +358,10 @@ public class TeleOp2 extends OpMode {
             rowPreloadLevel += 1;
             pressableDown = false;
 
-        }else if (!gamepad1.dpad_up){
+        }
+
+
+        if (!gamepad1.dpad_up){
 
             pressableDown = true;
         }
@@ -418,7 +424,11 @@ public class TeleOp2 extends OpMode {
         if(gamepad2.y){
             exocutePos = preloadPos;
             scoreWaitingTime.reset();
-        }else if (exocutePos == sliderMachineState.slidePosition.ROWSCORING){
+        }else if (exocutePos == sliderMachineState.slidePosition.MEDIUM ||
+                exocutePos == sliderMachineState.slidePosition.LOW ||
+                exocutePos == sliderMachineState.slidePosition.HIGH ||
+                exocutePos == sliderMachineState.slidePosition.REALLYHIGH){
+
             exocutePos = preloadPos;
             //scoreWaitingTime.reset();
         }

@@ -32,7 +32,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 
 @Config
-@Autonomous(group = "drive", preselectTeleOp = "TeleOp2")
+@Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
 public class BlueLeft extends LinearOpMode {
 
 

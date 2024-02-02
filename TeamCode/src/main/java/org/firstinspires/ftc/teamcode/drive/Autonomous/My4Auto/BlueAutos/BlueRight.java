@@ -29,7 +29,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
-@Autonomous(group = "drive", preselectTeleOp = "TeleOp2")
+@Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
 public class BlueRight extends LinearOpMode {
 
     public ElapsedTime slidesTime = new ElapsedTime();
