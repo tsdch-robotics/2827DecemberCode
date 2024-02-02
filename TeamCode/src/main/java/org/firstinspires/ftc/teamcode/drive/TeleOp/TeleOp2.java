@@ -38,6 +38,9 @@ public class TeleOp2 extends OpMode {
 //custom funcitons, used to save code space
 
 
+    PIDclass slidesPID = new PIDclass();
+
+
     int heightOffset = 0;
     private boolean currentlyScoring = false;
 
@@ -105,6 +108,8 @@ public class TeleOp2 extends OpMode {
     private sliderMachineState.slidePosition preloadPos = sliderMachineState.slidePosition.LOW;
     private sliderMachineState.slidePosition exocutePos = sliderMachineState.slidePosition.THREATEN;
 
+    int lastManualPosition = 800;
+
 //TODO import my "halt" funciton
     //TODO adjust slider pid;
 
@@ -165,7 +170,7 @@ public class TeleOp2 extends OpMode {
         hang1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-
+//getting rid of imu initialization
         // Initialize the gyro sensor
         BNO055IMU.Parameters imuParams = new BNO055IMU.Parameters();
         imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -176,7 +181,10 @@ public class TeleOp2 extends OpMode {
         imuParams.loggingTag = "IMU";
         imuParams.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+
         imu.initialize(imuParams);
+
+
 
 
         IMUposeTransfercorrection = (Math.toDegrees(PoseStorage.currentPose.getHeading()) + 90);
@@ -281,12 +289,16 @@ public class TeleOp2 extends OpMode {
         //intake code
 
 
-        if (gamepad1.left_trigger < .5) {
-            intake.setPower(gamepad1.right_trigger);
-        }
-        if (gamepad1.right_trigger < .5) {
+        if (gamepad1.left_trigger > .1) {
             intake.setPower(-gamepad1.left_trigger);
-//1 to 3     20 1/3 in 8 seconds, so 60rotations in 8 seconds
+        }else if (gamepad1.right_trigger > .1) {
+            intake.setPower(gamepad1.right_trigger);
+        }else if (gamepad2.left_trigger > .2) {
+            intake.setPower(gamepad2.left_trigger);
+        }else if (gamepad2.right_trigger > .2) {
+            intake.setPower(-gamepad2.right_trigger);
+        }else{
+            intake.setPower(0);
         }
 
 
@@ -304,19 +316,19 @@ public class TeleOp2 extends OpMode {
        //second controller
 
 
-        if (gamepad2.dpad_down && !currentlyScoring) {
+        if (gamepad2.dpad_down) {
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.LOW;
         }
-        if (gamepad2.dpad_left && !currentlyScoring) {
+        if (gamepad2.dpad_left) {
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.MEDIUM;
         }
 
 
-        if (gamepad2.dpad_up && !currentlyScoring) {
+        if (gamepad2.dpad_up) {
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.HIGH;
@@ -324,15 +336,45 @@ public class TeleOp2 extends OpMode {
 
 
 
-        if (gamepad2.dpad_right && !currentlyScoring) {
+        if (gamepad2.dpad_right) {
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.REALLYHIGH;
         }
 
-        heightOffset = (int) (Math.round(heightOffset + 100 * (float) -gamepad2.right_stick_y));
+/*
+        if(gamepad2.b && slides.getCurrentPosition() > 600){
+            heightOffset = (int) (Math.round(heightOffset + 50 * (float) -gamepad1.right_stick_y));
+        }else if(gamepad1.dpad_down){
+            heightOffset -= 150;
 
+        }else if(gamepad1.dpad_up){
+            heightOffset += 150;
 
+        }else if(gamepad1.dpad_right){
+            heightOffset += 75;
+
+        }else if(gamepad1.dpad_left){
+            heightOffset += 75;
+
+        }
+
+        else{
+            heightOffset = (int) (Math.round(heightOffset + 200 * (float) -gamepad2.left_stick_y));
+        }*/
+
+        if(Math.abs(gamepad2.left_stick_y) > 0.1){
+
+            exocutePos = sliderMachineState.slidePosition.MANUAL;
+            if(slides.getCurrentPosition() > 600 && slides.getCurrentPosition() < 3000){
+                slides.setPower(gamepad2.left_stick_y);
+                lastManualPosition = slides.getCurrentPosition();
+            }
+        } else if (exocutePos == sliderMachineState.slidePosition.MANUAL) {
+
+            slidesPID.magicPID(slides, lastManualPosition, sliderTime);
+
+        }
 
 
 
@@ -397,7 +439,7 @@ public class TeleOp2 extends OpMode {
         }
 
 
-            hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 100 * (float) -gamepad2.left_stick_y));
+        hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 100 * (float) -gamepad2.right_stick_y));
 
 
         hangPID.magicPID(hang1, hangTargetPos, hang1Time);

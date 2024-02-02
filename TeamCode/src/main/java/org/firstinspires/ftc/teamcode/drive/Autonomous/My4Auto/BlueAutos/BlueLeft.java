@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.BlueAutos;
 
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -27,10 +28,17 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 
 @Config
 @Autonomous(group = "drive", preselectTeleOp = "TeleOp2")
 public class BlueLeft extends LinearOpMode {
+
+
+
+    private BNO055IMU imu;
+
 
     public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
@@ -226,6 +234,21 @@ public class BlueLeft extends LinearOpMode {
 
 
 
+/*
+        BNO055IMU.Parameters imuParams = new BNO055IMU.Parameters();
+        imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imuParams.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        //imuParams.LOGO_FACING_DIR, USB_FACING_DIR
+        imuParams.calibrationDataFile = "BNO055IMUCalibration.json"; // Set this to your calibration file
+        imuParams.loggingEnabled = true;
+        imuParams.loggingTag = "IMU";
+        imuParams.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+
+        imu.initialize(imuParams);
+*/
+
 
         waitForStart();
 
@@ -307,9 +330,9 @@ public class BlueLeft extends LinearOpMode {
                     .addTemporalMarker(() -> {flicker.setPosition(.8);} )
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
                     .lineToSplineHeading(new Pose2d(18, 45, Math.toRadians(-80)))
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
                     .addTemporalMarker(() -> {
 
@@ -332,7 +355,7 @@ public class BlueLeft extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
 
-                    .waitSeconds(.5)
+                    .waitSeconds(.3)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -340,7 +363,7 @@ public class BlueLeft extends LinearOpMode {
                     })
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
                     .setReversed(true)
 
 
@@ -380,7 +403,7 @@ public class BlueLeft extends LinearOpMode {
 
                     .addTemporalMarker(() -> {flicker.setPosition(.8);} )
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
                     .lineToSplineHeading(new Pose2d(20, 45, Math.toRadians(-80)))
                     .waitSeconds(.1)
 
@@ -406,7 +429,7 @@ public class BlueLeft extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -414,7 +437,7 @@ public class BlueLeft extends LinearOpMode {
                     })
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
                     .setReversed(true)
 
 
@@ -423,7 +446,7 @@ public class BlueLeft extends LinearOpMode {
                     .splineTo(new Vector2d(45, 55), Math.toRadians(90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    .waitSeconds(.5)
+                    .waitSeconds(.1)
                     .lineToSplineHeading(new Pose2d(45.1, 55, Math.toRadians(-90)))
 
                     .build();
@@ -454,11 +477,11 @@ public class BlueLeft extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(30, 31, Math.toRadians(180)))
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
                     .addTemporalMarker(() -> {flicker.setPosition(.8);} )
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
 
                     .lineToSplineHeading(new Pose2d(38, 31, Math.toRadians(180)))
@@ -482,7 +505,7 @@ public class BlueLeft extends LinearOpMode {
 
                     })
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
 
                     .lineToSplineHeading(new Pose2d(52.5, 40, Math.toRadians(0)),
@@ -490,7 +513,7 @@ public class BlueLeft extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -498,7 +521,7 @@ public class BlueLeft extends LinearOpMode {
                     })
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
                     .setReversed(true)
 
                     .lineToSplineHeading(new Pose2d(45, 40, Math.toRadians(0)))
@@ -506,7 +529,7 @@ public class BlueLeft extends LinearOpMode {
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
                     .build();
 

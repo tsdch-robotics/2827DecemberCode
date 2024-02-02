@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.RedAutos;
 
+
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -32,6 +35,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(group = "drive", preselectTeleOp = "TeleOp2")
 public class RedLeftThruTruss extends LinearOpMode {
 
+
+    private BNO055IMU imu;
 
     TouchSensor touchSensor;
 
@@ -241,6 +246,21 @@ public class RedLeftThruTruss extends LinearOpMode {
 
 
 
+/*
+        BNO055IMU.Parameters imuParams = new BNO055IMU.Parameters();
+        imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imuParams.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        //imuParams.LOGO_FACING_DIR, USB_FACING_DIR
+        imuParams.calibrationDataFile = "BNO055IMUCalibration.json"; // Set this to your calibration file
+        imuParams.loggingEnabled = true;
+        imuParams.loggingTag = "IMU";
+        imuParams.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+
+        imu.initialize(imuParams);
+*/
+
 
 
         waitForStart();
@@ -325,10 +345,10 @@ public class RedLeftThruTruss extends LinearOpMode {
                         flicker.setPosition(.8);
                     })
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
 
 
-                  /*  .lineToSplineHeading(new Pose2d (-44.0, -58.9, Math.toRadians(0)))//allign with wall
+                    .lineToSplineHeading(new Pose2d (-44.0, -58.9, Math.toRadians(0)))//allign with wall
 
 
                     .lineToSplineHeading(new Pose2d(13.1, -58.7, Math.toRadians(0)))//out of truss
@@ -346,11 +366,11 @@ public class RedLeftThruTruss extends LinearOpMode {
 
                     })
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
                     .splineTo(new Vector2d(44.5, -34.5), Math.toRadians(0))
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
                     .splineTo(new Vector2d(51.21, -34.51), Math.toRadians(0),
             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
@@ -359,7 +379,7 @@ public class RedLeftThruTruss extends LinearOpMode {
 
                     .lineToSplineHeading(new Pose2d(51.2, -34.5, Math.toRadians(0)))//confirm 0
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
 
 
                     .addTemporalMarker(() -> {
@@ -369,7 +389,7 @@ public class RedLeftThruTruss extends LinearOpMode {
                             //release pixel
                     })
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
 
                     .lineToSplineHeading(new Pose2d(45, -33.5, Math.toRadians(0)))//confirm 0
                     .waitSeconds(.01)
@@ -378,7 +398,7 @@ public class RedLeftThruTruss extends LinearOpMode {
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                                             //slow to park
-*/
+
                     .build();
 
 
@@ -411,23 +431,23 @@ public class RedLeftThruTruss extends LinearOpMode {
                     .splineTo(new Vector2d(-32.4, -34.3), Math.toRadians(0))
                     .lineToSplineHeading(new Pose2d(-32.41, -34.31, Math.toRadians(0)))//spike mark
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.8);
                     })
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
 
-                    /*.lineToSplineHeading(new Pose2d(-38.5, -34.3, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-38.5, -34.3, Math.toRadians(0)))
 
                     .lineToSplineHeading(new Pose2d(-36.9, -58.7, Math.toRadians(0)))
 
                     .lineToSplineHeading(new Pose2d(13.1, -58.7, Math.toRadians(0)))
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
                     .addTemporalMarker(() -> {
 
@@ -442,20 +462,19 @@ public class RedLeftThruTruss extends LinearOpMode {
                     })
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
-                    .splineTo(new Vector2d(44.5, -40), Math.toRadians(0))
+                    .splineTo(new Vector2d(44.5, -39.25), Math.toRadians(0))
 
 
-
-                    .splineTo(new Vector2d(51, -40), Math.toRadians(0),
+                    .splineTo(new Vector2d(51, -39.25), Math.toRadians(0),
             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 //slow to board
 
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
 
                     .addTemporalMarker(() -> {
 
@@ -464,17 +483,17 @@ public class RedLeftThruTruss extends LinearOpMode {
 
                     })
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
 
 
 
 
                     .lineToSplineHeading(new Pose2d(47, -40, Math.toRadians(0)))
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
-                    /*.setReversed(true)
+                    .setReversed(true)
                     .splineTo(new Vector2d(46.5, -55), Math.toRadians(-90))//slow
-*/
+
 
                     .build();
 
@@ -492,7 +511,7 @@ public class RedLeftThruTruss extends LinearOpMode {
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
 
-                    .waitSeconds(7)
+                    //.waitSeconds(7)
 
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.5);
@@ -506,15 +525,15 @@ public class RedLeftThruTruss extends LinearOpMode {
                     .splineTo(new Vector2d(-46.71, -36.71), Math.toRadians(90))
                     .lineToSplineHeading(new Pose2d (-46, -36.7, Math.toRadians(90)))//ensure 90
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.8);
                     })
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
                     //place pixel
 
 
-                /*    .lineToSplineHeading(new Pose2d (-46.7, -44.7, Math.toRadians(90)))//back off
+                    .lineToSplineHeading(new Pose2d (-46.7, -44.7, Math.toRadians(90)))//back off
 
 
                     .lineToSplineHeading(new Pose2d (-43.5, -58.9, Math.toRadians(0)))//allign with wall
@@ -536,21 +555,21 @@ public class RedLeftThruTruss extends LinearOpMode {
                     })
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
-                    .splineTo(new Vector2d(44.5, -30.61), Math.toRadians(0))
+                    .splineTo(new Vector2d(44.5, -30), Math.toRadians(0))
 
                     //.waitSeconds(1)
 
-                    .splineTo(new Vector2d(52, -30.62), Math.toRadians(0),
+                    .splineTo(new Vector2d(52, -29.51), Math.toRadians(0),
             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                         //slow to board
 
-                    .lineToSplineHeading(new Pose2d(52, -30.63, Math.toRadians(0)))//correct on board
+                    .lineToSplineHeading(new Pose2d(52, -29.5, Math.toRadians(0)))//correct on board
 
 
-                    .waitSeconds(2)
+                    .waitSeconds(.5)
 
                     .addTemporalMarker(() -> {
 
@@ -559,20 +578,20 @@ public class RedLeftThruTruss extends LinearOpMode {
 
                     })
 
-                    .waitSeconds(1)
+                    .waitSeconds(.6)
 
 
 
                     .lineToSplineHeading(new Pose2d(45, -30.6, Math.toRadians(0)))//escape
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
                     .setReversed(true)
                     .splineTo(new Vector2d(46.5, -59.8), Math.toRadians(-90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                                     //slow to park
-*/
+
 
                     .build();
 

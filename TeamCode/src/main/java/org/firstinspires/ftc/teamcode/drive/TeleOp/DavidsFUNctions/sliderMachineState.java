@@ -26,6 +26,7 @@ public class sliderMachineState {
     sleep sleep = new sleep();
    public enum slidePosition {
 
+        MANUAL,
         THREATEN, //waiting to stab
         STAB, //stabing
         RESTAB,
@@ -36,14 +37,14 @@ public class sliderMachineState {
         REALLYHIGH;
     }
 
-    public static int LOWpos = 700;
+    public static int LOWpos = 800;
     public static int THREATENINGpos = 10;
     public static int midSTABpos = 1000;
     public static int STABBINGpos = -200;
     public static int MEDIUMpos = 1300;
     public static int HIGHpos = 1800;
     public static int ReallyHIGHpos = 3000;
-    //todo adjust these values
+    //todo adjust these values fortnite
 
     public static double stabFinger1Tight = 0.82;//servo pos
     public static double stabFinger2Tight = .58;//servo pos
@@ -97,7 +98,11 @@ public class sliderMachineState {
                     if(halt.halt(300, HaltTime)){
 
 
-                        slidesPID.magicPID(slider, 300, PIDtime);
+                        if(slider.getCurrentPosition() < 600){
+                            slider.setPower(1);
+                        }else{
+                            slider.setPower(0);
+                        }
 
                         wrist.setPosition(wristStab);
                         arm1.setPosition(armStab);
@@ -109,22 +114,27 @@ public class sliderMachineState {
 
                 case STABAFTERSTAB:
 
-                    slidesPID.magicPID(slider, STABBINGpos - 10, PIDtime);
+                    slidesPID.zero(slider, PIDtime, toucher);
 
                     if(halt.halt(200, HaltTime)){
                         stabberLeft.setPosition(stabFinger1Tight);
                         stabberRight.setPosition(stabFinger2Tight);
+
+
                     }
+
+
+
 
                     break;
 
 
                 case STAB:
 
-                    if (!halt.halt(500, HaltTime)){
+                    if (!halt.halt(400, HaltTime)){
 
                         //slidesPID.magicPID(slider, midSTABpos, PIDtime);
-                        if(slider.getCurrentPosition() < 800){
+                        if(slider.getCurrentPosition() < 600){
                             slider.setPower(1);
                         }else{
                             slider.setPower(0);
@@ -135,7 +145,7 @@ public class sliderMachineState {
                     }
 
 
-                    if (halt.halt(500, HaltTime)) {//so really this is only halting by this - the previous halt
+                    if (halt.halt(400, HaltTime)) {//so really this is only halting by this - the previous halt
 
                         slidesPID.zero(slider, PIDtime, toucher);
 
@@ -207,6 +217,10 @@ public class sliderMachineState {
                     if (halt.halt(0, HaltTime)) {
                         wrist.setPosition(wristScore);
                     }
+                    break;
+
+                case MANUAL:
+
                     break;
 
 

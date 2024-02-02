@@ -293,18 +293,18 @@ public class BlueRight extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(-38.0, 30.6, Math.toRadians(-90)))
 
 
-                    .waitSeconds(.5)
+                    .waitSeconds(.1)
 
                     .addTemporalMarker(() -> {flicker.setPosition(.8);} )
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
 
                     .lineToSplineHeading(new Pose2d(-42.5, 58.1, Math.toRadians(0)))//prepare for journey thru tus
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
 
                     .lineToSplineHeading(new Pose2d(17.4, 58.1, Math.toRadians(0)))
@@ -321,7 +321,7 @@ public class BlueRight extends LinearOpMode {
 
                     })
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
 
                     //fast to board
@@ -332,7 +332,7 @@ public class BlueRight extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
 
-                    .waitSeconds(.8)
+                    .waitSeconds(.3)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -340,7 +340,7 @@ public class BlueRight extends LinearOpMode {
                     })
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
                     .setReversed(true)
 
 
@@ -383,7 +383,7 @@ public class BlueRight extends LinearOpMode {
                     //place pixel
                     .addTemporalMarker(() -> {flicker.setPosition(.8);} )
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
 
                     .lineToSplineHeading(new Pose2d(-35.78, 32.4, Math.toRadians(180)))//escape pixel
@@ -419,7 +419,7 @@ public class BlueRight extends LinearOpMode {
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
-                    .waitSeconds(1)
+                    .waitSeconds(.3)
 
 
                     .addTemporalMarker(() -> {
@@ -428,7 +428,7 @@ public class BlueRight extends LinearOpMode {
                     })
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
                     .setReversed(true)
 
 
@@ -437,7 +437,7 @@ public class BlueRight extends LinearOpMode {
                     .splineTo(new Vector2d(45, 55), Math.toRadians(90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    .waitSeconds(.5)
+                    .waitSeconds(.1)
                     .lineToSplineHeading(new Pose2d(45.1, 60, Math.toRadians(-90)))
 
                     .build();
@@ -467,10 +467,10 @@ public class BlueRight extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(-30.36, 34.45, Math.toRadians(0)))
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
                     .addTemporalMarker(() -> {flicker.setPosition(.8);} )
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
 
                     .lineToSplineHeading(new Pose2d(-45, 34.45, Math.toRadians(0)))//to avoid the pole
@@ -506,7 +506,7 @@ public class BlueRight extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -514,7 +514,7 @@ public class BlueRight extends LinearOpMode {
                     })
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
 
 
                     .lineToSplineHeading(new Pose2d(45, 38.5, Math.toRadians(0)))
@@ -529,7 +529,7 @@ public class BlueRight extends LinearOpMode {
 
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
                     .build();
 
