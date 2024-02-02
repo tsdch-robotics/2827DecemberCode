@@ -368,16 +368,16 @@ public class RedLeftThruTruss extends LinearOpMode {
 
                     .waitSeconds(.1)
 
-                    .splineTo(new Vector2d(44.5, -34.5), Math.toRadians(0))
+                    .splineTo(new Vector2d(44.5, -35), Math.toRadians(0))
 
                     .waitSeconds(.1)
 
-                    .splineTo(new Vector2d(51.21, -34.51), Math.toRadians(0),
+                    .splineTo(new Vector2d(51.21, -35), Math.toRadians(0),
             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                                 //slow to board
 
-                    .lineToSplineHeading(new Pose2d(51.2, -34.5, Math.toRadians(0)))//confirm 0
+                    .lineToSplineHeading(new Pose2d(51.2, -35, Math.toRadians(0)))//confirm 0
 
                     .waitSeconds(.5)
 
@@ -561,12 +561,12 @@ public class RedLeftThruTruss extends LinearOpMode {
 
                     //.waitSeconds(1)
 
-                    .splineTo(new Vector2d(52, -29.51), Math.toRadians(0),
+                    .splineTo(new Vector2d(52, -30), Math.toRadians(0),
             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                         //slow to board
 
-                    .lineToSplineHeading(new Pose2d(52, -29.5, Math.toRadians(0)))//correct on board
+                    .lineToSplineHeading(new Pose2d(52, -30.1, Math.toRadians(-5)))//correct on board
 
 
                     .waitSeconds(.5)

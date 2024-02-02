@@ -325,14 +325,14 @@ public class BlueRight extends LinearOpMode {
 
 
                     //fast to board
-                    .splineTo(new Vector2d(48.6, 33.5), Math.toRadians(0))
+                    .splineTo(new Vector2d(48.6, 33), Math.toRadians(0))
 
-                    .lineToSplineHeading(new Pose2d(53, 33.5, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(52, 33, Math.toRadians(-2)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
 
-                    .waitSeconds(.3)
+                    .waitSeconds(.8)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -501,7 +501,7 @@ public class BlueRight extends LinearOpMode {
 
 
                     .splineTo(new Vector2d(45, 39.2), Math.toRadians(0))
-                    .splineTo(new Vector2d(53.95, 39.2), Math.toRadians(0),
+                    .splineTo(new Vector2d(51.5, 39.1), Math.toRadians(-5),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 //slow board aproch
@@ -517,7 +517,7 @@ public class BlueRight extends LinearOpMode {
                     .waitSeconds(.5)
 
 
-                    .lineToSplineHeading(new Pose2d(45, 38.5, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, 39.1, Math.toRadians(0)))
                     /*.splineTo(new Vector2d(45, 59), Math.toRadians(90),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))

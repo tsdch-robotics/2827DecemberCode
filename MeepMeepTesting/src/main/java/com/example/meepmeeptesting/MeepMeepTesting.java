@@ -24,6 +24,9 @@ public class MeepMeepTesting {
 
 
 
+
+                                //.splineTo()
+
                                 .splineTo(new Vector2d(13, -30), Math.toRadians(90))
 
                                 .waitSeconds(1)
@@ -37,20 +40,32 @@ public class MeepMeepTesting {
 
                                 .splineTo(new Vector2d(51, -34), Math.toRadians(0))//slow to board, middle
 
+//
 
-                                .waitSeconds(1)
-                                //score
+//begin stack
+                                .lineToSplineHeading(new Pose2d(45, -34, Math.toRadians(0)))
+                                .waitSeconds(.1)
+
+                                //retract lift
+                                .lineToSplineHeading(new Pose2d(45, -10, Math.toRadians(0)))
+                                .waitSeconds(.1)
+                                .lineToSplineHeading(new Pose2d(-50, -10, Math.toRadians(0)))
+                                .waitSeconds(.1)
 
 
-                                .waitSeconds(1)
-                                .setReversed(true)
+                                //turn on slow
+                                .lineToSplineHeading(new Pose2d(-55, -12, Math.toRadians(0)))
+                                .waitSeconds(.1)
+
+                                //intake
+                                .lineToSplineHeading(new Pose2d(-50, -10, Math.toRadians(0)))
+                                .waitSeconds(.1)
+                                //stab
+
+                                .lineToSplineHeading(new Pose2d(-50, -10, Math.toRadians(0)))
+                                .waitSeconds(.1)
 
 
-
-                                // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
-
-                                .splineTo(new Vector2d(45, -59), Math.toRadians(-90))
-                                .waitSeconds(1)
 
                                 .build()
 
