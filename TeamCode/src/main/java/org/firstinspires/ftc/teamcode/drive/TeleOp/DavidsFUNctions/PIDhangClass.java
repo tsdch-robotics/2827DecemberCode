@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.Range;
 
 public class PIDhangClass  {
 
-    public double hangKp = 0.02;
+    public double hangKp = 0.002;
     public double hangKi = 0;
     public double hangKd = 0;
     public double hangIntegralSum = 0;
@@ -15,7 +15,7 @@ public class PIDhangClass  {
     //public final int CUTOFF = 20;
 
     public int minHang = -100;
-    public int maxHang = 4500;
+    public int maxHang = 6000;
 
     public double out = 0;
 

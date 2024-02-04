@@ -375,6 +375,22 @@ public class BlueLeft extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
 
+                    .addTemporalMarker(() -> {
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .strafeLeft(9)
+
+                    .waitSeconds(2)
+
+
+
                     .build();
 
             drive.followTrajectorySequence(trajectory1);
@@ -448,6 +464,22 @@ public class BlueLeft extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                     .waitSeconds(.1)
                     .lineToSplineHeading(new Pose2d(45.1, 55, Math.toRadians(-90)))
+
+
+
+                    .addTemporalMarker(() -> {
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .strafeLeft(9)
+
+                    .waitSeconds(2)
 
                     .build();
 
@@ -532,7 +564,24 @@ public class BlueLeft extends LinearOpMode {
 
                     .waitSeconds(.1)
 
+                    .addTemporalMarker(() -> {
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .strafeLeft(9)
+
+                    .waitSeconds(2)
+
+
+
                     .build();
+
 
 
             drive.followTrajectorySequence(trajectory1);

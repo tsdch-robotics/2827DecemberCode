@@ -372,6 +372,20 @@ public class RedRightParkAlianceSide extends LinearOpMode {
             //slow to park
                     .waitSeconds(1)
 
+                    .addTemporalMarker(() -> {
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .strafeRight(9)
+
+                    .waitSeconds(2)
+
 
                     .build();
 
@@ -460,6 +474,21 @@ public class RedRightParkAlianceSide extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                     //slow to park
                     .waitSeconds(1)
+
+                    .addTemporalMarker(() -> {
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+
+                    .strafeRight(9)
+
+                    .waitSeconds(2)
 
 
 
@@ -550,6 +579,19 @@ public class RedRightParkAlianceSide extends LinearOpMode {
 
                     .waitSeconds(1)
 
+                    .addTemporalMarker(() -> {
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .strafeRight(9)
+
+                    .waitSeconds(2)
 
                     .build();
 

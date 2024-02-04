@@ -312,7 +312,7 @@ public class BlueRight extends LinearOpMode {
 
                     .addTemporalMarker(() -> {
 
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos + 200);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -350,6 +350,20 @@ public class BlueRight extends LinearOpMode {
                     .splineTo(new Vector2d(45, 60), Math.toRadians(90),
                             SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+
+                    .addTemporalMarker(() -> {
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .strafeLeft(9)
+
+                    .waitSeconds(2)
 
 
                     .build();
@@ -401,7 +415,7 @@ public class BlueRight extends LinearOpMode {
                     .addTemporalMarker(() -> {
 
 
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos + 200);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -439,6 +453,23 @@ public class BlueRight extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                     .waitSeconds(.1)
                     .lineToSplineHeading(new Pose2d(45.1, 60, Math.toRadians(-90)))
+
+
+                    .addTemporalMarker(() -> {
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .strafeLeft(9)
+
+                    .waitSeconds(2)
+
+
 
                     .build();
 
@@ -485,7 +516,7 @@ public class BlueRight extends LinearOpMode {
                     .addTemporalMarker(() -> {
 
 
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos + 200);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -530,6 +561,21 @@ public class BlueRight extends LinearOpMode {
 
 
                     .waitSeconds(.1)
+
+                    .addTemporalMarker(() -> {
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+                    .strafeLeft(9)
+
+                    .waitSeconds(2)
+
 
                     .build();
 

@@ -40,6 +40,7 @@ public class TeleOpOld extends OpMode {
 
     PIDclass slidesPID = new PIDclass();
 
+    public boolean recentDpad = true;
 
     int heightOffset = 0;
     private boolean currentlyScoring = false;
@@ -320,11 +321,13 @@ public class TeleOpOld extends OpMode {
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.LOW;
+            recentDpad = true;
         }
         if (gamepad2.dpad_left) {
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.MEDIUM;
+            recentDpad = true;
         }
 
 
@@ -332,6 +335,7 @@ public class TeleOpOld extends OpMode {
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.HIGH;
+            recentDpad = true;
         }
 
 
@@ -340,6 +344,7 @@ public class TeleOpOld extends OpMode {
 
             heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.REALLYHIGH;
+            recentDpad = true;
         }
 
 /*
@@ -369,8 +374,10 @@ public class TeleOpOld extends OpMode {
             if(slides.getCurrentPosition() > 300 && slides.getCurrentPosition() < 3000){
                 slides.setPower(-gamepad2.left_stick_y);
                 lastManualPosition = slides.getCurrentPosition();
+
             }
         } else if (exocutePos == sliderMachineState.slidePosition.MANUAL) {
+
 
             slidesPID.magicPID(slides, lastManualPosition, sliderTime);
 
@@ -380,10 +387,16 @@ public class TeleOpOld extends OpMode {
 
 
         //exocute pos
-        if(gamepad2.y){
+        if(gamepad2.y && recentDpad){
             exocutePos = preloadPos;
             scoreWaitingTime.reset();
         }
+
+        if(gamepad2.y && !recentDpad){
+            exocutePos = sliderMachineState.slidePosition.RESTORESTICK;
+            scoreWaitingTime.reset();
+        }
+
 //stab
         if(gamepad2.a && exocutePos == sliderMachineState.slidePosition.THREATEN && debounceTime.milliseconds() > 500){
 
@@ -409,6 +422,7 @@ public class TeleOpOld extends OpMode {
 
             exocutePos = sliderMachineState.slidePosition.THREATEN;
             scoreWaitingTime.reset();
+            recentDpad = false;
         }
 
 
@@ -439,7 +453,7 @@ public class TeleOpOld extends OpMode {
         }
 
 
-        hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 100 * (float) -gamepad2.right_stick_y));
+        hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 400 * (float) -gamepad2.right_stick_y));
 
 
         hangPID.magicPID(hang1, hangTargetPos, hang1Time);
@@ -453,7 +467,7 @@ public class TeleOpOld extends OpMode {
 //power slides
 
         executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2,
-                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false, heightOffset);
+                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false, heightOffset, lastManualPosition);
 
 
         //chekc if scoring

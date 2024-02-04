@@ -448,7 +448,7 @@ public class OneDriver extends OpMode {
 //power slides
 
         executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2,
-                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false, heightOffset);
+                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false, heightOffset,0);
 
 
         //chekc if scoring

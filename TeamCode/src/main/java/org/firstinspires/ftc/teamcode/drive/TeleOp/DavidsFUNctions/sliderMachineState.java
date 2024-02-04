@@ -30,6 +30,7 @@ public class sliderMachineState {
     sleep sleep = new sleep();
    public enum slidePosition {
 
+        RESTORESTICK,
         ROWSCORING,
         MANUAL,
         THREATEN, //waiting to stab
@@ -70,7 +71,7 @@ public class sliderMachineState {
 
     public void magicalMacro (DcMotor slider, Servo arm1, Servo arm2,
                               Servo wrist, Servo stabberLeft,
-                              Servo stabberRight, slidePosition targetMachineState, ElapsedTime HaltTime, ElapsedTime PIDtime, TouchSensor toucher, boolean auto, int rowHeight){
+                              Servo stabberRight, slidePosition targetMachineState, ElapsedTime HaltTime, ElapsedTime PIDtime, TouchSensor toucher, boolean auto, int rowHeight, int lastManual){
 
 
         if (HaltTime == null || PIDtime == null) {
@@ -242,6 +243,23 @@ public class sliderMachineState {
 
                     wrist.setPosition(wristScore);
 
+
+
+                    break;
+
+
+                case RESTORESTICK:
+
+
+
+                    slidesPID.magicPID(slider, lastManual, PIDtime);
+
+
+
+                    arm1.setPosition(armScore);
+                    arm2.setPosition(armScore);
+
+                    wrist.setPosition(wristScore);
 
 
                     break;

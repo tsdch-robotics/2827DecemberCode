@@ -502,7 +502,7 @@ public class TeleOp2 extends OpMode {
 //power slides
 
         executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2,
-                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false, rowPreloadLevel);
+                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false, rowPreloadLevel, 0);
 
 
         //chekc if scoring

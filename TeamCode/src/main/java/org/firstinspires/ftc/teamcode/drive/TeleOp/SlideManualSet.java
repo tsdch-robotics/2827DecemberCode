@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
-@TeleOp(name = "SlideManualSet", group = "TeleOp")
+@TeleOp(name = "Hang Adjusting", group = "TeleOp")
 public class SlideManualSet extends OpMode {
 
 //custom funcitons, used to save code space
@@ -73,8 +73,8 @@ public class SlideManualSet extends OpMode {
     public void loop() {
 
 
-        hang1.setPower(gamepad2.left_stick_y);
-        hang2.setPower(gamepad2.right_stick_y);
+        hang1.setPower(-gamepad2.left_stick_y);
+        hang2.setPower(-gamepad2.right_stick_y);
 
     }
 
