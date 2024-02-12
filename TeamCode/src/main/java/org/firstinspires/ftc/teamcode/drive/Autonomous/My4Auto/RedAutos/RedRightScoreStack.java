@@ -495,15 +495,15 @@ public class RedRightScoreStack extends LinearOpMode {
                     })
 
                     .splineTo(new Vector2d(15, -33), Math.toRadians(180))
-                    .waitSeconds(.1)
+                    .waitSeconds(.01)
                     .lineToSplineHeading(new Pose2d(7, -33, Math.toRadians(180)))
 
-                    .waitSeconds(1)
+
                     //place purple
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.8);
                     })
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
 
                     .lineToSplineHeading(new Pose2d(18, -33.01, Math.toRadians(180)))
                     .lineToSplineHeading(new Pose2d(18, -33, Math.toRadians(0.1)))
@@ -537,7 +537,7 @@ public class RedRightScoreStack extends LinearOpMode {
                     //slow to board
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
                     //score
                     .addTemporalMarker(() -> {
 
@@ -547,7 +547,7 @@ public class RedRightScoreStack extends LinearOpMode {
                     })
 
 
-                    .waitSeconds(1)
+                    .waitSeconds(.1)
 
                     .lineToSplineHeading(new Pose2d(45, -28, Math.toRadians(0.1)))//back off
 
@@ -556,66 +556,165 @@ public class RedRightScoreStack extends LinearOpMode {
 
 //trying to score stack
 
-
-                    .lineToSplineHeading(new Pose2d(45, -34, Math.toRadians(0)))
-                    .waitSeconds(.1)
-
                     //retract lift
                     .addTemporalMarker(() -> {
 
 
-                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
-                        arm1.setPosition(sliderMachineState.armThreaten);
-                        arm2.setPosition(sliderMachineState.armThreaten);
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        wrist.setPosition(sliderMachineState.wristThreaten);
+                                    moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                                    arm1.setPosition(sliderMachineState.armThreaten);
+                                    arm2.setPosition(sliderMachineState.armThreaten);
+                                    finger1.setPosition(sliderMachineState.Finger1Loose);
+                                    finger2.setPosition(sliderMachineState.Finger2Loose);
+                                    wrist.setPosition(sliderMachineState.wristThreaten);
 
                     })
 
 
                     .setReversed(true)
-                    .splineTo(new Vector2d(40,-5), Math.toRadians(180))
+                    .splineTo(new Vector2d(20,-8), Math.toRadians(180))
 
                     //.lineToSplineHeading(new Pose2d(45, -5, Math.toRadians(0)))
-                    .waitSeconds(1)
-                    .lineToSplineHeading(new Pose2d(-50, -8, Math.toRadians(0)))
-                    .waitSeconds(1)
 
-                    .lineToSplineHeading(new Pose2d(-55, -5, Math.toRadians(0)))
-                    .waitSeconds(1)
+                    .lineToSplineHeading(new Pose2d(-55, -8, Math.toRadians(0)))
 
-
-                    //turn on slow
-                    //.lineToSplineHeading(new Pose2d(-55, -12, Math.toRadians(0)))
-                    .waitSeconds(1)
+                    .lineToSplineHeading(new Pose2d(-60, -10, Math.toRadians(0)))
 
                     //intake
-                    .addTemporalMarker(() -> {
+                    .addTemporalMarker(13,() -> {
 
 
-                        intake.setPower(-.5);
+                        intake.setPower(-.75);
 
                     })
 
+                    .waitSeconds(.5)
+
+                    //backup before the second one
+                    .lineToSplineHeading(new Pose2d(-56, -10, Math.toRadians(0)))
+
+                    .addTemporalMarker(15,() -> {
+                                    intakeLeft.setPosition(.2);
+                                    intakeRight.setPosition(.2);
+                    })
+                    .lineToSplineHeading(new Pose2d(-60, -10, Math.toRadians(0)))
+
                     .waitSeconds(1)
+
+                    .addTemporalMarker(17,() -> {
+                                    intakeLeft.setPosition(.35);
+                                    intakeRight.setPosition(.35);
+                    })
+
+
                     .lineToSplineHeading(new Pose2d(-50, -8, Math.toRadians(0)))
                     .waitSeconds(1)
+
+
+
+
+
                     //stab
 
                     .lineToSplineHeading(new Pose2d(40, -8, Math.toRadians(0)))
-                    .waitSeconds(1)
+                    .waitSeconds(.5)
                     //raise lift
+
+                    .addTemporalMarker(20,() -> {
+
+                        intake.setPower(0);
+
+                    })
+
+                    .addTemporalMarker(23,() -> {
+
+
+
+                                    moveByEncoder.powerSlider(slides, 800);
+                                    wrist.setPosition(sliderMachineState.wristStab);
+                                    arm1.setPosition(sliderMachineState.armStab);
+                                    arm2.setPosition(sliderMachineState.armStab);
+
+
+                    })
+                    .addTemporalMarker(24,() -> {
+
+
+
+                                    moveByEncoder.powerSlider(slides, 0);
+
+
+
+
+
+                    })
+                    .addTemporalMarker(25,() -> {
+
+
+
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+
+
+
+                    })
+
+
 
 
                     .setReversed(false)
                     .splineTo(new Vector2d(45,-30), Math.toRadians(0))
-
-                    .waitSeconds(1)
+                    .waitSeconds(.01)
 
                     //go slow
-                    .lineToSplineHeading(new Pose2d(52, -30, Math.toRadians(0)))//insert custom y here
+                    .lineToSplineHeading(new Pose2d(52, -35, Math.toRadians(0)))//insert custom y here
+                    .waitSeconds(.01)
+
+
+                    .addTemporalMarker(() -> {
+
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        arm1.setPosition(sliderMachineState.armScore);
+                        arm2.setPosition(sliderMachineState.armScore);
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                        wrist.setPosition(sliderMachineState.wristScore);
+
+
+                    })
+                    .waitSeconds(1.5)
+                    .addTemporalMarker(() -> {
+
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                        //release pixel
+                    })
+
+
+
+
+
+
+          //end  of the extra
+
+
+
+
+//park
                     .waitSeconds(1)
+                    .setReversed(true)
+
+
+                    .lineToSplineHeading(new Pose2d(45, -35, Math.toRadians(0)))//back off
+
+
+                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                    //slow to park
+                    .waitSeconds(1)
+
+
 
                     .build();
 
