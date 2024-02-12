@@ -192,7 +192,7 @@ public class BlueRight extends LinearOpMode {
         finger2 = hardwareMap.servo.get("finger2");
         flicker = hardwareMap.servo.get("flicker");
 
-        arm1.setDirection(Servo.Direction.REVERSE);
+        arm2.setDirection(Servo.Direction.REVERSE);
 
 
 

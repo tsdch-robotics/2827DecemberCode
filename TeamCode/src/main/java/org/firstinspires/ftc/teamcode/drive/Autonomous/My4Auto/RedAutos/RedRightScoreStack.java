@@ -195,7 +195,6 @@ public class RedRightScoreStack extends LinearOpMode {
 
 
 
-
         slides = hardwareMap.dcMotor.get("slides");
         intake = hardwareMap.dcMotor.get("intake");
         slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -208,7 +207,7 @@ public class RedRightScoreStack extends LinearOpMode {
         finger2 = hardwareMap.servo.get("finger2");
         flicker = hardwareMap.servo.get("flicker");
 
-        arm1.setDirection(Servo.Direction.REVERSE);
+        arm2.setDirection(Servo.Direction.REVERSE);
 
         scoreWaitingTime.reset();
         scoreWaitingTime.startTime();
@@ -590,9 +589,6 @@ public class RedRightScoreStack extends LinearOpMode {
                     //go slow
                     .lineToSplineHeading(new Pose2d(52, -30, Math.toRadians(0)))//insert custom y here
                     .waitSeconds(.1)
-
-
-
 
 
                     .build();

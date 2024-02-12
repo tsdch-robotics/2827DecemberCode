@@ -4,48 +4,32 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import org.firstinspires.ftc.teamcode.drive.Autonomous.Misc.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.PIDclass;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.PIDhangClass;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
 
-import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.Halt;
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
-@TeleOp(name = "DONOTRUN", group = "TeleOp")
-public class TeleOp2 extends OpMode {
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Run this TeleOp!", group = "TeleOp")
+public class TeleOp extends OpMode {
 
 //custom funcitons, used to save code space
 
 
     PIDclass slidesPID = new PIDclass();
 
+    public boolean recentDpad = true;
 
     int heightOffset = 0;
-    public boolean pressableUp = true;
-    public boolean pressableDown = true;
-
-    public int rowPreloadLevel = 0;
+    private boolean currentlyScoring = false;
 
     TouchSensor touchSensor;
 
@@ -97,6 +81,9 @@ public class TeleOp2 extends OpMode {
     private Servo wrist;
     private Servo finger1;
 
+    private Servo intakeLeft;
+    private Servo intakeRight;
+
     private Servo finger2;
 
 
@@ -126,7 +113,8 @@ public class TeleOp2 extends OpMode {
         wrist = hardwareMap.servo.get("wrist");
         finger1 = hardwareMap.servo.get("finger1");
         finger2 = hardwareMap.servo.get("finger2");
-        arm1.setDirection(Servo.Direction.REVERSE);
+        arm2.setDirection(Servo.Direction.REVERSE);
+
 
         frontLeftMotor = hardwareMap.dcMotor.get("FL");
         frontRightMotor = hardwareMap.dcMotor.get("FR");
@@ -134,6 +122,9 @@ public class TeleOp2 extends OpMode {
         rearRightMotor = hardwareMap.dcMotor.get("BR");
         intake = hardwareMap.dcMotor.get("intake");
         slides = hardwareMap.dcMotor.get("slides");
+
+        intakeLeft = hardwareMap.servo.get("intakeLeft");
+        intakeRight = hardwareMap.servo.get("intakeRight");
 
 
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -213,10 +204,10 @@ public class TeleOp2 extends OpMode {
         debounceTime.startTime();
 
 
-        paperAirplane.setPosition(0.58);
+        paperAirplane.setPosition(.5);
 
         //waitForStart();
-      //  runtime.reset();
+        //  runtime.reset();
 
     }
 
@@ -304,6 +295,25 @@ public class TeleOp2 extends OpMode {
             intake.setPower(0);
         }
 
+        if (gamepad1.dpad_down ) {
+            intakeLeft.setPosition(.35);
+            intakeRight.setPosition(.35);
+
+        }else if (gamepad1.dpad_up ) {
+            intakeLeft.setPosition(.2);
+            intakeRight.setPosition(.2);
+
+        }else if (gamepad1.dpad_left ) {
+            intakeLeft.setPosition(.25);
+            intakeRight.setPosition(.25);
+
+        } else if (gamepad1.dpad_right ) {
+            intakeLeft.setPosition(.11);
+            intakeRight.setPosition(.11);
+
+        }
+
+
 
         //7.5
 
@@ -316,72 +326,38 @@ public class TeleOp2 extends OpMode {
         //320/60sed == 5.33 rotations per second = 320rpm
         //435/60sed == 7.25 rotations per second = 435rpm
 
-       //second controller
+        //second controller
 
 
-        if (gamepad2.dpad_down && pressableUp/* && dpadDebounce >= */) {
+        if (gamepad2.dpad_down) {
 
-           /*heightOffset = 0;
+            heightOffset = 0;
             preloadPos = sliderMachineState.slidePosition.LOW;
-            */
-
-            preloadPos = sliderMachineState.slidePosition.ROWSCORING;
-            rowPreloadLevel -= 1;
-            pressableUp = false;
+            recentDpad = true;
         }
-
-
-        if (!gamepad1.dpad_down){
-
-            pressableUp = true;
-        }
-
-
         if (gamepad2.dpad_left) {
 
-           /* heightOffset = 0;
-            preloadPos = sliderMachineState.slidePosition.MEDIUM;*/
-
-            preloadPos = sliderMachineState.slidePosition.ROWSCORING;
-            rowPreloadLevel = 3;
-
-
+            heightOffset = 0;
+            preloadPos = sliderMachineState.slidePosition.MEDIUM;
+            recentDpad = true;
         }
 
 
-        if (gamepad2.dpad_up && pressableDown) {
+        if (gamepad2.dpad_up) {
 
-            //heightOffset = 0;
-            //preloadPos = sliderMachineState.slidePosition.HIGH;
-
-            preloadPos = sliderMachineState.slidePosition.ROWSCORING;
-            rowPreloadLevel += 1;
-            pressableDown = false;
-
-        }
-
-
-        if (!gamepad1.dpad_up){
-
-            pressableDown = true;
+            heightOffset = 0;
+            preloadPos = sliderMachineState.slidePosition.HIGH;
+            recentDpad = true;
         }
 
 
 
         if (gamepad2.dpad_right) {
 
-            //heightOffset = 0;
-            //preloadPos = sliderMachineState.slidePosition.REALLYHIGH;
-
-            preloadPos = sliderMachineState.slidePosition.ROWSCORING;
-            rowPreloadLevel = 6;
-
+            heightOffset = 0;
+            preloadPos = sliderMachineState.slidePosition.REALLYHIGH;
+            recentDpad = true;
         }
-
-
-
-
-
 
 /*
         if(gamepad2.b && slides.getCurrentPosition() > 600){
@@ -404,33 +380,33 @@ public class TeleOp2 extends OpMode {
             heightOffset = (int) (Math.round(heightOffset + 200 * (float) -gamepad2.left_stick_y));
         }*/
 
-        /*if(Math.abs(gamepad2.left_stick_y) > 0.1){
+        if(Math.abs(gamepad2.left_stick_y) > 0.1){
 
             exocutePos = sliderMachineState.slidePosition.MANUAL;
-            if(slides.getCurrentPosition() > 600 && slides.getCurrentPosition() < 3000){
-                slides.setPower(-0.5 * gamepad2.left_stick_y);
+            if(slides.getCurrentPosition() > 300 && slides.getCurrentPosition() < 3000){
+                slides.setPower(-gamepad2.left_stick_y);
                 lastManualPosition = slides.getCurrentPosition();
+
             }
         } else if (exocutePos == sliderMachineState.slidePosition.MANUAL) {
 
+
             slidesPID.magicPID(slides, lastManualPosition, sliderTime);
 
-        }*/
+        }
 
 
 
 
         //exocute pos
-        if(gamepad2.y){
+        if(gamepad2.y && recentDpad){
             exocutePos = preloadPos;
             scoreWaitingTime.reset();
-        }else if (exocutePos == sliderMachineState.slidePosition.MEDIUM ||
-                exocutePos == sliderMachineState.slidePosition.LOW ||
-                exocutePos == sliderMachineState.slidePosition.HIGH ||
-                exocutePos == sliderMachineState.slidePosition.REALLYHIGH){
+        }
 
-            exocutePos = preloadPos;
-            //scoreWaitingTime.reset();
+        if(gamepad2.y && !recentDpad){
+            exocutePos = sliderMachineState.slidePosition.RESTORESTICK;
+            scoreWaitingTime.reset();
         }
 
 //stab
@@ -458,7 +434,23 @@ public class TeleOp2 extends OpMode {
 
             exocutePos = sliderMachineState.slidePosition.THREATEN;
             scoreWaitingTime.reset();
+            recentDpad = false;
+        }else if(gamepad1.x){
+
+
+            exocutePos = sliderMachineState.slidePosition.THREATEN;
+            scoreWaitingTime.reset();
+            recentDpad = false;
+
+            intakeLeft.setPosition(.45);
+            intakeRight.setPosition(.45);
+
+
+
         }
+
+
+
 
 
 //TODO fix potential issues with ellapsed tiime, as it it called in a seprate file
@@ -484,11 +476,11 @@ public class TeleOp2 extends OpMode {
 
         if (gamepad1.b) {
 
-            paperAirplane.setPosition(0);
+            paperAirplane.setPosition(.6);
         }
 
 
-        hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 100 * (float) -gamepad2.right_stick_y));
+        hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 400 * (float) -gamepad2.right_stick_y));
 
 
         hangPID.magicPID(hang1, hangTargetPos, hang1Time);
@@ -502,11 +494,11 @@ public class TeleOp2 extends OpMode {
 //power slides
 
         executeSlides.magicalMacro(slides, arm1, arm2, wrist, finger1, finger2,
-                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false, rowPreloadLevel, 0);
+                exocutePos, scoreWaitingTime, sliderTime, touchSensor, false, heightOffset, lastManualPosition);
 
 
         //chekc if scoring
-        /*if(exocutePos == sliderMachineState.slidePosition.HIGH ||
+        if(exocutePos == sliderMachineState.slidePosition.HIGH ||
                 exocutePos == sliderMachineState.slidePosition.REALLYHIGH ||
                 exocutePos == sliderMachineState.slidePosition.LOW ||
                 exocutePos == sliderMachineState.slidePosition.MEDIUM){
@@ -514,7 +506,7 @@ public class TeleOp2 extends OpMode {
             currentlyScoring = true;
         }else{
             currentlyScoring = false;
-        }*/
+        }
 
 
 

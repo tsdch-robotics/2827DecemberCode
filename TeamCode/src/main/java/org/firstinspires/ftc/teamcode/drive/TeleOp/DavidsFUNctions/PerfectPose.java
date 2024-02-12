@@ -44,6 +44,9 @@ public class PerfectPose extends OpMode {
     private Servo arm1;
     private Servo arm2;
 
+    private Servo intakeRight;
+    private Servo intakeLeft;
+
     private Servo wrist;
     private Servo finger1;
 
@@ -59,6 +62,13 @@ public class PerfectPose extends OpMode {
     public static double currentArm = 0.16;//servo p
 
     public static double currentPaper = 0.58;
+
+
+    public static double intakeLeftVal = 0.5;
+    public static double intakeRightVal = 0.5;
+
+
+
 
     //public static double currentArm2 = .5;
 
@@ -88,6 +98,8 @@ public class PerfectPose extends OpMode {
 
         paperAirplane = hardwareMap.servo.get("paperAirplane");
 
+        intakeLeft = hardwareMap.servo.get("intakeLeft");
+        intakeRight = hardwareMap.servo.get("intakeRight");
 
 
         arm1.setDirection(Servo.Direction.REVERSE);
@@ -110,12 +122,16 @@ public class PerfectPose extends OpMode {
     @Override
     public void loop() {
 
-        arm1.setPosition(currentArm);
+        /*arm1.setPosition(currentArm);
         arm2.setPosition(currentArm);
         wrist.setPosition(currentWrist);
         paperAirplane.setPosition(currentPaper);
         finger1.setPosition(currentFinger1);
-        finger2.setPosition(currentFinger2);
+        finger2.setPosition(currentFinger2);*/
+
+
+        intakeLeft.setPosition(intakeLeftVal);
+        intakeRight.setPosition(intakeRightVal);
 
         //telemetry
         telemetry.update();
@@ -124,7 +140,7 @@ public class PerfectPose extends OpMode {
         telemetry.addData("Position of arm2", arm2.getPosition());
         telemetry.addData("Position of finger1", finger1.getPosition());
         telemetry.addData("Position of finger2", finger2.getPosition());
-        telemetry.addData("Position of wrist", wrist.getPosition());
+        telemetry.addData("Posititon of wrist", wrist.getPosition());
 
     }
 }

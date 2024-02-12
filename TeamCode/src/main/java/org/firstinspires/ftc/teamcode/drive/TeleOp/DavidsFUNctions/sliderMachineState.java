@@ -50,7 +50,6 @@ public class sliderMachineState {
     public static int MEDIUMpos = 1300;
     public static int HIGHpos = 1800;
     public static int ReallyHIGHpos = 3000;
-    //todo adjust these values fortnite
 
     public static double stabFinger1Tight = 0.82;//servo pos
     public static double stabFinger2Tight = .58;//servo pos
@@ -58,8 +57,8 @@ public class sliderMachineState {
     public static double Finger1Loose = 0.5;//servo pos
     public static double Finger2Loose = 0.51;//servo pos
 
-    public static double wristThreaten = .6;//servo pos
-    public static double wristStab = 0.44;//servo pos
+    public static double wristThreaten = .4;//servo pos
+    public static double wristStab = 0.6;//servo pos
     public static double wristScore = 0.3;//servo pos
 
     public static double armThreaten = 0.2;//servo pos
