@@ -53,6 +53,10 @@ public class RedRightScoreStack extends LinearOpMode {
     int totalLeft;
     int totalRight;
 
+
+    private Servo intakeLeft;
+    private Servo intakeRight;
+
     public boolean greaterThanTargetPercentRedPixels1 = false;
     public boolean greaterThanTargetPercentRedPixels2 = false;
 
@@ -206,6 +210,11 @@ public class RedRightScoreStack extends LinearOpMode {
         finger1 = hardwareMap.servo.get("finger1");
         finger2 = hardwareMap.servo.get("finger2");
         flicker = hardwareMap.servo.get("flicker");
+
+        intakeLeft = hardwareMap.servo.get("intakeLeft");
+        intakeRight = hardwareMap.servo.get("intakeRight");
+
+
 
         arm2.setDirection(Servo.Direction.REVERSE);
 
@@ -511,6 +520,12 @@ public class RedRightScoreStack extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                         wrist.setPosition(sliderMachineState.wristScore);
 
+
+                        intakeLeft.setPosition(.11);
+                        intakeRight.setPosition(.11);
+
+
+
                     })
 
 
@@ -540,6 +555,8 @@ public class RedRightScoreStack extends LinearOpMode {
 
 
 //trying to score stack
+
+
                     .lineToSplineHeading(new Pose2d(45, -34, Math.toRadians(0)))
                     .waitSeconds(.1)
 
@@ -556,40 +573,49 @@ public class RedRightScoreStack extends LinearOpMode {
 
                     })
 
-                    .lineToSplineHeading(new Pose2d(45, -5, Math.toRadians(0)))
-                    .waitSeconds(.1)
-                    .lineToSplineHeading(new Pose2d(-50, -5, Math.toRadians(0)))
-                    .waitSeconds(.1)
+
+                    .setReversed(true)
+                    .splineTo(new Vector2d(40,-5), Math.toRadians(180))
+
+                    //.lineToSplineHeading(new Pose2d(45, -5, Math.toRadians(0)))
+                    .waitSeconds(1)
+                    .lineToSplineHeading(new Pose2d(-50, -8, Math.toRadians(0)))
+                    .waitSeconds(1)
+
+                    .lineToSplineHeading(new Pose2d(-55, -5, Math.toRadians(0)))
+                    .waitSeconds(1)
 
 
                     //turn on slow
                     //.lineToSplineHeading(new Pose2d(-55, -12, Math.toRadians(0)))
-                    .waitSeconds(2)
+                    .waitSeconds(1)
 
                     //intake
                     .addTemporalMarker(() -> {
 
-                        intake.setPower(.5);
+
+                        intake.setPower(-.5);
 
                     })
 
-                    .waitSeconds(2)
-                    .lineToSplineHeading(new Pose2d(-50, -10, Math.toRadians(0)))
-                    .waitSeconds(.1)
+                    .waitSeconds(1)
+                    .lineToSplineHeading(new Pose2d(-50, -8, Math.toRadians(0)))
+                    .waitSeconds(1)
                     //stab
 
-                    .lineToSplineHeading(new Pose2d(45, -10, Math.toRadians(0)))
-                    .waitSeconds(.1)
+                    .lineToSplineHeading(new Pose2d(40, -8, Math.toRadians(0)))
+                    .waitSeconds(1)
                     //raise lift
 
 
-                    .lineToSplineHeading(new Pose2d(45, -30, Math.toRadians(0)))//insert custom y here
-                    .waitSeconds(.1)
+                    .setReversed(false)
+                    .splineTo(new Vector2d(45,-30), Math.toRadians(0))
+
+                    .waitSeconds(1)
 
                     //go slow
                     .lineToSplineHeading(new Pose2d(52, -30, Math.toRadians(0)))//insert custom y here
-                    .waitSeconds(.1)
-
+                    .waitSeconds(1)
 
                     .build();
 
