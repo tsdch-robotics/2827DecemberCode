@@ -21,17 +21,76 @@ public class MeepMeepTesting {
 
 //-38, 60 for blue audiance side
 
+                                .addTemporalMarker(() -> {
+                                    /*finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                                    finger2.setPosition(sliderMachineState.stabFinger2Tight);*/
+                                })
+
+                                .splineTo(new Vector2d(15, -33), Math.toRadians(180))
+                                //.waitSeconds(.01)
+                                .lineToSplineHeading(new Pose2d(7, -33, Math.toRadians(180)))
+
+
+                                //place purple
+                                .addTemporalMarker(() -> {
+                                    /*flicker.setPosition(.8);*/
+                                })
+                                .waitSeconds(.1)
+
+                                .lineToSplineHeading(new Pose2d(18, -33.01, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(30, -33, Math.toRadians(0.1)))
+
+                                //.waitSeconds(.1)
+                                //raise lift
+                                .addTemporalMarker(() -> {
+
+                                    /*moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                                    arm1.setPosition(sliderMachineState.armScore);
+                                    arm2.setPosition(sliderMachineState.armScore);
+                                    finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                                    finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                                    wrist.setPosition(sliderMachineState.wristScore);
+
+
+                                    intakeLeft.setPosition(.11);
+                                    intakeRight.setPosition(.11);*/
 
 
 
-//begin stack
+                                })
 
 
-                                .lineToSplineHeading(new Pose2d(45, -34, Math.toRadians(0)))
-                                .waitSeconds(.5)
+                                .splineTo(new Vector2d(45, -29.1), Math.toRadians(0))
+                                //.waitSeconds(.01)
+                                .splineTo(new Vector2d(51, -29.2), Math.toRadians(0))/*,
+                                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                                DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                                */
+
+                                //slow to board
+
+
+                                //.waitSeconds(.1)
+                                //score
+                                .addTemporalMarker(() -> {
+
+                                    /*finger1.setPosition(sliderMachineState.Finger1Loose);
+                                    finger2.setPosition(sliderMachineState.Finger2Loose);*/
+                                    //release pixel
+                                })
+
+
+                                //.waitSeconds(.1)
+
+                                .lineToSplineHeading(new Pose2d(45, -28, Math.toRadians(0.1)))//back off
+
+
+
+
+//trying to score stack
 
                                 //retract lift
-                               .addTemporalMarker(() -> {
+                                .addTemporalMarker(() -> {
 
 
                                     /*moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
@@ -39,97 +98,89 @@ public class MeepMeepTesting {
                                     arm2.setPosition(sliderMachineState.armThreaten);
                                     finger1.setPosition(sliderMachineState.Finger1Loose);
                                     finger2.setPosition(sliderMachineState.Finger2Loose);
-                                    wrist.setPosition(sliderMachineState.wristThreaten);
-*/
+                                    wrist.setPosition(sliderMachineState.wristThreaten);*/
+
                                 })
 
 
                                 .setReversed(true)
-                                .splineTo(new Vector2d(25,-8), Math.toRadians(180))
+                                .splineTo(new Vector2d(20,-8), Math.toRadians(180))
 
                                 //.lineToSplineHeading(new Pose2d(45, -5, Math.toRadians(0)))
-                                .waitSeconds(.5)
+
                                 .lineToSplineHeading(new Pose2d(-55, -8, Math.toRadians(0)))
 
-                                .lineToSplineHeading(new Pose2d(-59, -10, Math.toRadians(0)))
+                                .lineToSplineHeading(new Pose2d(-60, -10, Math.toRadians(0)))
 
                                 //intake
-                                .addTemporalMarker(15,() -> {
+                                .addDisplacementMarker(180,() -> {
 
 
-                                    //intake.setPower(-.75);
+                                    /*intake.setPower(-.75);*/
 
                                 })
 
-                                .waitSeconds(1)
+                                //.waitSeconds(.5)
 
                                 //backup before the second one
                                 .lineToSplineHeading(new Pose2d(-56, -10, Math.toRadians(0)))
 
-                                .addTemporalMarker(17,() -> {
+                                .addTemporalMarker(() -> {
                                     /*intakeLeft.setPosition(.2);
                                     intakeRight.setPosition(.2);*/
                                 })
-                                .lineToSplineHeading(new Pose2d(-59, -10, Math.toRadians(0)))
+                                .waitSeconds(.5)
 
-                                .waitSeconds(1)
+                                .lineToSplineHeading(new Pose2d(-60, -10, Math.toRadians(0)))
 
-                                .addTemporalMarker(17,() -> {
+
+
+
+                                .lineToSplineHeading(new Pose2d(-50, -8, Math.toRadians(0)))//leaving the stack
+                                .addTemporalMarker(() -> {
                                     /*intakeLeft.setPosition(.35);
                                     intakeRight.setPosition(.35);*/
                                 })
+                                .lineToSplineHeading(new Pose2d(40, -8, Math.toRadians(0)))//go thru gate
 
-
-                                .lineToSplineHeading(new Pose2d(-50, -8, Math.toRadians(0)))
-                                .waitSeconds(1)
-
-
-
-
-
-                                //stab
-
-                                .lineToSplineHeading(new Pose2d(40, -8, Math.toRadians(0)))
-                                .waitSeconds(1)
                                 //raise lift
 
-                                .addTemporalMarker(20,() -> {
+                                .addDisplacementMarker(350,() -> {
 
-                                    //intake.setPower(0);
+                                    /*intake.setPower(0);*/
 
                                 })
 
-                                .addTemporalMarker(23,() -> {
+                                .addDisplacementMarker(390,() -> {
 
-                                    /*
-
-                                    moveByEncoder.powerSlider(slides, 800);
-                                    wrist.setPosition(wristStab);
-                                    arm1.setPosition(armStab);
-                                    arm2.setPosition(armStab);*/
-
+                                   /* moveByEncoder.powerSlider(slides, 800);
+                                    wrist.setPosition(sliderMachineState.wristStab);
+                                    arm1.setPosition(sliderMachineState.armStab);
+                                    arm2.setPosition(sliderMachineState.armStab);
+*/
 
                                 })
                                 .addTemporalMarker(24,() -> {
 
-                                    /*
+/*
+
 
                                     moveByEncoder.powerSlider(slides, 0);
 
-
-                                     */
 
 
                                 })
                                 .addTemporalMarker(25,() -> {
 
-                                    /*
 
-                                    stabberLeft.setPosition(slidePosition.stabFinger1Tight);
-                                    stabberRight.setPosition(slidePosition.stabFinger2Tight);
+/*
+
+                                    finger1.setPosition(sliderMachineState.Finger1Loose);
+                                    finger2.setPosition(sliderMachineState.Finger2Loose);
+
+*/
 
 
-                                     */
                                 })
 
 
@@ -137,13 +188,62 @@ public class MeepMeepTesting {
 
                                 .setReversed(false)
                                 .splineTo(new Vector2d(45,-30), Math.toRadians(0))
-
-                                .waitSeconds(1)
+                                .waitSeconds(.01)
 
                                 //go slow
-                                .lineToSplineHeading(new Pose2d(52, -30, Math.toRadians(0)))//insert custom y here
-                                .waitSeconds(1)
+                                .lineToSplineHeading(new Pose2d(52, -35, Math.toRadians(0)))//insert custom y here
+                                .waitSeconds(.01)
 
+
+                                .addTemporalMarker(() -> {
+
+
+                                   /* moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                                    arm1.setPosition(sliderMachineState.armScore);
+                                    arm2.setPosition(sliderMachineState.armScore);
+                                    finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                                    finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                                    wrist.setPosition(sliderMachineState.wristScore);
+
+*/
+                                })
+                                .waitSeconds(1.5)
+                                .addTemporalMarker(() -> {
+
+                                    /*finger1.setPosition(sliderMachineState.Finger1Loose);
+                                    finger2.setPosition(sliderMachineState.Finger2Loose);
+
+                                    */
+
+                                    //release pixel
+                                })
+
+
+
+
+
+
+                                //end  of the extra
+
+
+
+
+//park
+                                .waitSeconds(1)
+                                .setReversed(true)
+
+
+                                .lineToSplineHeading(new Pose2d(45, -35, Math.toRadians(0)))//back off
+
+
+                                .splineTo(new Vector2d(45, -59), Math.toRadians(-90))/*,
+                                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                                DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                                */
+
+
+                                //slow to park
+                                .waitSeconds(1)
 
                                 .build()
 

@@ -115,7 +115,6 @@ public class TeleOp extends OpMode {
         finger2 = hardwareMap.servo.get("finger2");
         arm2.setDirection(Servo.Direction.REVERSE);
 
-
         frontLeftMotor = hardwareMap.dcMotor.get("FL");
         frontRightMotor = hardwareMap.dcMotor.get("FR");
         rearLeftMotor = hardwareMap.dcMotor.get("BL");
