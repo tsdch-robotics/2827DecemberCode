@@ -15,6 +15,10 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Disabled
 @Autonomous(group = "drive")
 public class SplineTest extends LinearOpMode {
+
+
+    public Trajectory traj;
+
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);

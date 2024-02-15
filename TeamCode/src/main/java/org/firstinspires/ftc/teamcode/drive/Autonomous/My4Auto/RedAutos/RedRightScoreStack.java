@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -28,12 +29,15 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+
 @Config
 @Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
 public class RedRightScoreStack extends LinearOpMode {
 
 
-    TouchSensor touchSensor;
+
+    TouchSensor touchLeft;
+    TouchSensor touchRight;
 
     public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
@@ -193,14 +197,12 @@ public class RedRightScoreStack extends LinearOpMode {
 
 
 
-        touchSensor = hardwareMap.get(TouchSensor.class, "touch");
-
-
-
-
+        touchLeft = hardwareMap.get(TouchSensor.class, "touchLeft");
+        touchRight = hardwareMap.get(TouchSensor.class, "touchLeft");
 
         slides = hardwareMap.dcMotor.get("slides");
         intake = hardwareMap.dcMotor.get("intake");
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -213,8 +215,6 @@ public class RedRightScoreStack extends LinearOpMode {
 
         intakeLeft = hardwareMap.servo.get("intakeLeft");
         intakeRight = hardwareMap.servo.get("intakeRight");
-
-
 
         arm2.setDirection(Servo.Direction.REVERSE);
 
@@ -484,61 +484,31 @@ public class RedRightScoreStack extends LinearOpMode {
             telemetry.update();
 
 
-
-
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
-
                     .addTemporalMarker(() -> {
-                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
-                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                                    finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                                    finger2.setPosition(sliderMachineState.stabFinger2Tight);
+
                     })
+                    .addTemporalMarker(.9,() -> {
 
-                    .splineTo(new Vector2d(15, -33), Math.toRadians(180))
-                    .waitSeconds(.01)
-                    .lineToSplineHeading(new Pose2d(7, -33, Math.toRadians(180)))
-
-
-                    //place purple
-                    .addTemporalMarker(() -> {
-                        flicker.setPosition(.8);
-                    })
-                    .waitSeconds(.5)
-
-                    .lineToSplineHeading(new Pose2d(18, -33.01, Math.toRadians(180)))
-                    .lineToSplineHeading(new Pose2d(18, -33, Math.toRadians(0.1)))
-
-                    .waitSeconds(.1)
-                    //raise lift
-                    .addTemporalMarker(() -> {
-
-
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
-                        arm1.setPosition(sliderMachineState.armScore);
-                        arm2.setPosition(sliderMachineState.armScore);
-                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
-                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
-                        wrist.setPosition(sliderMachineState.wristScore);
-
-
-                        intakeLeft.setPosition(.11);
-                        intakeRight.setPosition(.11);
-
-
-
+                                    moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                                    arm1.setPosition(sliderMachineState.armScore);
+                                    arm2.setPosition(sliderMachineState.armScore);
+                                    finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                                    finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                                    wrist.setPosition(sliderMachineState.wristScore);
                     })
 
 
-                    .splineTo(new Vector2d(45, -29.1), Math.toRadians(0))
-                    .waitSeconds(.01)
+                    .splineTo(new Vector2d(43, -29.1), Math.toRadians(0))
+                    //.waitSeconds(.01)
                     .splineTo(new Vector2d(51, -29.2), Math.toRadians(0),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to board
-
+                        SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
+                            DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
                     .waitSeconds(.1)
-                    //score
                     .addTemporalMarker(() -> {
 
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -546,12 +516,41 @@ public class RedRightScoreStack extends LinearOpMode {
                         //release pixel
                     })
 
-
-                    .waitSeconds(.1)
-
-                    .lineToSplineHeading(new Pose2d(45, -28, Math.toRadians(0.1)))//back off
+                    .setReversed(true)
+                    .splineTo(new Vector2d(9, -33), Math.toRadians(180))
 
 
+                    .addTemporalMarker(3,() -> {
+                       intakeLeft.setPosition(.11);
+                       intakeRight.setPosition(.11);
+
+                    })
+
+                    .addTemporalMarker(() -> {
+                        intake.setPower(-.4);//svore purple
+                    })
+
+
+                    //retract lift
+                    .addTemporalMarker(() -> {
+                                    moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                                    arm1.setPosition(sliderMachineState.armThreaten);
+                                    arm2.setPosition(sliderMachineState.armThreaten);
+                                    finger1.setPosition(sliderMachineState.Finger1Loose);
+                                    finger2.setPosition(sliderMachineState.Finger2Loose);
+                                    wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+
+                    .addTemporalMarker(5,() -> {
+//turn intake off after purple
+                        intake.setPower(0);
+                    })
+
+                    .setReversed(false)
+
+                    .lineToSplineHeading(new Pose2d(13, -33, Math.toRadians(0)))
+                    .splineTo(new Vector2d(30, -9), Math.toRadians(0))
 
 
 //trying to score stack
@@ -575,86 +574,72 @@ public class RedRightScoreStack extends LinearOpMode {
 
                     //.lineToSplineHeading(new Pose2d(45, -5, Math.toRadians(0)))
 
-                    .lineToSplineHeading(new Pose2d(-55, -8, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-56, -8, Math.toRadians(0)))
 
-                    .lineToSplineHeading(new Pose2d(-60, -10, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-60, -8, Math.toRadians(0)),
+                            SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+
+
 
                     //intake
-                    .addTemporalMarker(13,() -> {
+                    .addTemporalMarker(7,() -> {
 
 
-                        intake.setPower(-.75);
-
+                        intake.setPower(.8);
+//turn power on for intake
                     })
 
-                    .waitSeconds(.5)
-
                     //backup before the second one
-                    .lineToSplineHeading(new Pose2d(-56, -10, Math.toRadians(0)))
 
-                    .addTemporalMarker(15,() -> {
+                    .lineToSplineHeading(new Pose2d(-56, -10, Math.toRadians(0)))
+                    .addTemporalMarker(() -> {
                                     intakeLeft.setPosition(.2);
                                     intakeRight.setPosition(.2);
                     })
+                    .waitSeconds(.5)
+
                     .lineToSplineHeading(new Pose2d(-60, -10, Math.toRadians(0)))
+                    .addTemporalMarker(() -> {
+                        intake.setPower(1);
+                    })
 
-                    .waitSeconds(1)
+                    .setReversed(false)
+                    .splineTo(new Vector2d(-50, -8), Math.toRadians(0))//leaving the stack
+                    //line to?
 
-                    .addTemporalMarker(17,() -> {
+                    .addTemporalMarker(() -> {
                                     intakeLeft.setPosition(.35);
                                     intakeRight.setPosition(.35);
                     })
+                    .lineToSplineHeading(new Pose2d(40, -8, Math.toRadians(0)))//go thru gate
 
-
-                    .lineToSplineHeading(new Pose2d(-50, -8, Math.toRadians(0)))
-                    .waitSeconds(1)
-
-
-
-
-
-                    //stab
-
-                    .lineToSplineHeading(new Pose2d(40, -8, Math.toRadians(0)))
-                    .waitSeconds(.5)
                     //raise lift
 
-                    .addTemporalMarker(20,() -> {
+                    .addTemporalMarker(12,() -> {
 
                         intake.setPower(0);
 
                     })
 
-                    .addTemporalMarker(23,() -> {
+                    .addTemporalMarker(12,() -> {
 
-
-
-                                    moveByEncoder.powerSlider(slides, 800);
-                                    wrist.setPosition(sliderMachineState.wristStab);
-                                    arm1.setPosition(sliderMachineState.armStab);
-                                    arm2.setPosition(sliderMachineState.armStab);
-
-
-                    })
-                    .addTemporalMarker(24,() -> {
-
-
-
-                                    moveByEncoder.powerSlider(slides, 0);
-
-
-
+                        moveByEncoder.powerSlider(slides, 800);
+                        wrist.setPosition(sliderMachineState.wristStab);
+                        arm1.setPosition(sliderMachineState.armStab);
+                        arm2.setPosition(sliderMachineState.armStab);
 
 
                     })
-                    .addTemporalMarker(25,() -> {
+                    .addTemporalMarker(13,() -> {
 
+                        moveByEncoder.powerSlider(slides, 0);
 
+                    })
+                    .addTemporalMarker(14,() -> {
 
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-
-
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
 
                     })
 
@@ -666,19 +651,23 @@ public class RedRightScoreStack extends LinearOpMode {
                     .waitSeconds(.01)
 
                     //go slow
-                    .lineToSplineHeading(new Pose2d(52, -35, Math.toRadians(0)))//insert custom y here
-                    .waitSeconds(.01)
+                    .lineToSplineHeading(new Pose2d(46, -35, Math.toRadians(0)))
+                    .waitSeconds(.01)//use?
+                    .lineToSplineHeading(new Pose2d(50, -35, Math.toRadians(0)),
+            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
+                    .waitSeconds(.01)
 
                     .addTemporalMarker(() -> {
 
 
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
-                        arm1.setPosition(sliderMachineState.armScore);
-                        arm2.setPosition(sliderMachineState.armScore);
-                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
-                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
-                        wrist.setPosition(sliderMachineState.wristScore);
+                                   moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                                   arm1.setPosition(sliderMachineState.armScore);
+                                   arm2.setPosition(sliderMachineState.armScore);
+                                   finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                                   finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                                   wrist.setPosition(sliderMachineState.wristScore);
 
 
                     })
@@ -687,6 +676,7 @@ public class RedRightScoreStack extends LinearOpMode {
 
                         finger1.setPosition(sliderMachineState.Finger1Loose);
                         finger2.setPosition(sliderMachineState.Finger2Loose);
+
                         //release pixel
                     })
 
@@ -695,7 +685,7 @@ public class RedRightScoreStack extends LinearOpMode {
 
 
 
-          //end  of the extra
+                    //end  of the extra
 
 
 
@@ -709,10 +699,14 @@ public class RedRightScoreStack extends LinearOpMode {
 
 
                     .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                                DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+
+
+
                     //slow to park
-                    .waitSeconds(1)
+                    .waitSeconds(20)
+
 
 
 
