@@ -102,7 +102,7 @@ public class PerfectPose extends OpMode {
         intakeRight = hardwareMap.servo.get("intakeRight");
 
 
-        arm1.setDirection(Servo.Direction.REVERSE);
+        arm2.setDirection(Servo.Direction.REVERSE);
 
         frontLeftMotor = hardwareMap.dcMotor.get("FL");
         frontRightMotor = hardwareMap.dcMotor.get("FR");
@@ -122,16 +122,16 @@ public class PerfectPose extends OpMode {
     @Override
     public void loop() {
 
-        /*arm1.setPosition(currentArm);
+        arm1.setPosition(currentArm);
         arm2.setPosition(currentArm);
         wrist.setPosition(currentWrist);
         paperAirplane.setPosition(currentPaper);
         finger1.setPosition(currentFinger1);
-        finger2.setPosition(currentFinger2);*/
+        finger2.setPosition(currentFinger2);
 
 
-        intakeLeft.setPosition(intakeLeftVal);
-        intakeRight.setPosition(intakeRightVal);
+        /*intakeLeft.setPosition(intakeLeftVal);
+        intakeRight.setPosition(intakeRightVal);*/
 
         //telemetry
         telemetry.update();

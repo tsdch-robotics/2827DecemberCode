@@ -21,6 +21,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -73,8 +74,8 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
 
-    private TouchSensor tsL;
-    private TouchSensor tsR;
+    private DistanceSensor tsL;
+    private DistanceSensor tsR;
 
     private List<DcMotorEx> motors;
 
@@ -86,7 +87,6 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
-
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);//default 0.5
@@ -109,15 +109,13 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         //deleting the imu so it doesn't take set up time when you run the opmode
 
-
-
         leftFront = hardwareMap.get(DcMotorEx.class, "FL");
         leftRear = hardwareMap.get(DcMotorEx.class, "BL");
         rightRear = hardwareMap.get(DcMotorEx.class, "BR");
         rightFront = hardwareMap.get(DcMotorEx.class, "FR");
 
-        tsL = hardwareMap.get(TouchSensor.class, "tsL");
-        tsR = hardwareMap.get(TouchSensor.class, "tsR");
+        tsL = hardwareMap.get(DistanceSensor.class, "tsL");
+        tsR = hardwareMap.get(DistanceSensor.class, "tsR");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 

@@ -18,7 +18,9 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.acmerobotics.roadrunner.util.Angle;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.SequenceSegment;
 import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.TrajectorySegment;
 import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.TurnSegment;
@@ -30,6 +32,11 @@ import java.util.Comparator;
 import java.util.List;
 
 public class TrajectorySequenceBuilder {
+
+    /*private DistanceSensor tsL;
+    private DistanceSensor tsR;
+
+    */
     private final double resolution = 0.25;
 
     private final TrajectoryVelocityConstraint baseVelConstraint;
@@ -241,6 +248,39 @@ public class TrajectorySequenceBuilder {
     ) {
         return addPath(() -> currentTrajectoryBuilder.splineTo(endPosition, endHeading, velConstraint, accelConstraint));
     }
+
+
+
+
+
+
+
+    public TrajectorySequenceBuilder distanceSensorStraightMove(
+
+            double CurrentX,
+            DistanceSensor tsL, DistanceSensor tsR,
+            Pose2d endPose,
+            TrajectoryVelocityConstraint velConstraint,
+            TrajectoryAccelerationConstraint accelConstraint
+    ) {
+
+        double distanceX = CurrentX + (((tsL.getDistance(DistanceUnit.INCH) + tsR.getDistance(DistanceUnit.INCH)) / 2) -3.5);//five is the offset
+
+        double distanceY = endPose.getY();
+
+        double heading1 = endPose.getHeading();
+
+        return addPath(() -> currentTrajectoryBuilder.lineToSplineHeading(new Pose2d (distanceX, distanceY,heading1), velConstraint, accelConstraint));
+
+    }
+
+
+
+
+
+
+
+
 
     public TrajectorySequenceBuilder splineToConstantHeading(Vector2d endPosition, double endHeading) {
         return addPath(() -> currentTrajectoryBuilder.splineToConstantHeading(endPosition, endHeading, currentVelConstraint, currentAccelConstraint));

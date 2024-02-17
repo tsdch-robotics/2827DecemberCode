@@ -43,9 +43,9 @@ public class sliderMachineState {
         REALLYHIGH;
     }
 
-    public static int LOWpos = 800;
+    public static int LOWpos = 500;
     public static int THREATENINGpos = 10;
-    public static int midSTABpos = 800;
+    public static int midSTABpos = 500;
     public static int STABBINGpos = -200;
     public static int MEDIUMpos = 1300;
     public static int HIGHpos = 1800;
@@ -57,15 +57,13 @@ public class sliderMachineState {
     public static double Finger1Loose = 0.5;//servo pos
     public static double Finger2Loose = 0.51;//servo pos
 
-    public static double wristThreaten = .4;//servo pos
+    public static double wristThreaten = .6;//servo pos
     public static double wristStab = 0.6;//servo pos
     public static double wristScore = 0.3;//servo pos
 
     public static double armThreaten = 0.2;//servo pos
-    public static double armStab = 0.05;//servo pos
+    public static double armStab = 0.1;//servo pos
     public static double armScore = .99;//servo pos
-
-
 
 
     public void magicalMacro (DcMotor slider, Servo arm1, Servo arm2,
@@ -103,11 +101,7 @@ public class sliderMachineState {
                     if(halt.halt(300, HaltTime)){
 
 
-                        if(slider.getCurrentPosition() < 600){
-                            slider.setPower(1);
-                        }else{
-                            slider.setPower(0);
-                        }
+                        slidesPID.magicPID(slider, midSTABpos, PIDtime);
 
                         wrist.setPosition(wristStab);
                         arm1.setPosition(armStab);
@@ -125,7 +119,6 @@ public class sliderMachineState {
                         stabberLeft.setPosition(stabFinger1Tight);
                         stabberRight.setPosition(stabFinger2Tight);
 
-
                     }
 
 
@@ -136,28 +129,24 @@ public class sliderMachineState {
 
                 case STAB:
 
-                    if (!halt.halt(400, HaltTime)){
-
-                        //slidesPID.magicPID(slider, midSTABpos, PIDtime);
-                        /*if(slider.getCurrentPosition() < 500){
-                            slider.setPower(.5);
-                        }else{
-                            slider.setPower(0);
-                        }*/
+                    if (!halt.halt(100, HaltTime)){
 
                         slidesPID.magicPID(slider, midSTABpos, PIDtime);
+
+                    }
+                    if (halt.halt(100, HaltTime)){
 
                         wrist.setPosition(wristStab);
                         arm1.setPosition(armStab);
                         arm2.setPosition(armStab);
-                    }
 
+                    }
 
                     if (halt.halt(400, HaltTime)) {//so really this is only halting by this - the previous halt
 
                         slidesPID.zero(slider, PIDtime, toucher);
 
-                        if (halt.halt(600, HaltTime)){
+                        if (halt.halt(500, HaltTime)){
 
                             slidesPID.zero(slider, PIDtime, toucher);
 

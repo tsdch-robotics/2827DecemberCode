@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -15,24 +16,21 @@ import org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.RedAutos.RedRight
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.sliderMachineState;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Disabled
-@Autonomous(group = "drive")
-public class RRZ1_SCR_PR_YW extends LinearOpMode {
 
+//@Autonomous(group = "drive")
+public class RRZ1_SCR_PR_YW {
 
-
-
-    TouchSensor touchLeft;
-    TouchSensor touchRight;
+    DistanceSensor tsL;
+    DistanceSensor tsR;
 
     public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
-
 
     sliderMachineState.slidePosition executePos = sliderMachineState.slidePosition.THREATEN;
 
@@ -48,13 +46,11 @@ public class RRZ1_SCR_PR_YW extends LinearOpMode {
     int totalLeft;
     int totalRight;
 
-
     private Servo intakeLeft;
     private Servo intakeRight;
 
     public boolean greaterThanTargetPercentRedPixels1 = false;
     public boolean greaterThanTargetPercentRedPixels2 = false;
-
 
     private double targetPixPercent1 = .2;
     private double targetPixPercent2 = .2;
@@ -70,11 +66,27 @@ public class RRZ1_SCR_PR_YW extends LinearOpMode {
     private Servo flicker;
 
 
+    public TrajectorySequence moveToSensingPos(SampleMecanumDrive robot, Pose2d startPose){
+
+        TrajectorySequence traj1 = robot.trajectorySequenceBuilder(startPose)
 
 
-    @Override
+                .build();
+
+
+
+        return traj1;
+
+    }
+
+
+   /* @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+
+        Pose2d startPose = new Pose2d(14.5, -60, Math.toRadians(90));
+        drive.setPoseEstimate(startPose);
 
         waitForStart();
 
@@ -83,6 +95,8 @@ public class RRZ1_SCR_PR_YW extends LinearOpMode {
         Trajectory traj = drive.trajectoryBuilder(new Pose2d())
                 .splineTo(new Vector2d(30, 30), 0)
                 .build();
+
+
 
         drive.followTrajectory(traj);
 
@@ -93,5 +107,5 @@ public class RRZ1_SCR_PR_YW extends LinearOpMode {
                         .splineTo(new Vector2d(0, 0), Math.toRadians(180))
                         .build()
         );
-    }
+    }*/
 }

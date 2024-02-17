@@ -6,10 +6,12 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.Autonomous.Misc.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.PIDclass;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.PIDhangClass;
@@ -23,6 +25,9 @@ public class TeleOp extends OpMode {
 
 //custom funcitons, used to save code space
 
+
+    DistanceSensor tsL;
+    DistanceSensor tsR;
 
     PIDclass slidesPID = new PIDclass();
 
@@ -126,6 +131,10 @@ public class TeleOp extends OpMode {
         intakeRight = hardwareMap.servo.get("intakeRight");
 
 
+        tsL = hardwareMap.get(DistanceSensor.class, "tsL");
+        tsR = hardwareMap.get(DistanceSensor.class, "tsR");
+
+
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -143,7 +152,7 @@ public class TeleOp extends OpMode {
 
         hang2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        intake.setDirection(DcMotorSimple.Direction.FORWARD);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rearLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -228,7 +237,8 @@ public class TeleOp extends OpMode {
         telemetry.addData("exocute pos", exocutePos);
         telemetry.addData("preload pos", preloadPos);
         telemetry.addData("IMU correction", IMUposeTransfercorrection);
-
+        telemetry.addData("tsL", tsL.getDistance(DistanceUnit.INCH));
+        telemetry.addData("tsR", tsR.getDistance(DistanceUnit.INCH));
 
         if(touchSensor.isPressed()){
             telemetry.addLine("Touchsensor is pressed");
@@ -467,17 +477,10 @@ public class TeleOp extends OpMode {
 
 
 
-        /*if (gamepad2.left_bumper && gamepad2.right_bumper){
-
-            paperAirplane.setPosition(0);
-
-        }*/
-
         if (gamepad1.b) {
 
             paperAirplane.setPosition(.6);
         }
-
 
         hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 400 * (float) -gamepad2.right_stick_y));
 
