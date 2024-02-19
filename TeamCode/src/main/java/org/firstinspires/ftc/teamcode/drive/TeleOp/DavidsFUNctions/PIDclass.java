@@ -53,8 +53,6 @@ public class PIDclass  {
 
         timer.reset();
 
-
-
     }
     public void zero(DcMotor slide, ElapsedTime tima, TouchSensor touchy) {
 
@@ -62,7 +60,7 @@ public class PIDclass  {
             slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            magicPID(slide, -50, tima);
+            magicPID(slide, 5, tima);
 
         }else{
             //magicPID(slide, , tima);

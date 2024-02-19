@@ -80,8 +80,8 @@ public class sliderMachineState {
             switch (targetMachineState) {
                 case THREATEN:
 
-                    stabberLeft.setPosition(Finger1Loose);
-                    stabberRight.setPosition(Finger2Loose);
+                    //stabberLeft.setPosition(Finger1Loose);
+                    //stabberRight.setPosition(Finger2Loose);
 
                     slidesPID.zero(slider, HaltTime, toucher);
                     //slidesPID.magicPID(slider, THREATENINGpos, PIDtime);
@@ -132,6 +132,8 @@ public class sliderMachineState {
                     if (!halt.halt(100, HaltTime)){
 
                         slidesPID.magicPID(slider, midSTABpos, PIDtime);
+                        stabberLeft.setPosition(Finger1Loose);
+                        stabberRight.setPosition(Finger2Loose);
 
                     }
                     if (halt.halt(100, HaltTime)){

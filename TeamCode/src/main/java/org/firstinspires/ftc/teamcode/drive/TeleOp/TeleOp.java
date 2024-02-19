@@ -1,5 +1,17 @@
 
 package org.firstinspires.ftc.teamcode.drive.TeleOp;
+
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -25,6 +37,58 @@ public class TeleOp extends OpMode {
 
 //custom funcitons, used to save code space
 
+    public boolean nearBoard = false;
+    public Pose2d myPose;
+    double IMUsetpoint = 0;
+    double rotate = 0;
+    double strafe = 0;
+    private double IMUkp = 0.02; // Proportional gain (tune this value)
+    private double IMUki = 0.001; // Integral gain (tune this value)
+    private double IMUkd = 0.001; // Derivative gain (tune this value)
+    private double IMUintegral = 0;
+    private double IMUprevError = 0;
+    private boolean rotatingTo90 = false;
+
+    double distanceLeftsetpoint = 0;
+    double distanceOffsetLeft = 0;
+    double distanceOffsetRight = 0;
+
+    boolean align = false;
+
+    public static double sensorLeftkp = 0.02; // Proportional gain (tune this value)
+    public static double sensorRightkp = 0.02;
+
+    public static double sensorLeftki = 0.001; // Integral gain (tune this value)
+    public static double sensorRightki = 0.001;
+
+    public static double sensorLeftkd = 0.001;
+    public static double sensorRigtkd = 0.001;
+
+    // Derivative gain (tune this value)
+    public double sensorLeftintegral = 0;
+    public double sensorRightintegral = 0;
+
+    public double sensorLeftprevError = 0;
+    public double sensorRightprevError = 0;
+
+    /*double sensorLefterror = sensorLeftsetpoint - tsL.getDistance(DistanceUnit.INCH);
+            double sensorRighterror = sensorRightsetpoint - tsR.getDistance(DistanceUnit.INCH);
+
+            // Update the integral term (helps eliminate steady-state error)
+            sensorLeftintegral += sensorLefterror;
+            sensorRightintegral += sensorRighterror;
+
+            // Calculate the derivative term (helps reduce overshooting)
+            double sensorLeftderivative = sensorLefterror - sensorLeftprevError;
+            double sensorRightderivative = sensorRighterror - sensorLeftprevError;
+
+            thingu = snesorLeftkp * sensorLefterror + sensorLeftki * sensorLeftintegral + sensorLeftkd * sensorLeftderivative;
+            thingu2 = snesorRightkp * sensorLefterror + sensorRightki * sensorRightintegral + sensorRightkd * sensorRightderivative;
+
+            // Update the previous error for the next iteration
+            sensorRightprevError = sensorLefterror;
+            sensorRightprevError = sensorLefterror;
+*/
 
     DistanceSensor tsL;
     DistanceSensor tsR;
@@ -76,7 +140,6 @@ public class TeleOp extends OpMode {
     private DcMotor intake;
 
 
-
     private DcMotor hang1;
     private DcMotor hang2;
 
@@ -90,7 +153,6 @@ public class TeleOp extends OpMode {
     private Servo intakeRight;
 
     private Servo finger2;
-
 
     private boolean gyroSquareRequested = false;
     private BNO055IMU imu; // Gyro sensor
@@ -108,10 +170,12 @@ public class TeleOp extends OpMode {
 //TODO import my "halt" funciton
     //TODO adjust slider pid;
 
-
-
     @Override
     public void init() {
+
+       /*SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Pose2d startPose = new Pose2d(14.5, -60, Math.toRadians(90));
+        drive.setPoseEstimate(startPose);*/
 
         arm1 = hardwareMap.servo.get("arm1");
         arm2 = hardwareMap.servo.get("arm2");
@@ -133,7 +197,6 @@ public class TeleOp extends OpMode {
 
         tsL = hardwareMap.get(DistanceSensor.class, "tsL");
         tsR = hardwareMap.get(DistanceSensor.class, "tsR");
-
 
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -162,7 +225,6 @@ public class TeleOp extends OpMode {
         rearLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rearRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
         //hang2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //hang1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -185,7 +247,6 @@ public class TeleOp extends OpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
         imu.initialize(imuParams);
-
 
 
 
@@ -223,8 +284,10 @@ public class TeleOp extends OpMode {
     public void loop() {
 
 
-
-
+        /*telemetry.addData("x", myPose.getX());
+        telemetry.addData("y", myPose.getY());
+        telemetry.addData("heading", myPose.getHeading());
+*/
 
         //telemetry
         telemetry.update();
@@ -237,8 +300,8 @@ public class TeleOp extends OpMode {
         telemetry.addData("exocute pos", exocutePos);
         telemetry.addData("preload pos", preloadPos);
         telemetry.addData("IMU correction", IMUposeTransfercorrection);
-        telemetry.addData("tsL", tsL.getDistance(DistanceUnit.INCH));
-        telemetry.addData("tsR", tsR.getDistance(DistanceUnit.INCH));
+        //telemetry.addData("tsL", tsL.getDistance(DistanceUnit.INCH));
+        //telemetry.addData("tsR", tsR.getDistance(DistanceUnit.INCH));
 
         if(touchSensor.isPressed()){
             telemetry.addLine("Touchsensor is pressed");
@@ -272,10 +335,6 @@ public class TeleOp extends OpMode {
         }
 
 
-
-
-
-
        /* if(gamepad1.a){
 
             exocutePos = sliderMachineState.slidePosition.STAB;
@@ -288,9 +347,7 @@ public class TeleOp extends OpMode {
         }
 //TODO fix potential issues with ellapsed tiime, as it it called in a seprate file
 
-
         //intake code
-
 
         if (gamepad1.left_trigger > .1) {
             intake.setPower(-gamepad1.left_trigger);
@@ -337,7 +394,6 @@ public class TeleOp extends OpMode {
 
         //second controller
 
-
         if (gamepad2.dpad_down) {
 
             heightOffset = 0;
@@ -358,8 +414,6 @@ public class TeleOp extends OpMode {
             preloadPos = sliderMachineState.slidePosition.HIGH;
             recentDpad = true;
         }
-
-
 
         if (gamepad2.dpad_right) {
 
@@ -446,15 +500,12 @@ public class TeleOp extends OpMode {
             recentDpad = false;
         }else if(gamepad1.x){
 
-
             exocutePos = sliderMachineState.slidePosition.THREATEN;
             scoreWaitingTime.reset();
             recentDpad = false;
 
             intakeLeft.setPosition(.45);
             intakeRight.setPosition(.45);
-
-
 
         }
 
@@ -514,8 +565,51 @@ public class TeleOp extends OpMode {
 
 //Drive Code
         double drive = gamepad1.left_stick_y;
-        double strafe = -gamepad1.left_stick_x;
-        double rotate = -gamepad1.right_stick_x;
+        strafe = -gamepad1.left_stick_x;
+
+
+       //distance sensor code
+
+        double sensorLeftsetpoint = 5;
+        double sensorRightsetpoint = 5;
+
+       if(gamepad1.y){
+            nearBoard = true;
+        }else{
+            nearBoard = false;
+        }
+
+        if(tsL.getDistance(DistanceUnit.INCH) < 20 && tsR.getDistance(DistanceUnit.INCH) < 20 && nearBoard) {
+
+            double sensorLefterror = sensorLeftsetpoint - tsL.getDistance(DistanceUnit.INCH);
+            double sensorRighterror = sensorRightsetpoint - tsR.getDistance(DistanceUnit.INCH);
+
+            // Update the integral term (helps eliminate steady-state error)
+            sensorLeftintegral += sensorLefterror;
+            sensorRightintegral += sensorRighterror;
+
+            // Calculate the derivative term (helps reduce overshooting)
+            double sensorLeftderivative = sensorLefterror - sensorLeftprevError;
+            double sensorRightderivative = sensorRighterror - sensorRightprevError;
+
+            distanceOffsetLeft = sensorLeftkp * sensorLefterror + sensorLeftki * sensorLeftintegral + sensorLeftkd * sensorLeftderivative;
+            distanceOffsetRight = sensorRightkp * sensorRighterror + sensorRightki * sensorRightintegral + sensorRigtkd * sensorRightderivative;
+
+            // Update the previous error for the next iteration
+            sensorLeftprevError = sensorLefterror;
+            sensorRightprevError = sensorRighterror;
+
+            // Apply the PID output to the robot's rotation
+            // You may need to adjust the scaling factor to match your robot's behavior
+            //distanceOffsetLeft = Range.clip(distanceOffsetLeft, -1.0, 1.0);
+            //distanceOffsetRight = Range.clip(distanceOffsetRight, -1.0, 1.0);
+        }else{
+            distanceOffsetLeft = 0;
+            distanceOffsetRight = 0;
+        }
+
+
+        //double rotate = -gamepad1.right_stick_x;
 
         // reset gyro button
         if (gamepad1.back) {
@@ -538,10 +632,10 @@ public class TeleOp extends OpMode {
         double fieldStrafe = drive * Math.sin(Math.toRadians(heading)) + strafe * Math.cos(Math.toRadians(heading));
         // Calculate motor powers for mecanum drive
 
-        double frontLeftPower = fieldDrive + fieldStrafe + rotate;
-        double frontRightPower = fieldDrive - fieldStrafe - rotate;
-        double rearLeftPower = fieldDrive - fieldStrafe + rotate;
-        double rearRightPower = fieldDrive + fieldStrafe - rotate;
+        double frontLeftPower = fieldDrive + fieldStrafe + rotate + distanceOffsetLeft;
+        double frontRightPower = fieldDrive - fieldStrafe - rotate + distanceOffsetRight;
+        double rearLeftPower = fieldDrive - fieldStrafe + rotate + distanceOffsetLeft;
+        double rearRightPower = fieldDrive + fieldStrafe - rotate + distanceOffsetRight;
 
         // Ensure motor powers are within the valid range of -1 to 1
         frontLeftPower = Range.clip(frontLeftPower, -1.0, 1.0);
@@ -559,6 +653,50 @@ public class TeleOp extends OpMode {
         telemetry.addData("Gyro Heading", heading);
         telemetry.addData("slidesTime %2d", sliderTime.time());
         telemetry.update();
+
+        //imu pid
+        // Calculate the error (how far off the robot is from the setpoint)
+        double IMUerror = IMUsetpoint - heading;
+
+        // Update the integral term (helps eliminate steady-state error)
+        IMUintegral += IMUerror;
+
+        // Calculate the derivative term (helps reduce overshooting)
+        double IMUderivative = IMUerror - IMUprevError;
+
+        // Calculate the PID output (rotate)
+        // Check if the B button is pressed for rotating to 90 degrees
+        /*if (gamepad1.y && !rotatingTo90) {
+            IMUsetpoint = 90;
+            rotatingTo90 = true;
+            IMUintegral = 0; // Reset the integral term
+        }*/
+
+        if (rotatingTo90 && Math.abs(gamepad1.right_stick_x) < .2){
+            // Calculate the PID output (rotate)
+            rotate = IMUkp * IMUerror + IMUki * IMUintegral + IMUkd * IMUderivative;
+
+            // Check if the robot is close enough to 90 degrees and stop
+            if (Math.abs(IMUerror) < 5) {
+                rotatingTo90 = false;
+                rotate = 0;
+            }
+        }else if (Math.abs(gamepad1.right_stick_x) > .1){
+            // Use right stick control when not rotating to 90 degrees
+            rotate = -gamepad1.right_stick_x;
+        }else {
+            // Use right stick control when not rotating to 90 degrees
+            rotate = -gamepad1.right_stick_x;
+        }
+        // Update the previous error for the next iteration
+        IMUprevError = IMUerror;
+
+        // Apply the PID output to the robot's rotation
+        // You may need to adjust the scaling factor to match your robot's behavior
+        rotate = Range.clip(rotate, -1.0, 1.0);
+
+        //imu pid end
+
 
     }
 

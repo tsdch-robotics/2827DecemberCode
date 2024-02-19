@@ -40,8 +40,8 @@ public class RedRightPullStack extends LinearOpMode {
 
     RRZ1_SCR_PR_YW robot = new RRZ1_SCR_PR_YW();
 
-    public DistanceSensor tsL;
-    public DistanceSensor tsR;
+    //public DistanceSensor tsL;
+    //public DistanceSensor tsR;
 
     public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
@@ -197,8 +197,8 @@ public class RedRightPullStack extends LinearOpMode {
 
 
 
-        tsL = hardwareMap.get(DistanceSensor.class, "tsL");
-        tsR = hardwareMap.get(DistanceSensor.class, "tsR");
+        //tsL = hardwareMap.get(DistanceSensor.class, "tsL");
+        //tsR = hardwareMap.get(DistanceSensor.class, "tsR");
 
         slides = hardwareMap.dcMotor.get("slides");
         intake = hardwareMap.dcMotor.get("intake");
@@ -247,8 +247,8 @@ public class RedRightPullStack extends LinearOpMode {
 
         telemetry.addData("RedPixels1", colorAnalysisPipeline.getRedPixels1());
         telemetry.addData("RedPixels1", colorAnalysisPipeline.getRedPixels2());
-        telemetry.addData("tsL", tsL.getDistance(DistanceUnit.INCH));
-        telemetry.addData("tsR", tsR.getDistance(DistanceUnit.INCH));
+        //telemetry.addData("tsL", tsL.getDistance(DistanceUnit.INCH));
+        //telemetry.addData("tsR", tsR.getDistance(DistanceUnit.INCH));
         telemetry.update();
 
 
@@ -505,8 +505,8 @@ public class RedRightPullStack extends LinearOpMode {
 
 
                     .splineTo(new Vector2d(43, -28), Math.toRadians(0))
-                    //.waitSeconds(.01)
-                    .splineTo(new Vector2d(51, -28), Math.toRadians(0),
+                    .waitSeconds(.01)
+                    .splineTo(new Vector2d(52, -28), Math.toRadians(0),
                             SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
@@ -537,7 +537,6 @@ public class RedRightPullStack extends LinearOpMode {
                     })
 
                     .lineToSplineHeading(new Pose2d(10, -33, Math.toRadians(0)))
-
 
                     //retract lift
                     .addTemporalMarker(() -> {
@@ -584,7 +583,7 @@ public class RedRightPullStack extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(-56, -9, Math.toRadians(0)))
 
                     .waitSeconds(.01)
-                    .lineToSplineHeading(new Pose2d(-62, -9, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(-62, -11, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
@@ -598,8 +597,7 @@ public class RedRightPullStack extends LinearOpMode {
 //turn power on for intake
                     })
 
-                    .lineToSplineHeading(new Pose2d(-55, -9, Math.toRadians(0)))
-
+                    .lineToSplineHeading(new Pose2d(-55, -11, Math.toRadians(0)))
 
 //NOW, we can turn on the intake!
 
@@ -615,9 +613,11 @@ public class RedRightPullStack extends LinearOpMode {
                     .waitSeconds(1)
 
                     //shifting over
-                    .lineToSplineHeading(new Pose2d(-58, -9, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(-58.5, -11, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+
+
 
 
 
@@ -672,8 +672,6 @@ public class RedRightPullStack extends LinearOpMode {
                     //end of second
 
 */
-
-
                     .setReversed(false)
                     .splineTo(new Vector2d(-50, -9), Math.toRadians(0))//leaving the stack
                     //line to?
@@ -681,8 +679,7 @@ public class RedRightPullStack extends LinearOpMode {
                     .addTemporalMarker(() -> {
                         intakeLeft.setPosition(.35);
                         intakeRight.setPosition(.35);
-
-                        intake.setPower(-1);//to pixk up pixels stuck in intake
+                        //to pixk up pixels stuck in intake
                     })
                     .lineToSplineHeading(new Pose2d(30, -9, Math.toRadians(0)))//go thru gate
 
@@ -701,23 +698,24 @@ public class RedRightPullStack extends LinearOpMode {
                     .addTemporalMarker(16,() -> {
 
                         moveByEncoder.powerSlider(slides, 0);
-                        intake.setPower(0);
+                        intake.setPower(-1);
 
                     })
-                    .addTemporalMarker(17,() -> {
+                    .addTemporalMarker(18,() -> {
 
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
 
                     })
 
+                    .waitSeconds(2)
+
                     .setReversed(false)
                     .splineTo(new Vector2d(45,-35), Math.toRadians(0))
 
                     .addTemporalMarker(() -> {
 
-
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        moveByEncoder.powerSlider(slides, sliderMachineState.MEDIUMpos);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -729,7 +727,7 @@ public class RedRightPullStack extends LinearOpMode {
 
                     //go slow
 
-                    .lineToSplineHeading(new Pose2d(49, -35, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(49, -30, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
