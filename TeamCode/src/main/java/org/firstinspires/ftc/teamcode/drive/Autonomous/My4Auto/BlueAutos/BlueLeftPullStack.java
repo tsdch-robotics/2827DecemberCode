@@ -1,19 +1,18 @@
-package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.RedAutos;
+package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.BlueAutos;
+
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.Autonomous.Misc.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -30,29 +29,27 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-
-import org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.RedAutos.Trajectories.RRZ1_SCR_PR_YW;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 
 @Config
 @Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
-public class RedRightPullStack extends LinearOpMode {
+public class BlueLeftPullStack extends LinearOpMode {
 
+    private Servo intakeLeft;
+    private Servo intakeRight;
+    private DcMotor intake;
 
-    RRZ1_SCR_PR_YW robot = new RRZ1_SCR_PR_YW();
+    private BNO055IMU imu;
 
-    //public DistanceSensor tsL;
-    //public DistanceSensor tsR;
 
     public ElapsedTime slidesTime = new ElapsedTime();
     sliderMachineState executeSlides = new sliderMachineState();
 
-
-    sliderMachineState.slidePosition executePos = sliderMachineState.slidePosition.THREATEN;
-
     OpenCvWebcam webcam1 = null;
     ElapsedTime elapsedTime = new ElapsedTime(); // Add ElapsedTime to track time
 
-    public ElapsedTime scoreWaitingTime = new ElapsedTime();
+    ElapsedTime poseTransferTime = new ElapsedTime();
 
     moveWithBasicEncoder moveByEncoder = new moveWithBasicEncoder();
 
@@ -61,14 +58,8 @@ public class RedRightPullStack extends LinearOpMode {
     int totalLeft;
     int totalRight;
 
-
-    private Servo intakeLeft;
-    private Servo intakeRight;
-
-    public boolean greaterThanTargetPercentRedPixels1 = false;
-    public boolean greaterThanTargetPercentRedPixels2 = false;
-
-    TouchSensor touchSensor;
+    public boolean greaterThanTargetPercentBluePixels1 = false;
+    public boolean greaterThanTargetPercentBluePixels2 = false;
 
     ColorAnalysisPipeline colorAnalysisPipeline;
 
@@ -76,7 +67,6 @@ public class RedRightPullStack extends LinearOpMode {
     private double targetPixPercent2 = .2;
 
     private DcMotor slides;
-    private DcMotor intake;
 
     private Servo arm1;
     private Servo arm2;
@@ -94,36 +84,33 @@ public class RedRightPullStack extends LinearOpMode {
 
         public boolean firstTime = true;
 
-        Mat redMask = new Mat();
+        Mat blueMask = new Mat();
 
         Mat inputMat = new Mat();
         Mat output = new Mat();
 
-        ElapsedTime sliderTime = new ElapsedTime();
+
+
 
         Scalar redLower = new Scalar(0, 50, 50);
         Scalar redUpper = new Scalar(20, 255, 255);
         Scalar yellowLower = new Scalar(20, 50, 50);
         Scalar yellowUpper = new Scalar(40, 255, 255);
-        //Scalar blueLower = new Scalar(90, 50, 50);
-        //Scalar blueUpper = new Scalar(130, 255, 255);
+        Scalar blueLower = new Scalar(90, 50, 50);
+        Scalar blueUpper = new Scalar(130, 255, 255);
 
-
-        private Rect rect1 = new Rect(50, 100, 250, 150);
+        private Rect rect1 = new Rect(50, 150, 300, 150);
         private Rect rect2 = new Rect(440, 120, 190, 180);
 
-        //private Rect rect1 = new Rect(50, 150, 300, 150);
-        //private Rect rect2 = new Rect(440, 120, 190, 180);
+        private int bluePixels1;
+        private int bluePixels2;
 
-        private int redPixels1;
-        private int redPixels2;
-
-        public int getRedPixels1() {
-            return redPixels1;
+        public int getBluePixels1() {
+            return bluePixels1;
         }
 
-        public int getRedPixels2() {
-            return redPixels2;
+        public int getBluePixels2() {
+            return bluePixels2;
         }
 
         public Rect getRect1() {
@@ -141,6 +128,7 @@ public class RedRightPullStack extends LinearOpMode {
             output.release();
             inputMat.release();
 
+
             input.copyTo(this.inputMat);
 
             this.inputMat.copyTo(this.output);
@@ -148,14 +136,15 @@ public class RedRightPullStack extends LinearOpMode {
             roi1 = this.inputMat.submat(rect1);
             roi2 = this.inputMat.submat(rect2);
 
-            redPixels1 = countRedPixels(roi1);
-            redPixels2 = countRedPixels(roi2);
+
+
+            bluePixels1 = countBluePixels(roi1);
+            bluePixels2 = countBluePixels(roi2);
 
             telemetry.addData("ProcessFrame Called", true);
-            telemetry.addData("Red Pixels in Rectangle 1", redPixels1);
-            telemetry.addData("Red Pixels in Rectangle 2", redPixels2);
+            telemetry.addData("Blue Pixels in Rectangle 1", bluePixels1);
+            telemetry.addData("Blue Pixels in Rectangle 2", bluePixels2);
             telemetry.addData("Rectangle1 Area", rect1.area());
-
             telemetry.addData("Rectangle2 Area", rect2.area());
 
             Imgproc.rectangle(this.output, rect1, new Scalar(255, 0, 0), 2);
@@ -169,24 +158,30 @@ public class RedRightPullStack extends LinearOpMode {
         }
 
 
-        private int countRedPixels(Mat image) {
+        private int countBluePixels(Mat image) {
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2HSV);
 
             //Mat blueMask = new Mat();
-            Core.inRange(image, redLower, redUpper, redMask);
+            Core.inRange(image, blueLower, blueUpper, blueMask);
 
-            return Core.countNonZero(redMask);
+            return Core.countNonZero(blueMask);
         }
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-
+        poseTransferTime.startTime();
+        poseTransferTime.reset();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(14.5, -60, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(9, 60, Math.toRadians(-90));
         drive.setPoseEstimate(startPose);
+
+        drive.setPoseEstimate(startPose);
+
+
+
 
 
 
@@ -198,12 +193,12 @@ public class RedRightPullStack extends LinearOpMode {
 
 
 
-        //tsL = hardwareMap.get(DistanceSensor.class, "tsL");
-        //tsR = hardwareMap.get(DistanceSensor.class, "tsR");
-
-        slides = hardwareMap.dcMotor.get("slides");
+        intakeLeft = hardwareMap.servo.get("intakeLeft");
+        intakeRight = hardwareMap.servo.get("intakeRight");
         intake = hardwareMap.dcMotor.get("intake");
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        slides = hardwareMap.dcMotor.get("slides");
         slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -214,18 +209,8 @@ public class RedRightPullStack extends LinearOpMode {
         finger2 = hardwareMap.servo.get("finger2");
         flicker = hardwareMap.servo.get("flicker");
 
-        touchSensor = hardwareMap.get(TouchSensor.class, "touch");
-
-        intakeLeft = hardwareMap.servo.get("intakeLeft");
-        intakeRight = hardwareMap.servo.get("intakeRight");
-
         arm2.setDirection(Servo.Direction.REVERSE);
 
-        scoreWaitingTime.reset();
-        scoreWaitingTime.startTime();
-
-        slidesTime.reset();
-        slidesTime.startTime();
 
 
         colorAnalysisPipeline = new ColorAnalysisPipeline();
@@ -245,19 +230,32 @@ public class RedRightPullStack extends LinearOpMode {
 
         telemetry.addLine("Waiting to start");
 
-        telemetry.addData("RedPixels1", colorAnalysisPipeline.getRedPixels1());
-        telemetry.addData("RedPixels1", colorAnalysisPipeline.getRedPixels2());
-        //telemetry.addData("tsL", tsL.getDistance(DistanceUnit.INCH));
-        //telemetry.addData("tsR", tsR.getDistance(DistanceUnit.INCH));
+        telemetry.addData("BluePixels1", colorAnalysisPipeline.getBluePixels1());
+        telemetry.addData("BluePixels1", colorAnalysisPipeline.getBluePixels2());
         telemetry.update();
 
 
 
+/*
+        BNO055IMU.Parameters imuParams = new BNO055IMU.Parameters();
+        imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imuParams.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        //imuParams.LOGO_FACING_DIR, USB_FACING_DIR
+        imuParams.calibrationDataFile = "BNO055IMUCalibration.json"; // Set this to your calibration file
+        imuParams.loggingEnabled = true;
+        imuParams.loggingTag = "IMU";
+        imuParams.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
 
-        slidesTime.startTime();
-        slidesTime.reset();
+
+        imu.initialize(imuParams);
+*/
+
+
         waitForStart();
 
+        poseTransferTime.startTime();
+        poseTransferTime.reset();
 
         telemetry.addLine("started");
         telemetry.update();
@@ -269,8 +267,8 @@ public class RedRightPullStack extends LinearOpMode {
             telemetry.update();
 
             // Process frames and accumulate color values
-            totalLeft += colorAnalysisPipeline.getRedPixels1();
-            totalRight += colorAnalysisPipeline.getRedPixels2();
+            totalLeft += colorAnalysisPipeline.getBluePixels1();
+            totalRight += colorAnalysisPipeline.getBluePixels2();
 
             frameCount = frameCount + 1;
             sleep(0);
@@ -282,18 +280,18 @@ public class RedRightPullStack extends LinearOpMode {
         double averageRight = totalRight / frameCount;
 
         if (averageLeft / colorAnalysisPipeline.getRect1().area() > targetPixPercent1) {
-            greaterThanTargetPercentRedPixels1 = true;
+            greaterThanTargetPercentBluePixels1 = true;
         } else if (averageRight / colorAnalysisPipeline.getRect2().area() > targetPixPercent2) {
-            greaterThanTargetPercentRedPixels2 = true;
+            greaterThanTargetPercentBluePixels2 = true;
         } else {
-            greaterThanTargetPercentRedPixels1 = false;
-            greaterThanTargetPercentRedPixels2 = false;
+            greaterThanTargetPercentBluePixels1 = false;
+            greaterThanTargetPercentBluePixels2 = false;
         }
 
-        if (averageLeft > averageRight && greaterThanTargetPercentRedPixels1) {
+        if (averageLeft > averageRight && greaterThanTargetPercentBluePixels1) {
             telemetry.addLine("Middle");
             zone = 2;
-        } else if (averageLeft < averageRight && greaterThanTargetPercentRedPixels2) {
+        } else if (averageLeft < averageRight && greaterThanTargetPercentBluePixels2) {
             telemetry.addLine("Right");
             zone = 3;
         } else {
@@ -309,8 +307,9 @@ public class RedRightPullStack extends LinearOpMode {
 
 
         if (zone == 2) {
-            telemetry.addLine("running zone 5 auto!");
+            telemetry.addLine("running zone 2 auto!");
             telemetry.update();
+
 
 
 
@@ -319,119 +318,27 @@ public class RedRightPullStack extends LinearOpMode {
 
 
                     .addTemporalMarker(() -> {
+                        flicker.setPosition(.5);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
+                    .lineToSplineHeading(new Pose2d(12, 59, Math.toRadians(-90)))
+                    .lineToSplineHeading(new Pose2d(11, 30, Math.toRadians(-90)))
 
-                    .splineTo(new Vector2d(13, -30), Math.toRadians(90))//13
-
-                    .waitSeconds(1)
-                    //place purple
-                    .addTemporalMarker(() -> {
-                        flicker.setPosition(.8);
-                    })
-                    .waitSeconds(1)
-
-                    .lineToSplineHeading(new Pose2d(13, -38, Math.toRadians(90)))
-                    .waitSeconds(.01)
-                    .lineToSplineHeading(new Pose2d(13.1, -38, Math.toRadians(0)))
-                    .waitSeconds(.1)
-
-                    //raise lift
-                    .addTemporalMarker(() -> {
-
-
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
-                        arm1.setPosition(sliderMachineState.armScore);
-                        arm2.setPosition(sliderMachineState.armScore);
-                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
-                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
-                        wrist.setPosition(sliderMachineState.wristScore);
-
-                    })
-
-                    .splineTo(new Vector2d(45, -35), Math.toRadians(0))
-                    .splineTo(new Vector2d(51, -35), Math.toRadians(0),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to park//slow to board, middle
-
-
-                    .waitSeconds(1)
-                    //score
-                    .addTemporalMarker(() -> {
-
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        //release pixel
-                    })
-
-
-                    .waitSeconds(1)
-
-                    .lineToSplineHeading(new Pose2d(45, -34, Math.toRadians(0)))//back off
-
-
-                    .setReversed(true)
-
-
-
-                    // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
-
-                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to park
-                    .waitSeconds(1)
-
-
-                    .build();
-
-
-
-
-            drive.followTrajectorySequence(trajectory1);
-
-
-
-//TODO: do not touich ozned 6!
-        } else if (zone == 3) {
-            telemetry.addLine("running zone 6 auto!");
-            telemetry.update();
-
-            TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
-
-
-                    .addTemporalMarker(() -> {
-                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
-                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
-                    })
-
-
-
-                    .splineTo(new Vector2d(30.5, -30), Math.toRadians(180))
-
-                    .waitSeconds(1)
-                    //place purple
-                    .addTemporalMarker(() -> {
-                        flicker.setPosition(.8);
-                    })
-                    .waitSeconds(1)
-
-
-                    .lineToSplineHeading(new Pose2d(45, -31.1, Math.toRadians(180)))
 
                     .waitSeconds(.5)
 
-                    .lineToSplineHeading(new Pose2d(45, -31, Math.toRadians(0)))
+                    .addTemporalMarker(() -> {flicker.setPosition(.8);} )
 
-                    //raise lift
+
+                    .waitSeconds(.1)
+                    .lineToSplineHeading(new Pose2d(18, 45, Math.toRadians(-80)))
+                    .waitSeconds(.1)
 
                     .addTemporalMarker(() -> {
 
-
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos + 100);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -441,59 +348,71 @@ public class RedRightPullStack extends LinearOpMode {
                     })
 
 
-                    .lineToSplineHeading(new Pose2d(45, -40.5, Math.toRadians(0)))
-                    .waitSeconds(.1)
-                    .splineTo(new Vector2d(51.3, -40.5), Math.toRadians(0),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-//slow to board
 
+                    .lineToSplineHeading(new Pose2d(40, 34, Math.toRadians(0)))
+                    //fast to board
+                    .waitSeconds(.5)
+                    .lineToSplineHeading(new Pose2d(51.5, 34, Math.toRadians(0)),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
+//slow board aproch
 
                     .waitSeconds(1)
-                    //score
+
+                    .addTemporalMarker(() -> {
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+                    })
+
+
+                    .waitSeconds(.5)
+                    .setReversed(true)
+
+
+
+                    .lineToSplineHeading(new Pose2d(45, 34, Math.toRadians(0)))
+                    .waitSeconds(.5)
+                    .splineTo(new Vector2d(45, 59), Math.toRadians(90),
+                            SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
 
                     .addTemporalMarker(() -> {
 
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        //release pixel
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
                     })
+                    .strafeLeft(9)
 
-
-                    .waitSeconds(1)
-                    .setReversed(true)
-
-
-                    .lineToSplineHeading(new Pose2d(45, -42, Math.toRadians(0)))//back off
-
-
-                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to park
-                    .waitSeconds(1)
+                    .waitSeconds(2)
 
 
 
                     .build();
 
-
             drive.followTrajectorySequence(trajectory1);
 
 
-        } else {
-            telemetry.addLine("running zone 4 auto!");
+        } else if (zone == 3) {
+            telemetry.addLine("running zone 3 auto!");
             telemetry.update();
 
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
+
+
                     .addTemporalMarker(() -> {
+                        flicker.setPosition(.5);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
-
                     })
+
                     .addTemporalMarker(.9,() -> {
 
                         moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
@@ -504,14 +423,11 @@ public class RedRightPullStack extends LinearOpMode {
                         wrist.setPosition(sliderMachineState.wristScore);
                     })
 
-                    .splineTo(new Vector2d(43, -28), Math.toRadians(0))
-                    .waitSeconds(.01)
-                    .splineTo(new Vector2d(51, -28), Math.toRadians(0),
-                            SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-
-                    //sensor function??
-
+                    .lineToSplineHeading(new Pose2d(7, 59, Math.toRadians(-90)))
+                    .splineTo(new Vector2d(45, 38.8), Math.toRadians(0))
+                    .lineToSplineHeading(new Pose2d(51.5, 38.8, Math.toRadians(0)),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
                     .waitSeconds(.1)
                     .addTemporalMarker(() -> {
 
@@ -520,9 +436,9 @@ public class RedRightPullStack extends LinearOpMode {
                         //release pixel
                     })
 
+//slow board aproch
                     .setReversed(true)
-                    .splineTo(new Vector2d(13, -33), Math.toRadians(180))
-
+                    .splineTo(new Vector2d(13, 33), Math.toRadians(180))
 
                     .addTemporalMarker(2.5,() -> {
                         intakeLeft.setPosition(0);
@@ -534,7 +450,7 @@ public class RedRightPullStack extends LinearOpMode {
                         intake.setPower(-.4);//svore purple
                     })
 
-                    .lineToSplineHeading(new Pose2d(10, -33, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(10, 33, Math.toRadians(0)))
 
                     //retract lift
                     .addTemporalMarker(() -> {
@@ -553,12 +469,13 @@ public class RedRightPullStack extends LinearOpMode {
                     })
 
                     .setReversed(false)
+                    .lineToSplineHeading(new Pose2d(13, 33, Math.toRadians(0)))
+                    .splineTo(new Vector2d(30, 9), Math.toRadians(0))
 
-                    .lineToSplineHeading(new Pose2d(13, -33, Math.toRadians(0)))
-                    .splineTo(new Vector2d(30, -9), Math.toRadians(0))
 
 
-//trying to score stack
+
+//TRYING to Score STACK  🤯
 
                     //retract lift
                     .addTemporalMarker(() -> {
@@ -571,17 +488,18 @@ public class RedRightPullStack extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.Finger2Loose);
                         wrist.setPosition(sliderMachineState.wristThreaten);
 
+
                     })
 
                     .setReversed(true)
-                    .splineTo(new Vector2d(20,-9), Math.toRadians(180))
+                    .splineTo(new Vector2d(20,9), Math.toRadians(180))
 
-                    //.lineToSplineHeading(new Pose2d(45, -5, Math.toRadians(0)))
+                    //.lineToSplineHeading(new Pose2d(45, 5, Math.toRadians(0)))
 
-                    .lineToSplineHeading(new Pose2d(-56, -9, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-56, 9, Math.toRadians(0)))
 
                     .waitSeconds(.01)
-                    .lineToSplineHeading(new Pose2d(-62, -11, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(-62, 11, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
@@ -595,7 +513,7 @@ public class RedRightPullStack extends LinearOpMode {
 //turn power on for intake
                     })
 
-                    .lineToSplineHeading(new Pose2d(-55, -11, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-55, 11, Math.toRadians(0)))
 
 //NOW, we can turn on the intake!
 
@@ -611,12 +529,9 @@ public class RedRightPullStack extends LinearOpMode {
                     .waitSeconds(1)
 
                     //shifting over
-                    .lineToSplineHeading(new Pose2d(-58.5, -11, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(-58.5, 11, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-
-
-
 
 
 /*
@@ -631,47 +546,21 @@ public class RedRightPullStack extends LinearOpMode {
 //raise for second pixel and turn off power
 
 
-                    //CYCLE 2!!
 
 
-                    .waitSeconds(1)
-                    .lineToSplineHeading(new Pose2d(-62, -9, Math.toRadians(0)),
-                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-
-                    //intake
-                    .addTemporalMarker(() -> {
-
-                        intakeLeft.setPosition(.25);
-                        intakeRight.setPosition(.25);
 
 
-//turn power on for intake
-                    })
-
-                    .lineToSplineHeading(new Pose2d(-55, -9, Math.toRadians(0)))
-                    .addTemporalMarker(() -> {
-
-                        intakeLeft.setPosition(.35);
-                        intakeRight.setPosition(.35);
-                        intake.setPower(1);
-
-                    })
-
-                    .waitSeconds(1)
 
 
-                    //shifting over
-                    .lineToSplineHeading(new Pose2d(-60, -9, Math.toRadians(0)),
-                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
 
-                    //end of second
 
-*/
+
+
+
+ */
                     .setReversed(false)
-                    .splineTo(new Vector2d(-50, -9), Math.toRadians(0))//leaving the stack
+                    .splineTo(new Vector2d(-50, 9), Math.toRadians(0))//leaving the stack
                     //line to?
 
                     .addTemporalMarker(() -> {
@@ -679,7 +568,7 @@ public class RedRightPullStack extends LinearOpMode {
                         intakeRight.setPosition(.35);
                         //to pixk up pixels stuck in intake
                     })
-                    .lineToSplineHeading(new Pose2d(30, -9, Math.toRadians(0)))//go thru gate
+                    .lineToSplineHeading(new Pose2d(30, 9, Math.toRadians(0)))//go thru gate
 
                     //raise lift
 
@@ -696,7 +585,7 @@ public class RedRightPullStack extends LinearOpMode {
                     })
                     .addTemporalMarker(15,() -> {
 
-                        moveByEncoder.powerSlider(slides, -30);
+                        moveByEncoder.powerSlider(slides, 30);
                         arm1.setPosition(sliderMachineState.armStab);
                         arm2.setPosition(sliderMachineState.armStab);
 
@@ -711,7 +600,7 @@ public class RedRightPullStack extends LinearOpMode {
                     })
 
                     .setReversed(false)
-                    .splineTo(new Vector2d(45,-35), Math.toRadians(0))
+                    .splineTo(new Vector2d(45,35), Math.toRadians(0))
 
                     .addTemporalMarker(() -> {
 
@@ -725,7 +614,7 @@ public class RedRightPullStack extends LinearOpMode {
 
                     //go slow
 
-                    .lineToSplineHeading(new Pose2d(49, -30, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(49, 35, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
@@ -743,27 +632,46 @@ public class RedRightPullStack extends LinearOpMode {
 
                     .waitSeconds(1)
 
-                    .lineToSplineHeading(new Pose2d(45, -35, Math.toRadians(0)))//back off
+                    .lineToSplineHeading(new Pose2d(45, 35, Math.toRadians(0)))//back off
 
                     .build();
 
 
-            //drive.followTrajectorySequence(robot.moveToSensingPos(drive, startPose));
 
 
-            /*TrajectorySequence traj4 = robot.moveToSensingPos(drive, startPose);
-            TrajectorySequence traj2 = robot.moveToSensingPos(drive, traj4.end());
-*/
-
-            //drive.followTrajectorySequenceAsync(trajectory1)
 
 
             drive.followTrajectorySequence(trajectory1);
+        } else {
+            telemetry.addLine("running zone 1 auto!");
+            telemetry.update();
 
+
+
+
+
+
+
+
+
+
+            //drive.followTrajectorySequence(trajectory1);
+        }
+
+
+       /* while(poseTransferTime.seconds() <= 28){
 
         }
-        /*while(!isStopRequested()){
-            PoseStorage.currentPose = drive.getPoseEstimate();
-        }*/
+
+        /*Pose2d thePose = new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(),
+                Math.toRadians((Math.toDegrees(drive.getPoseEstimate().getHeading()) + 90)));
+*/
+        PoseStorage.currentPose = drive.getPoseEstimate();//thePose;*/
+
+        //Math.toRadians((Math.toDegrees(drive.getPoseEstimate()) + 90))
+
+
     }
+
+
 }
