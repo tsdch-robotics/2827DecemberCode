@@ -31,14 +31,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.RedAutos.Trajectories.RRZ1_SCR_PR_YW;
-
 @Config
 @Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
 public class RedRightScoreStack extends LinearOpMode {
 
-
-    RRZ1_SCR_PR_YW robot = new RRZ1_SCR_PR_YW();
 
     public DistanceSensor tsL;
     public DistanceSensor tsR;

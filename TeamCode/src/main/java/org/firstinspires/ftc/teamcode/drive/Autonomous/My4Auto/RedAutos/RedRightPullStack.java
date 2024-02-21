@@ -31,14 +31,12 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.RedAutos.Trajectories.RRZ1_SCR_PR_YW;
-
 @Config
 @Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
 public class RedRightPullStack extends LinearOpMode {
 
 
-    RRZ1_SCR_PR_YW robot = new RRZ1_SCR_PR_YW();
+
 
     //public DistanceSensor tsL;
     //public DistanceSensor tsR;
@@ -523,7 +521,6 @@ public class RedRightPullStack extends LinearOpMode {
                     .setReversed(true)
                     .splineTo(new Vector2d(13, -33), Math.toRadians(180))
 
-
                     .addTemporalMarker(2.5,() -> {
                         intakeLeft.setPosition(0);
                         intakeRight.setPosition(0);
@@ -556,7 +553,6 @@ public class RedRightPullStack extends LinearOpMode {
 
                     .lineToSplineHeading(new Pose2d(13, -33, Math.toRadians(0)))
                     .splineTo(new Vector2d(30, -9), Math.toRadians(0))
-
 
 //trying to score stack
 

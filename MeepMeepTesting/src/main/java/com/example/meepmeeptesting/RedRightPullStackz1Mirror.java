@@ -1,48 +1,30 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.noahbres.meepmeep.MeepMeep;
+import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
+import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-
-/*
- * This is an example of a more complex path to really test the tuning.
- */
-//@Disabled
-@Autonomous(group = "drive")
-public class SplineTest extends LinearOpMode {
-
-
-    public Trajectory traj;
-
-    @Override
-    public void runOpMode() throws InterruptedException {
-
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(14.5, 60, Math.toRadians(-90));
-        drive.setPoseEstimate(startPose);
+public class RedRightPullStackz1Mirror {
+    public static void main(String[] args) {
+        MeepMeep meepMeep = new MeepMeep(800);
 
 
 
-        waitForStart();
 
-        if (isStopRequested()) return;
+        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 52, Math.toRadians(180), Math.toRadians(180), 14.9)
+                .followTrajectorySequence(drive ->
+                                drive.trajectorySequenceBuilder(new Pose2d(14.5, 60, Math.toRadians(-90)))//-38, 60 for blue right
 
-        TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d())
-
-
-
-                .addTemporalMarker(() -> {
+                                        .addTemporalMarker(() -> {
                                     /*finger1.setPosition(sliderMachineState.stabFinger1Tight);
                                     finger2.setPosition(sliderMachineState.stabFinger2Tight);
 */
-                })
-                .addTemporalMarker(.9,() -> {
+                                        })
+                                        .addTemporalMarker(.9,() -> {
 
                                     /*moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
                                     arm1.setPosition(sliderMachineState.armScore);
@@ -50,42 +32,42 @@ public class SplineTest extends LinearOpMode {
                                     finger1.setPosition(sliderMachineState.stabFinger1Tight);
                                     finger2.setPosition(sliderMachineState.stabFinger2Tight);
                                     wrist.setPosition(sliderMachineState.wristScore);*/
-                })
+                                        })
 
-                .splineTo(new Vector2d(43, 28), Math.toRadians(0))
-                .waitSeconds(.01)
-                .splineTo(new Vector2d(51, 28), Math.toRadians(0))/*,
+                                        .splineTo(new Vector2d(43, 28), Math.toRadians(0))
+                                        .waitSeconds(.01)
+                                        .splineTo(new Vector2d(51, 28), Math.toRadians(0))/*,
                                         SampleMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL,
                                                 DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 */
 
-                //sensor function??
+                                        //sensor function??
 
-                .waitSeconds(.1)
-                .addTemporalMarker(() -> {
+                                        .waitSeconds(.1)
+                                        .addTemporalMarker(() -> {
 
                                     /*finger1.setPosition(sliderMachineState.Finger1Loose);
                                     finger2.setPosition(sliderMachineState.Finger2Loose);*/
-                    //release pixel
-                })
+                                            //release pixel
+                                        })
 
-                .setReversed(true)
-                .splineTo(new Vector2d(13, 33), Math.toRadians(180))
+                                        .setReversed(true)
+                                        .splineTo(new Vector2d(13, 33), Math.toRadians(180))
 
-                .addTemporalMarker(2.5,() -> {
+                                        .addTemporalMarker(2.5,() -> {
                                     /*intakeLeft.setPosition(0);
                                     intakeRight.setPosition(0);*/
 
-                })
+                                        })
 
-                .addTemporalMarker(() -> {
-                    /* intake.setPower(-.4);*///svore purple
-                })
+                                        .addTemporalMarker(() -> {
+                                            /* intake.setPower(-.4);*///svore purple
+                                        })
 
-                .lineToSplineHeading(new Pose2d(10, 33, Math.toRadians(0)))
+                                        .lineToSplineHeading(new Pose2d(10, 33, Math.toRadians(0)))
 
-                //retract lift
-                .addTemporalMarker(() -> {
+                                        //retract lift
+                                        .addTemporalMarker(() -> {
                                     /*moveByEncoder.powerSlider(slides, 0);
                                     arm1.setPosition(sliderMachineState.armThreaten);
                                     arm2.setPosition(sliderMachineState.armThreaten);
@@ -93,23 +75,23 @@ public class SplineTest extends LinearOpMode {
                                     finger2.setPosition(sliderMachineState.Finger2Loose);
                                     wrist.setPosition(sliderMachineState.wristThreaten);*/
 
-                })
+                                        })
 
-                .addTemporalMarker(5,() -> {
+                                        .addTemporalMarker(5,() -> {
 //turn intake off after purple
 
-                    /*intake.setPower(0);*/
-                })
+                                            /*intake.setPower(0);*/
+                                        })
 
-                .setReversed(false)
+                                        .setReversed(false)
 
-                .lineToSplineHeading(new Pose2d(13, 33, Math.toRadians(0)))
-                .splineTo(new Vector2d(30, 9), Math.toRadians(0))
+                                        .lineToSplineHeading(new Pose2d(13, 33, Math.toRadians(0)))
+                                        .splineTo(new Vector2d(30, 9), Math.toRadians(0))
 
 //trying to score stack  🤯
 
-                //retract lift
-                .addTemporalMarker(() -> {
+                                        //retract lift
+                                        .addTemporalMarker(() -> {
 
 //prepare scoring to pass under gate
                                     /*moveByEncoder.powerSlider(slides, 0);
@@ -119,47 +101,47 @@ public class SplineTest extends LinearOpMode {
                                     finger2.setPosition(sliderMachineState.Finger2Loose);
                                     wrist.setPosition(sliderMachineState.wristThreaten);
 */
-                })
+                                        })
 
-                .setReversed(true)
-                .splineTo(new Vector2d(20,9), Math.toRadians(180))
+                                        .setReversed(true)
+                                        .splineTo(new Vector2d(20,9), Math.toRadians(180))
 
-                //.lineToSplineHeading(new Pose2d(45, -5, Math.toRadians(0)))
+                                        //.lineToSplineHeading(new Pose2d(45, -5, Math.toRadians(0)))
 
-                .lineToSplineHeading(new Pose2d(-56, 9, Math.toRadians(0)))
+                                        .lineToSplineHeading(new Pose2d(-56, 9, Math.toRadians(0)))
 
-                .waitSeconds(.01)
-                .lineToSplineHeading(new Pose2d(-62, 11, Math.toRadians(0)))/*,
+                                        .waitSeconds(.01)
+                                        .lineToSplineHeading(new Pose2d(-62, 11, Math.toRadians(0)))/*,
                                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                                 DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 */
 
-                //intake
-                .addTemporalMarker(() -> {
+                                        //intake
+                                        .addTemporalMarker(() -> {
 
                                 /*    intakeLeft.setPosition(.8);
                                     intakeRight.setPosition(.8);*/
 
 //turn power on for intake
-                })
+                                        })
 
-                .lineToSplineHeading(new Pose2d(-55, 11, Math.toRadians(0)))
+                                        .lineToSplineHeading(new Pose2d(-55, 11, Math.toRadians(0)))
 
 //NOW, we can turn on the intake!
 
-                .addTemporalMarker(() -> {
+                                        .addTemporalMarker(() -> {
 /*
                                     //create height for pixel 4
                                     intakeLeft.setPosition(.35);
                                     intakeRight.setPosition(.35);
                                     intake.setPower(1);*/
 
-                })
+                                        })
 
-                .waitSeconds(1)
+                                        .waitSeconds(1)
 
-                //shifting over
-                .lineToSplineHeading(new Pose2d(-58.5, 11, Math.toRadians(0)))/*,
+                                        //shifting over
+                                        .lineToSplineHeading(new Pose2d(-58.5, 11, Math.toRadians(0)))/*,
                                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                                 DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 */
@@ -218,21 +200,21 @@ public class SplineTest extends LinearOpMode {
                     //end of second
 
 */
-                .setReversed(false)
-                .splineTo(new Vector2d(-50, 9), Math.toRadians(0))//leaving the stack
-                //line to?
+                                        .setReversed(false)
+                                        .splineTo(new Vector2d(-50, 9), Math.toRadians(0))//leaving the stack
+                                        //line to?
 
-                .addTemporalMarker(() -> {
+                                        .addTemporalMarker(() -> {
                                     /*intakeLeft.setPosition(.35);
                                     intakeRight.setPosition(.35);*/
-                    //to pixk up pixels stuck in intake
-                })
-                .lineToSplineHeading(new Pose2d(30, 9, Math.toRadians(0)))//go thru gate
+                                            //to pixk up pixels stuck in intake
+                                        })
+                                        .lineToSplineHeading(new Pose2d(30, 9, Math.toRadians(0)))//go thru gate
 
-                //raise lift
+                                        //raise lift
 
 
-                .addTemporalMarker(14,() -> {
+                                        .addTemporalMarker(14,() -> {
 
                                     /*moveByEncoder.powerSlider(slides, 400);
 
@@ -241,8 +223,8 @@ public class SplineTest extends LinearOpMode {
                                     arm2.setPosition(sliderMachineState.armStab);
 
 */
-                })
-                .addTemporalMarker(15,() -> {
+                                        })
+                                        .addTemporalMarker(15,() -> {
 
                                     /*moveByEncoder.powerSlider(slides, -30);
                                     arm1.setPosition(sliderMachineState.armStab);
@@ -250,18 +232,18 @@ public class SplineTest extends LinearOpMode {
 
                                     intake.setPower(-1);
 */
-                })
-                .addTemporalMarker(16,() -> {
+                                        })
+                                        .addTemporalMarker(16,() -> {
 
                                     /*finger1.setPosition(sliderMachineState.stabFinger1Tight);
                                     finger2.setPosition(sliderMachineState.stabFinger2Tight);
 */
-                })
+                                        })
 
-                .setReversed(false)
-                .splineTo(new Vector2d(45,35), Math.toRadians(0))
+                                        .setReversed(false)
+                                        .splineTo(new Vector2d(45,35), Math.toRadians(0))
 
-                .addTemporalMarker(() -> {
+                                        .addTemporalMarker(() -> {
 
                                     /*moveByEncoder.powerSlider(slides, sliderMachineState.MEDIUMpos);
                                     arm1.setPosition(sliderMachineState.armScore);
@@ -269,41 +251,41 @@ public class SplineTest extends LinearOpMode {
                                     wrist.setPosition(sliderMachineState.wristScore);
 */
 
-                })
+                                        })
 
-                //go slow
+                                        //go slow
 
-                .lineToSplineHeading(new Pose2d(49, 30, Math.toRadians(0)))/*,
+                                        .lineToSplineHeading(new Pose2d(49, 30, Math.toRadians(0)))/*,
                                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                                 DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 */
-                .waitSeconds(1)
+                                        .waitSeconds(1)
 
-                .addTemporalMarker(() -> {
+                                        .addTemporalMarker(() -> {
 
                                    /* finger1.setPosition(sliderMachineState.Finger1Loose);
                                     finger2.setPosition(sliderMachineState.Finger2Loose);
 */
-                    //release pixel
-                })
+                                            //release pixel
+                                        })
 
-                //end  of the extra
+                                        //end  of the extra
 
-                .waitSeconds(1)
+                                        .waitSeconds(1)
 
-                .lineToSplineHeading(new Pose2d(45, 35, Math.toRadians(0)))//back off
+                                        .lineToSplineHeading(new Pose2d(45, 35, Math.toRadians(0)))//back off
 
 
-                .build();
 
-        drive.followTrajectorySequence(traj);
 
-        sleep(2000);
+                                        .build()
 
-        drive.followTrajectory(
-                drive.trajectoryBuilder(traj.end(), true)
-                        .splineTo(new Vector2d(0, 0), Math.toRadians(180))
-                        .build()
-        );
+                );
+
+        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_LIGHT)
+                .setDarkMode(false)
+                .setBackgroundAlpha(0.95f)
+                .addEntity(myBot)
+                .start();
     }
 }
