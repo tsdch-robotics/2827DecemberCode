@@ -33,9 +33,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
 @Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
-public class RedRightPullStack extends LinearOpMode {
-
-
+public class RedLeftPullStack extends LinearOpMode {
 
 
     //public DistanceSensor tsL;

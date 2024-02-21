@@ -309,9 +309,6 @@ public class BlueLeft extends LinearOpMode {
             telemetry.update();
 
 
-
-
-
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
 
@@ -577,7 +574,6 @@ public class BlueLeft extends LinearOpMode {
                     .strafeLeft(9)
 
                     .waitSeconds(2)
-
 
 
                     .build();
