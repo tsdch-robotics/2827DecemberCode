@@ -221,8 +221,6 @@ public class RedLeftThruTruss extends LinearOpMode {
 
 
 
-
-
         colorAnalysisPipeline = new ColorAnalysisPipeline();
         webcam1.setPipeline(colorAnalysisPipeline);
 
