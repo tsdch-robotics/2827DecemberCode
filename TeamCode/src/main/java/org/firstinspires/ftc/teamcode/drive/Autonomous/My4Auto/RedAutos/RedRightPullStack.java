@@ -36,7 +36,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class RedRightPullStack extends LinearOpMode {
 
 
-
+    private double autonomousTimeOffset = 0;
 
     //public DistanceSensor tsL;
     //public DistanceSensor tsR;
@@ -314,74 +314,12 @@ public class RedRightPullStack extends LinearOpMode {
 
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
-
-
-                    .addTemporalMarker(() -> {
-                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
-                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
-                    })
-
-
-                    .splineTo(new Vector2d(13, -30), Math.toRadians(90))//13
-
-                    .waitSeconds(1)
-                    //place purple
-                    .addTemporalMarker(() -> {
-                        flicker.setPosition(.8);
-                    })
-                    .waitSeconds(1)
-
-                    .lineToSplineHeading(new Pose2d(13, -38, Math.toRadians(90)))
-                    .waitSeconds(.01)
-                    .lineToSplineHeading(new Pose2d(13.1, -38, Math.toRadians(0)))
-                    .waitSeconds(.1)
-
-                    //raise lift
-                    .addTemporalMarker(() -> {
-
-
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
-                        arm1.setPosition(sliderMachineState.armScore);
-                        arm2.setPosition(sliderMachineState.armScore);
-                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
-                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
-                        wrist.setPosition(sliderMachineState.wristScore);
-
-                    })
-
-                    .splineTo(new Vector2d(45, -35), Math.toRadians(0))
-                    .splineTo(new Vector2d(51, -35), Math.toRadians(0),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to park//slow to board, middle
-
-
-                    .waitSeconds(1)
-                    //score
-                    .addTemporalMarker(() -> {
-
-                        finger1.setPosition(sliderMachineState.Finger1Loose);
-                        finger2.setPosition(sliderMachineState.Finger2Loose);
-                        //release pixel
-                    })
-
-
-                    .waitSeconds(1)
-
-                    .lineToSplineHeading(new Pose2d(45, -34, Math.toRadians(0)))//back off
-
-
-                    .setReversed(true)
+//what should the y be on score???
 
 
 
-                    // .splineTo(new Vector2d(50, 40), Math.toRadians(0))
 
-                    .splineTo(new Vector2d(45, -59), Math.toRadians(-90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to park
-                    .waitSeconds(1)
+
 
 
                     .build();
@@ -400,6 +338,8 @@ public class RedRightPullStack extends LinearOpMode {
 
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
+
+                    .waitSeconds(autonomousTimeOffset)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -458,7 +398,7 @@ public class RedRightPullStack extends LinearOpMode {
 
                     })
 
-                    .addTemporalMarker(5,() -> {
+                    .addTemporalMarker(5 + autonomousTimeOffset,() -> {
 //turn intake off after purple
                         intake.setPower(0);
                     })
@@ -595,7 +535,7 @@ public class RedRightPullStack extends LinearOpMode {
                     //raise lift
 
 
-                    .addTemporalMarker(14,() -> {
+                    .addTemporalMarker(14 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, 400);
 
@@ -605,7 +545,7 @@ public class RedRightPullStack extends LinearOpMode {
 
 
                     })
-                    .addTemporalMarker(15,() -> {
+                    .addTemporalMarker(15 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, -30);
                         arm1.setPosition(sliderMachineState.armStab);
@@ -614,7 +554,7 @@ public class RedRightPullStack extends LinearOpMode {
                         intake.setPower(-1);
 
                     })
-                    .addTemporalMarker(16,() -> {
+                    .addTemporalMarker(16 + autonomousTimeOffset,() -> {
 
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
@@ -681,6 +621,8 @@ public class RedRightPullStack extends LinearOpMode {
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
+                    .waitSeconds(autonomousTimeOffset)
+
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
@@ -738,7 +680,7 @@ public class RedRightPullStack extends LinearOpMode {
 
                     })
 
-                    .addTemporalMarker(5,() -> {
+                    .addTemporalMarker(5 + autonomousTimeOffset,() -> {
 //turn intake off after purple
                         intake.setPower(0);
                     })
@@ -874,7 +816,7 @@ public class RedRightPullStack extends LinearOpMode {
                     //raise lift
 
 
-                    .addTemporalMarker(14,() -> {
+                    .addTemporalMarker(14 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, 400);
 
@@ -884,7 +826,7 @@ public class RedRightPullStack extends LinearOpMode {
 
 
                     })
-                    .addTemporalMarker(15,() -> {
+                    .addTemporalMarker(15 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, -30);
                         arm1.setPosition(sliderMachineState.armStab);
@@ -893,7 +835,7 @@ public class RedRightPullStack extends LinearOpMode {
                         intake.setPower(-1);
 
                     })
-                    .addTemporalMarker(16,() -> {
+                    .addTemporalMarker(16 + autonomousTimeOffset,() -> {
 
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
@@ -909,7 +851,6 @@ public class RedRightPullStack extends LinearOpMode {
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
                         wrist.setPosition(sliderMachineState.wristScore);
-
 
                     })
 
@@ -936,7 +877,6 @@ public class RedRightPullStack extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(45, -35, Math.toRadians(0)))//back off
 
                     .build();
-
 
             //drive.followTrajectorySequence(robot.moveToSensingPos(drive, startPose));
 

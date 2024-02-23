@@ -36,6 +36,8 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 @Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
 public class BlueLeftPullStack extends LinearOpMode {
 
+    private double autonomousTimeOffset = 0.0;
+
     private Servo intakeLeft;
     private Servo intakeRight;
     private DcMotor intake;
@@ -308,13 +310,15 @@ public class BlueLeftPullStack extends LinearOpMode {
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
+                    .waitSeconds(autonomousTimeOffset)//to prevent a crash
+
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.5);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
-                    .addTemporalMarker(.9,() -> {
+                    .addTemporalMarker(.9 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
                         arm1.setPosition(sliderMachineState.armScore);
@@ -351,7 +355,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
 
-                    .addTemporalMarker(3,() -> {
+                    .addTemporalMarker(3 + autonomousTimeOffset,() -> {
                         intakeLeft.setPosition(0);
                         intakeRight.setPosition(0);
 
@@ -360,7 +364,6 @@ public class BlueLeftPullStack extends LinearOpMode {
                     .addTemporalMarker(() -> {
                         intake.setPower(-.4);//svore purple
                     })
-
 
 
                     //push pixel a lil farther
@@ -382,7 +385,7 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     })
 
-                    .addTemporalMarker(7,() -> {
+                    .addTemporalMarker(7 + autonomousTimeOffset,() -> {
 //turn intake off after purple
                         intake.setPower(0);
                     })
@@ -464,7 +467,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                     //raise lift
 
 
-                    .addTemporalMarker(17,() -> {
+                    .addTemporalMarker(17 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, 400);
 
@@ -473,7 +476,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                         arm2.setPosition(sliderMachineState.armStab);
 
                     })
-                    .addTemporalMarker(18,() -> {
+                    .addTemporalMarker(18 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, -30);
                         arm1.setPosition(sliderMachineState.armStab);
@@ -482,7 +485,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                         intake.setPower(-1);
 
                     })
-                    .addTemporalMarker(20,() -> {
+                    .addTemporalMarker(20 + autonomousTimeOffset,() -> {
 
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
@@ -541,13 +544,17 @@ public class BlueLeftPullStack extends LinearOpMode {
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
+                    .waitSeconds(autonomousTimeOffset)
+
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.5);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
-                    .addTemporalMarker(.9,() -> {
+
+
+                    .addTemporalMarker(.9 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
                         arm1.setPosition(sliderMachineState.armScore);
@@ -584,7 +591,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
 
-                    .addTemporalMarker(3,() -> {
+                    .addTemporalMarker(3 + autonomousTimeOffset,() -> {
                         intakeLeft.setPosition(0);
                         intakeRight.setPosition(0);
 
@@ -615,7 +622,7 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     })
 
-                    .addTemporalMarker(7,() -> {
+                    .addTemporalMarker(7 + autonomousTimeOffset,() -> {
 //turn intake off after purple
                         intake.setPower(0);
                     })
@@ -696,7 +703,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                     //raise lift
 
 
-                    .addTemporalMarker(17,() -> {
+                    .addTemporalMarker(17 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, 400);
 
@@ -705,7 +712,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                         arm2.setPosition(sliderMachineState.armStab);
 
                     })
-                    .addTemporalMarker(18,() -> {
+                    .addTemporalMarker(18 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, -30);
                         arm1.setPosition(sliderMachineState.armStab);
@@ -714,7 +721,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                         intake.setPower(-1);
 
                     })
-                    .addTemporalMarker(20,() -> {
+                    .addTemporalMarker(20 + autonomousTimeOffset,() -> {
 
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
@@ -796,13 +803,16 @@ public class BlueLeftPullStack extends LinearOpMode {
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
+
+                    .waitSeconds(autonomousTimeOffset)
+
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.5);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
-                    .addTemporalMarker(.9,() -> {
+                    .addTemporalMarker(.9 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
                         arm1.setPosition(sliderMachineState.armScore);
@@ -842,7 +852,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
 
-                    .addTemporalMarker(3,() -> {
+                    .addTemporalMarker(3 + autonomousTimeOffset,() -> {
                         intakeLeft.setPosition(0);
                         intakeRight.setPosition(0);
 
@@ -873,7 +883,7 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     })
 
-                    .addTemporalMarker(7,() -> {
+                    .addTemporalMarker(7 + autonomousTimeOffset,() -> {
 //turn intake off after purple
                         intake.setPower(0);
                     })
@@ -955,7 +965,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                     //raise lift
 
 
-                    .addTemporalMarker(17,() -> {
+                    .addTemporalMarker(17 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, 400);
 
@@ -964,7 +974,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                         arm2.setPosition(sliderMachineState.armStab);
 
                     })
-                    .addTemporalMarker(18,() -> {
+                    .addTemporalMarker(18 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, 30);
                         arm1.setPosition(sliderMachineState.armStab);
@@ -973,7 +983,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                         intake.setPower(-1);
 
                     })
-                    .addTemporalMarker(20,() -> {
+                    .addTemporalMarker(20 + autonomousTimeOffset,() -> {
 
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
@@ -994,7 +1004,6 @@ public class BlueLeftPullStack extends LinearOpMode {
                     })
 
                     //go slow
-
 
                     .waitSeconds(.01)//
 

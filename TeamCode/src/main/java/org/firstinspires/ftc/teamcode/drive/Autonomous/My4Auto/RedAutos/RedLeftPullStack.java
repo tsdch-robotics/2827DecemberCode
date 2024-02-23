@@ -36,6 +36,10 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
 public class RedLeftPullStack extends LinearOpMode {
 
+
+    private double autonomousTimeOffset = 0.0;
+
+
     private BNO055IMU imu;
 
     TouchSensor touchSensor;
@@ -416,8 +420,7 @@ public class RedLeftPullStack extends LinearOpMode {
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
-                    // .waitSeconds(7)
-
+                    .waitSeconds(autonomousTimeOffset)
 
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.5);
@@ -492,7 +495,7 @@ public class RedLeftPullStack extends LinearOpMode {
 
                     //wait a second, then stab while holding the yellow
 
-                    .addTemporalMarker(8,() -> {
+                    .addTemporalMarker(8 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, 500);
                         arm1.setPosition(sliderMachineState.armStab);
@@ -502,7 +505,7 @@ public class RedLeftPullStack extends LinearOpMode {
                         wrist.setPosition(sliderMachineState.wristStab);
                     })
 
-                    .addTemporalMarker(7,() -> {
+                    .addTemporalMarker(7 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, 0);
                         arm1.setPosition(sliderMachineState.armStab);
@@ -512,7 +515,7 @@ public class RedLeftPullStack extends LinearOpMode {
                         wrist.setPosition(sliderMachineState.wristStab);
                     })
 
-                    .addTemporalMarker(9,() -> {
+                    .addTemporalMarker(9 + autonomousTimeOffset,() -> {
 
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
@@ -602,6 +605,14 @@ public class RedLeftPullStack extends LinearOpMode {
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
+//.lineToSplineHeading(new Pose2d (-46, -36.7, Math.toRadians(90)))//ensure 90    this is the purple placement pos
+                    //.lineToSplineHeading(new Pose2d(52, -30.1, Math.toRadians(-5)))  this is the board position
+
+
+
+
+
+
 
                     //.waitSeconds(7)
 
@@ -626,7 +637,6 @@ public class RedLeftPullStack extends LinearOpMode {
 
 
                     .lineToSplineHeading(new Pose2d (-46.7, -44.7, Math.toRadians(90)))//back off
-
 
                     .lineToSplineHeading(new Pose2d (-43.5, -58.9, Math.toRadians(0)))//allign with wall
 
@@ -672,8 +682,6 @@ public class RedLeftPullStack extends LinearOpMode {
 
                     .waitSeconds(.6)
 
-
-
                     .lineToSplineHeading(new Pose2d(45, -30.6, Math.toRadians(0)))//escape
 
                     .waitSeconds(.1)
@@ -684,19 +692,14 @@ public class RedLeftPullStack extends LinearOpMode {
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
                     //slow to park
 
-
                     .build();
-
 
             drive.followTrajectorySequence(trajectory1);
         }
-
 
         /*while(!isStopRequested()){
             PoseStorage.currentPose = drive.getPoseEstimate();
         }*/
 
     }
-
-
 }
