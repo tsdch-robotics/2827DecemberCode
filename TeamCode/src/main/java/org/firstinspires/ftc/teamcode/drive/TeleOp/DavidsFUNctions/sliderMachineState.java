@@ -59,7 +59,7 @@ public class sliderMachineState {
 
     public static double wristThreaten = .6;//servo pos
     public static double wristStab = 0.6;//servo pos
-    public static double wristScore = 0.3;//servo pos
+    public static double wristScore = 0.2;//servo pos//on feb 22 it was .3
 
     public static double armThreaten = 0.2;//servo pos
     public static double armStab = 0.1;//servo pos
