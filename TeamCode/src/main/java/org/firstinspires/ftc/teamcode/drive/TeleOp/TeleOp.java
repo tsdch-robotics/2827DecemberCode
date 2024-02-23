@@ -195,8 +195,8 @@ public class TeleOp extends OpMode {
         intakeRight = hardwareMap.servo.get("intakeRight");
 
 
-        tsL = hardwareMap.get(DistanceSensor.class, "tsL");
-        tsR = hardwareMap.get(DistanceSensor.class, "tsR");
+        //tsL = hardwareMap.get(DistanceSensor.class, "tsL");
+        //tsR = hardwareMap.get(DistanceSensor.class, "tsR");
 
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -446,7 +446,7 @@ public class TeleOp extends OpMode {
         if(Math.abs(gamepad2.left_stick_y) > 0.1){
 
             exocutePos = sliderMachineState.slidePosition.MANUAL;
-            if(slides.getCurrentPosition() > 300 && slides.getCurrentPosition() < 3000){
+            if(slides.getCurrentPosition() > 0 && slides.getCurrentPosition() < 3000){
                 slides.setPower(-gamepad2.left_stick_y);
                 lastManualPosition = slides.getCurrentPosition();
 
@@ -533,14 +533,11 @@ public class TeleOp extends OpMode {
             paperAirplane.setPosition(.6);
         }
 
-        hangTargetPos = (int) (Math.round(hang1.getCurrentPosition() + 400 * (float) -gamepad2.right_stick_y));
+        hangTargetPos = (int) ( ((Math.round(hang1.getCurrentPosition())+ Math.round(hang2.getCurrentPosition()))/2) + 400 * (float) -gamepad2.right_stick_y);
 
 
         hangPID.magicPID(hang1, hangTargetPos, hang1Time);
         hangPID.magicPID(hang2, hangTargetPos, hang2Time);
-
-
-
 
 
 
@@ -573,7 +570,7 @@ public class TeleOp extends OpMode {
         double sensorLeftsetpoint = 5;
         double sensorRightsetpoint = 5;
 
-       if(gamepad1.y){
+       /*if(gamepad1.y){
             nearBoard = true;
         }else{
             nearBoard = false;
@@ -606,7 +603,7 @@ public class TeleOp extends OpMode {
         }else{
             distanceOffsetLeft = 0;
             distanceOffsetRight = 0;
-        }
+        }*/
 
 
         //double rotate = -gamepad1.right_stick_x;
@@ -632,10 +629,10 @@ public class TeleOp extends OpMode {
         double fieldStrafe = drive * Math.sin(Math.toRadians(heading)) + strafe * Math.cos(Math.toRadians(heading));
         // Calculate motor powers for mecanum drive
 
-        double frontLeftPower = fieldDrive + fieldStrafe + rotate + distanceOffsetLeft;
-        double frontRightPower = fieldDrive - fieldStrafe - rotate + distanceOffsetRight;
-        double rearLeftPower = fieldDrive - fieldStrafe + rotate + distanceOffsetLeft;
-        double rearRightPower = fieldDrive + fieldStrafe - rotate + distanceOffsetRight;
+        double frontLeftPower = fieldDrive + fieldStrafe + rotate;// + distanceOffsetLeft;
+        double frontRightPower = fieldDrive - fieldStrafe - rotate;// + distanceOffsetRight;
+        double rearLeftPower = fieldDrive - fieldStrafe + rotate;// + distanceOffsetLeft;
+        double rearRightPower = fieldDrive + fieldStrafe - rotate;// + distanceOffsetRight;
 
         // Ensure motor powers are within the valid range of -1 to 1
         frontLeftPower = Range.clip(frontLeftPower, -1.0, 1.0);

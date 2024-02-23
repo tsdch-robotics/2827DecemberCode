@@ -251,6 +251,9 @@ public class BlueLeftPullStack extends LinearOpMode {
 
         waitForStart();
 
+        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+
         poseTransferTime.startTime();
         poseTransferTime.reset();
 
@@ -320,7 +323,7 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     .addTemporalMarker(1.3 + autonomousTimeOffset,() -> {
 
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos + 200);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -332,12 +335,12 @@ public class BlueLeftPullStack extends LinearOpMode {
                     .waitSeconds(.01)//
                     .splineTo(new Vector2d(45, 35), Math.toRadians(0))
                     .waitSeconds(.01)//
-                    .lineToSplineHeading(new Pose2d(52, 35, Math.toRadians(-5)),//negative 5
+                    .lineToSplineHeading(new Pose2d(53, 35, Math.toRadians(-5)),//negative 5
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 
 
-                    .waitSeconds(.5)
+                    .waitSeconds(1)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -416,15 +419,15 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     .lineToSplineHeading(new Pose2d(-56, 16, Math.toRadians(-5)))
 
-                    .lineToSplineHeading(new Pose2d(-62, 16, Math.toRadians(-5)),
+                    .lineToSplineHeading(new Pose2d(-61, 16, Math.toRadians(-5)),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
                     //intake3
                     .addTemporalMarker(() -> {
 
-                        intakeLeft.setPosition(.2);
-                        intakeRight.setPosition(.2);
+                        intakeLeft.setPosition(.1);//.2?
+                        intakeRight.setPosition(.1);//.2?
 
 //turn power on for intake
                     })
@@ -446,7 +449,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                     .waitSeconds(1)
 
                     //shifting over
-                    .lineToSplineHeading(new Pose2d(-57.5, 17, Math.toRadians(-5)),
+                    .lineToSplineHeading(new Pose2d(-57, 17, Math.toRadians(-5)),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
@@ -468,7 +471,7 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     //raise lift
 
-                    .addTemporalMarker(17.5 + autonomousTimeOffset,() -> {
+                    .addTemporalMarker(18 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, 400);
 
@@ -480,7 +483,7 @@ public class BlueLeftPullStack extends LinearOpMode {
 
 
                     })
-                    .addTemporalMarker(18.5 + autonomousTimeOffset,() -> {
+                    .addTemporalMarker(19 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, -100);
                         arm1.setPosition(sliderMachineState.armStab);
@@ -489,7 +492,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                         intake.setPower(-1);
 
                     })
-                    .addTemporalMarker(19.5 + autonomousTimeOffset,() -> {
+                    .addTemporalMarker(20 + autonomousTimeOffset,() -> {
 
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
@@ -497,7 +500,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                     })
 
                     .setReversed(false)
-                    .splineTo(new Vector2d(45,35), Math.toRadians(-5))
+                    .splineTo(new Vector2d(45,30), Math.toRadians(-5))
 
                     .addTemporalMarker(() -> {
 
@@ -513,7 +516,7 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     .waitSeconds(.01)//
 
-                    .lineToSplineHeading(new Pose2d(52, 32, Math.toRadians(-5)),
+                    .lineToSplineHeading(new Pose2d(53, 30, Math.toRadians(-5)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
@@ -559,7 +562,7 @@ public class BlueLeftPullStack extends LinearOpMode {
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
-                    .waitSeconds(autonomousTimeOffset)
+                    .waitSeconds(autonomousTimeOffset)//to prevent a crash
 
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.5);
@@ -567,11 +570,9 @@ public class BlueLeftPullStack extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
+                    .addTemporalMarker(2 + autonomousTimeOffset,() -> {
 
-
-                    .addTemporalMarker(.9 + autonomousTimeOffset,() -> {
-
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos + 200);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -581,14 +582,14 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     .lineToSplineHeading(new Pose2d(11.5, 59, Math.toRadians(-90)))
                     .waitSeconds(.01)//
-                    .splineTo(new Vector2d(45, 28), Math.toRadians(0))
+                    .splineTo(new Vector2d(45, 29), Math.toRadians(0))
                     .waitSeconds(.01)//
-                    .lineToSplineHeading(new Pose2d(52, 28, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(53, 29, Math.toRadians(-5)),//negative 5
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 
 
-                    .waitSeconds(.5)
+                    .waitSeconds(1)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -602,27 +603,29 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     .setReversed(true)
                     .splineTo(new Vector2d(14, 35), Math.toRadians(180),
-            SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL,
-                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+                            SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
 
-                    .addTemporalMarker(3 + autonomousTimeOffset,() -> {
+                    .addTemporalMarker(4 + autonomousTimeOffset,() -> {
                         intakeLeft.setPosition(0);
                         intakeRight.setPosition(0);
 
                     })
 
+                    /*.addTemporalMarker(() -> {
+                        intake.setPower(-.4);//svore purple
+                    })
+*/
+
+                    //push pixel a lil farther
+                    .lineToSplineHeading(new Pose2d(11, 35, Math.toRadians(0)),
+                            SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL,
+                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+
                     .addTemporalMarker(() -> {
                         intake.setPower(-.4);//svore purple
                     })
-
-
-
-                    //push pixel a lil farther
-                    .lineToSplineHeading(new Pose2d(12, 35, Math.toRadians(0)),
-            SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL,
-                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-
 
                     .waitSeconds(.01)//
 
@@ -643,11 +646,11 @@ public class BlueLeftPullStack extends LinearOpMode {
                     })
 
                     .setReversed(false)
-                    .lineToSplineHeading(new Pose2d(14, 35, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(15, 26, Math.toRadians(0)))
 
 
-
-            //line up with aisle
+                    //line up with aisle
+                    //.setReversed(true)
                     .splineTo(new Vector2d(30, 13), Math.toRadians(0),
                             SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
@@ -663,24 +666,23 @@ public class BlueLeftPullStack extends LinearOpMode {
                     //.waitSeconds(.01)//
 
 
-                    .lineToSplineHeading(new Pose2d(-56, 17, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-56, 16, Math.toRadians(-5)))
 
-                    .lineToSplineHeading(new Pose2d(-62, 17, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(-61, 16, Math.toRadians(-5)),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
                     //intake3
                     .addTemporalMarker(() -> {
 
-                        intakeLeft.setPosition(.1);
-                        intakeRight.setPosition(.1);
+                        intakeLeft.setPosition(.1);//.2?
+                        intakeRight.setPosition(.1);//.2?
 
 //turn power on for intake
                     })
 
-
                     .waitSeconds(.01)//
-                    .lineToSplineHeading(new Pose2d(-55, 14, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-54, 16, Math.toRadians(-5)))
 
 //NOW, we can turn on the intake!
 
@@ -696,14 +698,15 @@ public class BlueLeftPullStack extends LinearOpMode {
                     .waitSeconds(1)
 
                     //shifting over
-                    .lineToSplineHeading(new Pose2d(-57, 13, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(-57, 17, Math.toRadians(-5)),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
+
 
                     .waitSeconds(.01)//
 
                     .setReversed(false)
-                    .splineTo(new Vector2d(-50, 13), Math.toRadians(0))//leaving the stack
+                    .splineTo(new Vector2d(-50, 13), Math.toRadians(-5))//leaving the stack
                     //line to?
 
                     .addTemporalMarker(() -> {
@@ -713,10 +716,9 @@ public class BlueLeftPullStack extends LinearOpMode {
                     })
 
                     .waitSeconds(.01)//
-                    .lineToSplineHeading(new Pose2d(30, 13, Math.toRadians(0)))//go thru gate
+                    .lineToSplineHeading(new Pose2d(30, 13, Math.toRadians(-5)))//go thru gate
 
                     //raise lift
-
 
                     .addTemporalMarker(17 + autonomousTimeOffset,() -> {
 
@@ -725,18 +727,21 @@ public class BlueLeftPullStack extends LinearOpMode {
                         wrist.setPosition(sliderMachineState.wristStab);
                         arm1.setPosition(sliderMachineState.armStab);
                         arm2.setPosition(sliderMachineState.armStab);
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+
 
                     })
                     .addTemporalMarker(18 + autonomousTimeOffset,() -> {
 
-                        moveByEncoder.powerSlider(slides, -30);
+                        moveByEncoder.powerSlider(slides, -100);
                         arm1.setPosition(sliderMachineState.armStab);
                         arm2.setPosition(sliderMachineState.armStab);
 
                         intake.setPower(-1);
 
                     })
-                    .addTemporalMarker(20 + autonomousTimeOffset,() -> {
+                    .addTemporalMarker(19 + autonomousTimeOffset,() -> {
 
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
@@ -744,7 +749,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                     })
 
                     .setReversed(false)
-                    .splineTo(new Vector2d(45,35), Math.toRadians(0))
+                    .splineTo(new Vector2d(45,30), Math.toRadians(-5))
 
                     .addTemporalMarker(() -> {
 
@@ -753,7 +758,6 @@ public class BlueLeftPullStack extends LinearOpMode {
                         arm2.setPosition(sliderMachineState.armScore);
                         wrist.setPosition(sliderMachineState.wristScore);
 
-
                     })
 
                     //go slow
@@ -761,11 +765,9 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     .waitSeconds(.01)//
 
-                    .lineToSplineHeading(new Pose2d(51, 35, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(52, 30, Math.toRadians(-5)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-
-                    .waitSeconds(1)
 
                     .addTemporalMarker(() -> {
 
@@ -777,10 +779,25 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     //end  of the extra
 
-                    .waitSeconds(1)
-
                     .lineToSplineHeading(new Pose2d(45, 35, Math.toRadians(0)))//back off
 
+                    //the park
+                    /*.setReversed(true)
+                    .splineTo(new Vector2d(45, 20), Math.toRadians(90))
+                    .waitSeconds(.1)
+
+                    .addTemporalMarker(() -> {
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+
+                    .waitSeconds(30)
+*/
                     .build();
 
 
@@ -819,7 +836,7 @@ public class BlueLeftPullStack extends LinearOpMode {
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
 
-                    .waitSeconds(autonomousTimeOffset)
+                    .waitSeconds(autonomousTimeOffset)//to prevent a crash
 
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.5);
@@ -827,9 +844,9 @@ public class BlueLeftPullStack extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
-                    .addTemporalMarker(.9 + autonomousTimeOffset,() -> {
+                    .addTemporalMarker(1.3 + autonomousTimeOffset,() -> {
 
-                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos);
+                        moveByEncoder.powerSlider(slides, sliderMachineState.LOWpos + 200);
                         arm1.setPosition(sliderMachineState.armScore);
                         arm2.setPosition(sliderMachineState.armScore);
                         finger1.setPosition(sliderMachineState.stabFinger1Tight);
@@ -839,17 +856,14 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     .lineToSplineHeading(new Pose2d(11.5, 59, Math.toRadians(-90)))
                     .waitSeconds(.01)//
-
-                    .splineTo(new Vector2d(45, 38.8), Math.toRadians(0))
-
-
+                    .splineTo(new Vector2d(45, 40), Math.toRadians(0))
                     .waitSeconds(.01)//
-                    .lineToSplineHeading(new Pose2d(52, 38.8, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(52, 40, Math.toRadians(-5)),//negative 5
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))//to board
 
 
-                    .waitSeconds(.5)
+                    .waitSeconds(1)
 
                     .addTemporalMarker(() -> {
                         finger1.setPosition(sliderMachineState.Finger1Loose);
@@ -862,28 +876,30 @@ public class BlueLeftPullStack extends LinearOpMode {
 //slow board aproch
 
                     .setReversed(true)
-                    .splineTo(new Vector2d(40, 35), Math.toRadians(180),
+                    .splineTo(new Vector2d(37, 35), Math.toRadians(180),
                             SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
 
-                    .addTemporalMarker(3 + autonomousTimeOffset,() -> {
+                    .addTemporalMarker(4 + autonomousTimeOffset,() -> {
                         intakeLeft.setPosition(0);
                         intakeRight.setPosition(0);
 
                     })
 
-                    .addTemporalMarker(() -> {
+                    /*.addTemporalMarker(() -> {
                         intake.setPower(-.4);//svore purple
                     })
-
-
+*/
 
                     //push pixel a lil farther
-                    .lineToSplineHeading(new Pose2d(37, 35, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(32, 35, Math.toRadians(0)),
                             SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
+                    .addTemporalMarker(() -> {
+                        intake.setPower(-.4);//svore purple
+                    })
 
                     .waitSeconds(.01)//
 
@@ -904,12 +920,12 @@ public class BlueLeftPullStack extends LinearOpMode {
                     })
 
                     .setReversed(false)
-                    .lineToSplineHeading(new Pose2d(45, 35, Math.toRadians(0)))
-
+                    //.lineToSplineHeading(new Pose2d(40, 35, Math.toRadians(0)))
 
 
                     //line up with aisle
-                    .splineTo(new Vector2d(30, 13), Math.toRadians(0),
+                    //.setReversed(true)
+                    .splineTo(new Vector2d(40, 13), Math.toRadians(0),
                             SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
@@ -924,24 +940,23 @@ public class BlueLeftPullStack extends LinearOpMode {
                     //.waitSeconds(.01)//
 
 
-                    .lineToSplineHeading(new Pose2d(-56, 17, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-56, 16, Math.toRadians(-5)))
 
-                    .lineToSplineHeading(new Pose2d(-62, 17, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(-61, 16, Math.toRadians(-5)),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
                     //intake3
                     .addTemporalMarker(() -> {
 
-                        intakeLeft.setPosition(.1);
-                        intakeRight.setPosition(.1);
+                        intakeLeft.setPosition(.1);//.2?
+                        intakeRight.setPosition(.1);//.2?
 
 //turn power on for intake
                     })
 
-
                     .waitSeconds(.01)//
-                    .lineToSplineHeading(new Pose2d(-55, 14, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-54, 16, Math.toRadians(-5)))
 
 //NOW, we can turn on the intake!
 
@@ -957,7 +972,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                     .waitSeconds(1)
 
                     //shifting over
-                    .lineToSplineHeading(new Pose2d(-57, 13, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(-57, 17, Math.toRadians(-5)),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
 
@@ -965,7 +980,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                     .waitSeconds(.01)//
 
                     .setReversed(false)
-                    .splineTo(new Vector2d(-50, 13), Math.toRadians(0))//leaving the stack
+                    .splineTo(new Vector2d(-50, 13), Math.toRadians(-5))//leaving the stack
                     //line to?
 
                     .addTemporalMarker(() -> {
@@ -975,23 +990,25 @@ public class BlueLeftPullStack extends LinearOpMode {
                     })
 
                     .waitSeconds(.01)//
-                    .lineToSplineHeading(new Pose2d(30, 13, Math.toRadians(0)))//go thru gate
+                    .lineToSplineHeading(new Pose2d(30, 13, Math.toRadians(-5)))//go thru gate
 
                     //raise lift
 
-
-                    .addTemporalMarker(17 + autonomousTimeOffset,() -> {
+                    .addTemporalMarker(18 + autonomousTimeOffset,() -> {
 
                         moveByEncoder.powerSlider(slides, 400);
 
                         wrist.setPosition(sliderMachineState.wristStab);
                         arm1.setPosition(sliderMachineState.armStab);
                         arm2.setPosition(sliderMachineState.armStab);
+                        finger1.setPosition(sliderMachineState.Finger1Loose);
+                        finger2.setPosition(sliderMachineState.Finger2Loose);
+
 
                     })
-                    .addTemporalMarker(18 + autonomousTimeOffset,() -> {
+                    .addTemporalMarker(19 + autonomousTimeOffset,() -> {
 
-                        moveByEncoder.powerSlider(slides, 30);
+                        moveByEncoder.powerSlider(slides, -100);
                         arm1.setPosition(sliderMachineState.armStab);
                         arm2.setPosition(sliderMachineState.armStab);
 
@@ -1006,7 +1023,7 @@ public class BlueLeftPullStack extends LinearOpMode {
                     })
 
                     .setReversed(false)
-                    .splineTo(new Vector2d(45,35), Math.toRadians(0))
+                    .splineTo(new Vector2d(45,30), Math.toRadians(-5))
 
                     .addTemporalMarker(() -> {
 
@@ -1015,18 +1032,16 @@ public class BlueLeftPullStack extends LinearOpMode {
                         arm2.setPosition(sliderMachineState.armScore);
                         wrist.setPosition(sliderMachineState.wristScore);
 
-
                     })
 
                     //go slow
 
+
                     .waitSeconds(.01)//
 
-                    .lineToSplineHeading(new Pose2d(51, 35, Math.toRadians(0)),
+                    .lineToSplineHeading(new Pose2d(52, 30, Math.toRadians(-5)),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-
-                    .waitSeconds(1)
 
                     .addTemporalMarker(() -> {
 
@@ -1038,10 +1053,25 @@ public class BlueLeftPullStack extends LinearOpMode {
 
                     //end  of the extra
 
-                    .waitSeconds(1)
-
                     .lineToSplineHeading(new Pose2d(45, 35, Math.toRadians(0)))//back off
 
+                    //the park
+                    /*.setReversed(true)
+                    .splineTo(new Vector2d(45, 20), Math.toRadians(90))
+                    .waitSeconds(.1)
+
+                    .addTemporalMarker(() -> {
+
+                        moveByEncoder.powerSlider(slides, sliderMachineState.THREATENINGpos);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+
+                        wrist.setPosition(sliderMachineState.wristThreaten);
+
+                    })
+
+                    .waitSeconds(30)
+*/
                     .build();
 
 
@@ -1049,10 +1079,7 @@ public class BlueLeftPullStack extends LinearOpMode {
             drive.followTrajectorySequence(trajectory1);
 
 
-
-
         }
     }
-
 
 }
