@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.Autonomous.My4Auto.RedAutos;
 
 
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -15,7 +14,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.drive.Autonomous.Misc.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.TeleOp.DavidsFUNctions.moveWithBasicEncoder;
@@ -36,11 +34,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(group = "drive", preselectTeleOp = "Run this TeleOp!")
 public class RedLeftPullStack extends LinearOpMode {
 
+    private final double autonomousTimeOffset = 0.0;
 
-    private double autonomousTimeOffset = 0.0;
-
-
-    private BNO055IMU imu;
 
     TouchSensor touchSensor;
 
@@ -50,12 +45,9 @@ public class RedLeftPullStack extends LinearOpMode {
     private DcMotor intake;
 
     public ElapsedTime slidesTime = new ElapsedTime();
-    sliderMachineState executeSlides = new sliderMachineState();
 
-    sliderMachineState.slidePosition executePos = sliderMachineState.slidePosition.THREATEN;
 
     OpenCvWebcam webcam1 = null;
-    ElapsedTime elapsedTime = new ElapsedTime(); // Add ElapsedTime to track time
 
     public ElapsedTime scoreWaitingTime = new ElapsedTime();
 
@@ -89,21 +81,15 @@ public class RedLeftPullStack extends LinearOpMode {
         Mat roi1 = new Mat();
         Mat roi2 = new Mat();
 
-
-        public boolean firstTime = true;
-
         Mat redMask = new Mat();
 
         Mat inputMat = new Mat();
         Mat output = new Mat();
 
-
-
-
         Scalar redLower = new Scalar(0, 50, 50);
         Scalar redUpper = new Scalar(20, 255, 255);
-        Scalar yellowLower = new Scalar(20, 50, 50);
-        Scalar yellowUpper = new Scalar(40, 255, 255);
+        //Scalar yellowLower = new Scalar(20, 50, 50);
+        //Scalar yellowUpper = new Scalar(40, 255, 255);
         //Scalar blueLower = new Scalar(90, 50, 50);
         //Scalar blueUpper = new Scalar(130, 255, 255);
 
@@ -184,12 +170,10 @@ public class RedLeftPullStack extends LinearOpMode {
 
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(-33, -60, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-34, -60, Math.toRadians(90));//was x = -33 but I shifted over like an inch
         drive.setPoseEstimate(startPose);
 
         drive.setPoseEstimate(startPose);
-
-
 
 
 
@@ -326,13 +310,15 @@ public class RedLeftPullStack extends LinearOpMode {
             telemetry.addLine("running zone 2 auto!");
             telemetry.update();
 
-
-
+//purple  .lineToSplineHeading(new Pose2d (-38.2, -30.7, Math.toRadians(90)))//ensure a heading of 90
+//
+//score: .lineToSplineHeading(new Pose2d(51.2, -35, Math.toRadians(0)))//confirm 0
 
             TrajectorySequence trajectory1 = drive.trajectorySequenceBuilder(startPose)
 
-                    // .waitSeconds(7)
 
+
+                    .waitSeconds(autonomousTimeOffset)
 
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.5);
@@ -341,25 +327,103 @@ public class RedLeftPullStack extends LinearOpMode {
                     })
 
 
-
-                    .lineToSplineHeading(new Pose2d(-37, -52, Math.toRadians(90)))//54 or 51?a
-
-                    .splineTo(new Vector2d(-38.21, -30.71), Math.toRadians(90))
-                    .lineToSplineHeading(new Pose2d (-38.2, -30.7, Math.toRadians(90)))//ensure a heading of 90
-                    //place pixel
+                    .splineTo(new Vector2d(-38.2, -30.7), Math.toRadians(0))
 
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.8);
+
+                        moveByEncoder.powerSlider(slides, 500);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+                        finger1.setPosition(sliderMachineState.Finger2Loose);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
                     })
 
-                    .waitSeconds(.5)
+                    .waitSeconds(.1)
+
+                    .setReversed(true)
+                    .splineTo(new Vector2d(-46, -40), Math.toRadians(180))
 
 
-                    .lineToSplineHeading(new Pose2d (-44.0, -58.9, Math.toRadians(0)))//allign with wall
+                    //put up the intake
+                    .addTemporalMarker(() -> {
+
+                        //create height for pixel 4
+                        intakeLeft.setPosition(0);
+                        intakeRight.setPosition(0);
 
 
-                    .lineToSplineHeading(new Pose2d(13.1, -58.7, Math.toRadians(0)))//out of truss
-                    //raise lift
+                    })
+
+                    .lineToSplineHeading(new Pose2d(-62, -40, Math.toRadians(0)))
+
+                    .addTemporalMarker(() -> {
+
+                        //create height for pixel 4
+                        intakeLeft.setPosition(.05);
+                        intakeRight.setPosition(.05);
+
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(-55, -40, Math.toRadians(0)))
+
+
+                    .addTemporalMarker(() -> {
+
+                        //create height for pixel 4
+                        intakeLeft.setPosition(.35);
+                        intakeRight.setPosition(.35);
+                        intake.setPower(1);
+
+                    })
+
+
+                    //turn on power, then...
+                    .lineToSplineHeading(new Pose2d(-57, -40, Math.toRadians(0)))
+
+                    //wait a second, then stab while holding the yellow
+
+                    .addTemporalMarker(8 + autonomousTimeOffset,() -> {
+
+                        moveByEncoder.powerSlider(slides, 500);
+                        arm1.setPosition(sliderMachineState.armStab);
+                        arm2.setPosition(sliderMachineState.armStab);
+                        finger1.setPosition(sliderMachineState.Finger2Loose);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                        wrist.setPosition(sliderMachineState.wristStab);
+                    })
+
+                    .addTemporalMarker(7 + autonomousTimeOffset,() -> {
+
+                        moveByEncoder.powerSlider(slides, 0);
+                        arm1.setPosition(sliderMachineState.armStab);
+                        arm2.setPosition(sliderMachineState.armStab);
+                        finger1.setPosition(sliderMachineState.Finger2Loose);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                        wrist.setPosition(sliderMachineState.wristStab);
+                    })
+
+                    .addTemporalMarker(9 + autonomousTimeOffset,() -> {
+
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+
+                    })
+
+
+
+
+
+                    //continue to the rest of the code
+                    .lineToSplineHeading(new Pose2d(-37, -58.7, Math.toRadians(0)))
+
+
+
+                    .lineToSplineHeading(new Pose2d(13.1, -58.7, Math.toRadians(0)))
+
+                    .waitSeconds(.1)
 
                     .addTemporalMarker(() -> {
 
@@ -373,38 +437,36 @@ public class RedLeftPullStack extends LinearOpMode {
 
                     })
 
+
                     .waitSeconds(.1)
 
                     .splineTo(new Vector2d(44.5, -35), Math.toRadians(0))
-
-                    .waitSeconds(.1)
-
-                    .splineTo(new Vector2d(51.21, -35), Math.toRadians(0),
+                    .splineTo(new Vector2d(52, -35), Math.toRadians(-5),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to board
+//slow to board
 
-                    .lineToSplineHeading(new Pose2d(51.2, -35, Math.toRadians(0)))//confirm 0
 
                     .waitSeconds(.5)
-
 
                     .addTemporalMarker(() -> {
 
                         finger1.setPosition(sliderMachineState.Finger1Loose);
                         finger2.setPosition(sliderMachineState.Finger2Loose);
-                        //release pixel
+
                     })
 
                     .waitSeconds(.5)
 
-                    .lineToSplineHeading(new Pose2d(45, -33.5, Math.toRadians(0)))//confirm 0
-                    .waitSeconds(.01)
+
+
+
+                    .lineToSplineHeading(new Pose2d(47, -40, Math.toRadians(0)))
+                    .waitSeconds(.1)
+
                     .setReversed(true)
-                    .splineTo(new Vector2d(46.5, -59.8), Math.toRadians(-90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to park
+                    .splineTo(new Vector2d(46.5, -55), Math.toRadians(-90))//slow
+
 
                     .build();
 
@@ -589,13 +651,6 @@ public class RedLeftPullStack extends LinearOpMode {
 
 
 
-
-
-
-
-
-
-
         } else {
             telemetry.addLine("running zone 1 auto!");
             telemetry.update();
@@ -608,13 +663,7 @@ public class RedLeftPullStack extends LinearOpMode {
 //.lineToSplineHeading(new Pose2d (-46, -36.7, Math.toRadians(90)))//ensure 90    this is the purple placement pos
                     //.lineToSplineHeading(new Pose2d(52, -30.1, Math.toRadians(-5)))  this is the board position
 
-
-
-
-
-
-
-                    //.waitSeconds(7)
+                    .waitSeconds(autonomousTimeOffset)
 
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.5);
@@ -622,27 +671,104 @@ public class RedLeftPullStack extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.stabFinger2Tight);
                     })
 
-                    //initialize servos
-                    .lineToSplineHeading(new Pose2d(-42.5, -51.4, Math.toRadians(90)))//54 or 51?a
 
-                    .splineTo(new Vector2d(-46.71, -36.71), Math.toRadians(90))
-                    .lineToSplineHeading(new Pose2d (-46, -36.7, Math.toRadians(90)))//ensure 90
+                    .splineTo(new Vector2d(-46, -36.7), Math.toRadians(0))
 
-                    .waitSeconds(.1)
                     .addTemporalMarker(() -> {
                         flicker.setPosition(.8);
+
+                        moveByEncoder.powerSlider(slides, 500);
+                        arm1.setPosition(sliderMachineState.armThreaten);
+                        arm2.setPosition(sliderMachineState.armThreaten);
+                        finger1.setPosition(sliderMachineState.Finger2Loose);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                        wrist.setPosition(sliderMachineState.wristThreaten);
                     })
+
                     .waitSeconds(.1)
-                    //place pixel
+
+                    .setReversed(true)
+                    .splineTo(new Vector2d(-46, -40), Math.toRadians(180))
 
 
-                    .lineToSplineHeading(new Pose2d (-46.7, -44.7, Math.toRadians(90)))//back off
+                    //put up the intake
+                    .addTemporalMarker(() -> {
 
-                    .lineToSplineHeading(new Pose2d (-43.5, -58.9, Math.toRadians(0)))//allign with wall
+                        //create height for pixel 4
+                        intakeLeft.setPosition(0);
+                        intakeRight.setPosition(0);
 
 
-                    .lineToSplineHeading(new Pose2d(13.1, -58.7, Math.toRadians(0)))//out of truss
-                    //raise lift
+                    })
+
+                    .lineToSplineHeading(new Pose2d(-62, -40, Math.toRadians(0)))
+
+                    .addTemporalMarker(() -> {
+
+                        //create height for pixel 4
+                        intakeLeft.setPosition(.05);
+                        intakeRight.setPosition(.05);
+
+
+                    })
+
+                    .lineToSplineHeading(new Pose2d(-55, -40, Math.toRadians(0)))
+
+
+                    .addTemporalMarker(() -> {
+
+                        //create height for pixel 4
+                        intakeLeft.setPosition(.35);
+                        intakeRight.setPosition(.35);
+                        intake.setPower(1);
+
+                    })
+
+
+                    //turn on power, then...
+                    .lineToSplineHeading(new Pose2d(-57, -40, Math.toRadians(0)))
+
+                    //wait a second, then stab while holding the yellow
+
+                    .addTemporalMarker(8 + autonomousTimeOffset,() -> {
+
+                        moveByEncoder.powerSlider(slides, 500);
+                        arm1.setPosition(sliderMachineState.armStab);
+                        arm2.setPosition(sliderMachineState.armStab);
+                        finger1.setPosition(sliderMachineState.Finger2Loose);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                        wrist.setPosition(sliderMachineState.wristStab);
+                    })
+
+                    .addTemporalMarker(7 + autonomousTimeOffset,() -> {
+
+                        moveByEncoder.powerSlider(slides, 0);
+                        arm1.setPosition(sliderMachineState.armStab);
+                        arm2.setPosition(sliderMachineState.armStab);
+                        finger1.setPosition(sliderMachineState.Finger2Loose);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+                        wrist.setPosition(sliderMachineState.wristStab);
+                    })
+
+                    .addTemporalMarker(9 + autonomousTimeOffset,() -> {
+
+                        finger1.setPosition(sliderMachineState.stabFinger1Tight);
+                        finger2.setPosition(sliderMachineState.stabFinger2Tight);
+
+                    })
+
+
+
+
+
+                    //continue to the rest of the code
+                    .lineToSplineHeading(new Pose2d(-37, -58.7, Math.toRadians(0)))
+
+
+
+                    .lineToSplineHeading(new Pose2d(13.1, -58.7, Math.toRadians(0)))
+
+                    .waitSeconds(.1)
 
                     .addTemporalMarker(() -> {
 
@@ -659,16 +785,11 @@ public class RedLeftPullStack extends LinearOpMode {
 
                     .waitSeconds(.1)
 
-                    .splineTo(new Vector2d(44.5, -30), Math.toRadians(0))
-
-                    //.waitSeconds(1)
-
-                    .splineTo(new Vector2d(52, -30), Math.toRadians(0),
-                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL,
+                    .splineTo(new Vector2d(44.5, -30.1), Math.toRadians(0))
+                    .splineTo(new Vector2d(52, -30.1), Math.toRadians(-5),
+                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
                                     DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to board
-
-                    .lineToSplineHeading(new Pose2d(52, -30.1, Math.toRadians(-5)))//correct on board
+//slow to board
 
 
                     .waitSeconds(.5)
@@ -680,17 +801,14 @@ public class RedLeftPullStack extends LinearOpMode {
 
                     })
 
-                    .waitSeconds(.6)
+                    .waitSeconds(.5)
 
-                    .lineToSplineHeading(new Pose2d(45, -30.6, Math.toRadians(0)))//escape
 
+                    .lineToSplineHeading(new Pose2d(47, -40, Math.toRadians(0)))
                     .waitSeconds(.1)
 
                     .setReversed(true)
-                    .splineTo(new Vector2d(46.5, -59.8), Math.toRadians(-90),
-                            SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
-                                    DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint((DriveConstants.MAX_ACCEL)))
-                    //slow to park
+                    .splineTo(new Vector2d(46.5, -55), Math.toRadians(-90))//slow
 
                     .build();
 

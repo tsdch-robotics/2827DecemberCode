@@ -390,8 +390,6 @@ public class BlueRight extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(-39, 54.4, Math.toRadians(-90)))
 
 
-
-
                     .lineToSplineHeading(new Pose2d(-38.67, 32.4, Math.toRadians(180)))
 
                     //place pixel
@@ -526,11 +524,6 @@ public class BlueRight extends LinearOpMode {
                     })
                     .waitSeconds(.5)
 
-
-
-
-
-
                     .splineTo(new Vector2d(45, 39.2), Math.toRadians(0))
                     .splineTo(new Vector2d(51.5, 39.1), Math.toRadians(-5),
                             SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL,
@@ -544,9 +537,7 @@ public class BlueRight extends LinearOpMode {
                         finger2.setPosition(sliderMachineState.Finger2Loose);
                     })
 
-
                     .waitSeconds(.5)
-
 
                     .lineToSplineHeading(new Pose2d(45, 39.1, Math.toRadians(0)))
                     /*.splineTo(new Vector2d(45, 59), Math.toRadians(90),
