@@ -173,6 +173,9 @@ public class TeleOp extends OpMode {
     @Override
     public void init() {
 
+
+
+
        /*SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(14.5, -60, Math.toRadians(90));
         drive.setPoseEstimate(startPose);*/
@@ -277,6 +280,11 @@ public class TeleOp extends OpMode {
 
         //waitForStart();
         //  runtime.reset();
+
+
+        intakeLeft.setPosition(.45);
+        intakeRight.setPosition(.45);
+
 
     }
 

@@ -52,10 +52,10 @@ public class sliderMachineState {
     public static int ReallyHIGHpos = 3000;
 
     public static double stabFinger1Tight = 0.82;//servo pos
-    public static double stabFinger2Tight = .58;//servo pos
+    public static double stabFinger2Tight = .13;//servo pos
 
     public static double Finger1Loose = 0.5;//servo pos
-    public static double Finger2Loose = 0.51;//servo pos
+    public static double Finger2Loose = 0.45;//servo pos
 
     public static double wristThreaten = .6;//servo pos
     public static double wristStab = 0.6;//servo pos
